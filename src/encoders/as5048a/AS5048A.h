@@ -47,9 +47,18 @@ struct AS5048Error {
 #define AS5048A_RESULT_MASK 0x3FFF
 
 
+#if defined(ESP32)
+// fix for ESP32 - if BitOrder is not compiling on your platform, take a look at how Adafruit has solved this:
+//   https://github.com/adafruit/Adafruit_BusIO/blob/13bd6906a62b5f2e8cbe8529f55ad13880ffd730/Adafruit_SPIDevice.h#L6
+// TODO Perhaps it would be good to inherit from Adafruit's class. Need to investigate this.
+typedef enum {
+  LSBFIRST = 0,
+  MSBFIRST = 1,
+} BitOrder;
 
+#endif
 
-static SPISettings AS5048SPISettings(1000000, BitOrder::MSBFIRST, SPI_MODE1);
+static SPISettings AS5048SPISettings(8000000, BitOrder::MSBFIRST, SPI_MODE1); // @suppress("Invalid arguments")
 
 
 class AS5048A {
