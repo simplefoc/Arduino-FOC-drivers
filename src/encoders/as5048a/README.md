@@ -10,6 +10,7 @@ While AS5048A absolute position magnetic rotary encoder is supported by the stan
 - it has a fastMode setting, in which the sensor is sent only 1 command per getAngle() call - the value returned will be from previous getAngle() invocation
 - these two modes together will reduce the number of 16-bit SPI transfers by 4x per simpleFOC loop iteration
 
+
 ## Hardware setup
 
 Connect as per normal for your SPI bus. No special hardware setup is needed to use this driver.
@@ -77,3 +78,9 @@ Here's how you can use it:
     // get diagnostics
     AS5048Diagnostics diagnostics = sensor1.readDiagnostics();
 ```
+
+
+## PreciseMagneticSensorAS5048A
+
+This is a variant of the sensor that uses [PreciseAngle](../utilities) to represent the angle, allowing a (much) greater range of rotation.
+
