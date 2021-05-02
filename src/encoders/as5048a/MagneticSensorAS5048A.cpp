@@ -1,6 +1,7 @@
 
 #include "./MagneticSensorAS5048A.h"
 #include "common/foc_utils.h"
+#include "common/time_utils.h"
 
 MagneticSensorAS5048A::MagneticSensorAS5048A(int nCS, bool fastMode, SPISettings settings) : AS5048A(settings, nCS), fastMode(fastMode) {
 
@@ -13,7 +14,7 @@ void MagneticSensorAS5048A::init(SPIClass* _spi) {
     this->AS5048A::init(_spi);
 	// velocity calculation init
 	angle_prev = 0;
-	velocity_calc_timestamp = micros(); 
+	velocity_calc_timestamp = _micros();
 	// full rotations tracking number
 	full_rotation_offset = 0;
     readRawAngle();
@@ -25,7 +26,7 @@ float MagneticSensorAS5048A::getAngle() {
     float angle_data = readRawAngle();
     if (!fastMode) // read again to ensure current value
         angle_data = readRawAngle();
-    angle_curr_ts = micros();
+    angle_curr_ts = _micros();
 
     // TODO check for and handle sensor errors
 

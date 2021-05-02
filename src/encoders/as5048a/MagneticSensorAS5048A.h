@@ -18,7 +18,7 @@ private:
     bool fastMode = false;
     float angle_data_prev=0;
     float angle_curr=0;
-    float angle_curr_ts=0;
+    long angle_curr_ts=0;
     float full_rotation_offset=0;   // TODO this is problematic as it causes angle counting to stop after a relatively short time, when the precision of the full_rotation
                                     // is insufficient to capture the angle-delta, no further incrementation happends
 
