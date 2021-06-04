@@ -27,11 +27,11 @@ void AS5048A::init(SPIClass* _spi) {
 
 float AS5048A::getCurrentAngle(){
 	readRawAngle();
-	return ((float)readRawAngle())/AS5048A_CPR * 2 * PI;
+	return ((float)readRawAngle())/(float)AS5048A_CPR * 2.0f * (float)PI;
 }
 
 float AS5048A::getFastAngle(){
-	return ((float)readRawAngle())/AS5048A_CPR * 2 * PI;
+	return ((float)readRawAngle())/(float)AS5048A_CPR * 2.0f * (float)PI;
 }
 
 

@@ -25,7 +25,7 @@ void PreciseMagneticSensorAS5048A::init(SPIClass* _spi) {
 
 
 
-float PreciseMagneticSensorAS5048A::getAngle() {
+float PreciseMagneticSensorAS5048A::getSensorAngle() {
     previous_ts = current_ts;
     previous_angle = current_angle;
     uint16_t angle_data = readRawAngle();

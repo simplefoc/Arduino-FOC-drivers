@@ -27,11 +27,11 @@ void AS5047::init(SPIClass* _spi) {
 
 float AS5047::getCurrentAngle(){
 	readCorrectedAngle();
-	return ((float)readCorrectedAngle())/AS5047_CPR * 2 * PI;
+	return ((float)readCorrectedAngle())/(float)AS5047_CPR * 2.0f * (float)PI;
 }
 
 float AS5047::getFastAngle(){
-	return ((float)readCorrectedAngle())/AS5047_CPR * 2 * PI;
+	return ((float)readCorrectedAngle())/(float)AS5047_CPR * 2.0f * (float)PI;
 }
 
 

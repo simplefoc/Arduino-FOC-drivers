@@ -17,8 +17,7 @@ public:
 	PreciseMagneticSensorAS5048A(int nCS = -1, bool fastMode = false, SPISettings settings = AS5048SPISettings);
 	virtual ~PreciseMagneticSensorAS5048A();
 
-	float getPreciseAngle();
-    virtual float getAngle() override;
+    virtual float getSensorAngle() override;
     virtual float getVelocity() override;
 
 	virtual void init(SPIClass* _spi = &SPI) override;
