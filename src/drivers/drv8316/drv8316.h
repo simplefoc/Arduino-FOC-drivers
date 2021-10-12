@@ -292,7 +292,7 @@ class DRV8316Driver3PWM : public DRV8316Driver, public BLDCDriver3PWM {
 
 	public:
 		DRV8316Driver3PWM(int phA,int phB,int phC, int cs, bool currentLimit = false, int en = NOT_SET, int nFault = NOT_SET) :
-			DRV8316Driver(cs, currentLimit, nFault), BLDCDriver3PWM(phA, phB, phC, en) {};
+			DRV8316Driver(cs, currentLimit, nFault), BLDCDriver3PWM(phA, phB, phC, en) { enable_active_high=false; };
 		virtual ~DRV8316Driver3PWM() {};
 
 		virtual void init(SPIClass* _spi = &SPI) override;
