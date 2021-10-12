@@ -15,6 +15,8 @@ What's here? See the sections below. Each driver or function should come with it
 ### Encoders
 
 [AS5048A SPI driver](src/encoders/as5048a/) - SPI driver for the AMS AS5048A absolute position magnetic rotary encoder IC.
+[AS5047 SPI driver](src/encoders/as5047/) - SPI driver for the AMS AS5047P and AS5047D absolute position magnetic rotary encoder ICs.
+
 
 
 

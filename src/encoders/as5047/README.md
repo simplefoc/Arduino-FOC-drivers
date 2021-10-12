@@ -68,7 +68,7 @@ Here's how you can use it:
     float m1 = sensor1.readMagnitude();
 
     // check for errors
-    if (!sensor1.isErrorFlag()) {
+    if (sensor1.isErrorFlag()) {
         AS5047Error error = sensor1.clearErrorFlag();
         if (error.parityError) { // also error.framingError, error.commandInvalid
             // etc...            
