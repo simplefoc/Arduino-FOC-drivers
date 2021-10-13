@@ -1,7 +1,5 @@
 # AS5047 SimpleFOC driver
 
-:warning: work in progress!
-
 While AS5047 absolute position magnetic rotary encoder is supported by the standard MagneticSensorSPI driver included in the base distribution, this AS5047-specific driver includes some optimisations:
 
 - access to the other registers of the AS5047, including the magnitude value which can be used to check the magnet strength, and the diagnostics register
@@ -24,6 +22,7 @@ Its actually easier to use than the standard SPI sensor class, because it is les
 #include "Wire.h"
 #include "SPI.h"
 #include "SimpleFOC.h"
+#include "SimpleFOCDrivers.h"
 #include "encoders/as5047/MagneticSensorAS5047.h"
 
 #define SENSOR1_CS 5 // some digital pin that you're using as the nCS pin

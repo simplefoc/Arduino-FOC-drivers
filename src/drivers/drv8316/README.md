@@ -46,6 +46,7 @@ Usage is quite easy, especially if you already know SimpleFOC. See also the [exa
 #include <Wire.h>
 #include <SimpleFOC.h>
 #include <Math.h>
+#include "SimpleFOCDrivers.h"
 #include "drivers/drv8316/drv8316.h"
 
 BLDCMotor motor = BLDCMotor(11);
@@ -61,6 +62,7 @@ Or, for 3-PWM:
 #include <Wire.h>
 #include <SimpleFOC.h>
 #include <Math.h>
+#include "SimpleFOCDrivers.h"
 #include "drivers/drv8316/drv8316.h"
 
 BLDCMotor motor = BLDCMotor(11);
