@@ -4,9 +4,7 @@ While AS5047 absolute position magnetic rotary encoder is supported by the stand
 
 - access to the other registers of the AS5047, including the magnitude value which can be used to check the magnet strength, and the diagnostics register
 - access to the error state of the sensor, and ability to clear errors
-- getVelocity() uses the last value read from the sensor by getAngle(), reducing the sensor-polls by 1 per move() call (i.e. usually 1 per loop() iteration)
 - it has a fastMode setting, in which the sensor is sent only 1 command per getAngle() call - the value returned will be from previous getAngle() invocation
-- these two modes together will reduce the number of 16-bit SPI transfers by 4x per simpleFOC loop iteration
 
 
 ## Hardware setup
