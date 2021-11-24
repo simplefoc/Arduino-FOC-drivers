@@ -122,8 +122,10 @@ public:
 
 	AS5047Diagnostics readDiagnostics();
 	AS5047Settings1 readSettings1();
+	void writeSettings1(AS5047Settings1 settings);
 	AS5047Settings2 readSettings2();
-	void enablePWM(bool enable);	
+	void enablePWM(bool enable);
+	void enableABI(bool enable);
 
 	uint16_t setZero(uint16_t);
 

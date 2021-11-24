@@ -82,6 +82,14 @@ AS5047Settings1 AS5047::readSettings1(){
 	return result;
 }
 
+
+void AS5047::writeSettings1(AS5047Settings1 settings){
+	uint16_t command = AS5047_SETTINGS1_REG;  // set r=0, result is 0x0018
+	uint16_t cmdresult = spi_transfer16(command);
+	cmdresult = spi_transfer16(settings.reg);
+}
+
+
 AS5047Settings2 AS5047::readSettings2(){
 	uint16_t command = AS5047_SETTINGS2_REG | AS5047_RW; // set r=1, result is 0x4019
 	uint16_t cmdresult = spi_transfer16(command);
@@ -105,11 +113,15 @@ AS5047Diagnostics AS5047::readDiagnostics(){
 void AS5047::enablePWM(bool enable){
 	AS5047Settings1 settings = readSettings1();
 	settings.pwmon = enable;
-	uint16_t command = AS5047_SETTINGS1_REG;  // set r=0, result is 0x0018
-	uint16_t cmdresult = spi_transfer16(command);
-	cmdresult = spi_transfer16(settings.reg);
-	// TODO check result...
+	writeSettings1(settings);
 }
+
+void AS5047::enableABI(bool enable){
+	AS5047Settings1 settings = readSettings1();
+	settings.uvw_abi = enable?0:1;
+	writeSettings1(settings);
+}
+
 
 
 uint16_t AS5047::setZero(uint16_t value){
