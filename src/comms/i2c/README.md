@@ -5,6 +5,10 @@ Implementation of SimpleFOC Commander for I2C communication bus.
 
 This code takes the point of view that the motor driver (the "muscle") is the I2C target device, and another MCU/CPU (the "brain") is the I2C controller device, which is coordinating one or more motor drivers on the same or different I2C buses. Each motor driver can offer one or more motors for control via the I2CCommander. So fairly flexible setups are possible, with multiple motors per driver, multiple drivers per I2C bus and multiple I2C buses on the brain MCU.
 
+## Warning
+
+This is new code, and has not been extensively tested. Your milage may vary. That said, basic use cases have been tested, and we would certainly appreciate feedback and help with testing it out.
+
 ## Using
 
 As would be expected for I2C, each target device needs a unique I2C address on its bus, and setting up and discovering these addresses is out-of-scope for I2CCommander. Setting up and configuring the TwoWire objects (which pins, speed, etc...) is also out of scope and finished, initialized TwoWire objects must be passed to I2CCommander. If you don't specify a different reference, the standard *Wire* object is assumed.
