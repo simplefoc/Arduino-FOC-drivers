@@ -19,6 +19,9 @@ What's here? See the sections below. Each driver or function should come with it
  - [MA730 SPI driver](src/encoders/ma730/) - SPI driver for the MPS MagAlpha MA730 absolute position magnetic rotary encoder IC.
  - [STM32 Hardware Encoder](src/encoders/stm32hwencoder/) - Hardware timer based encoder driver for ABI type quadrature encoders.
 
+### Communications
+
+ - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices. 
 
 
 ## How to use
