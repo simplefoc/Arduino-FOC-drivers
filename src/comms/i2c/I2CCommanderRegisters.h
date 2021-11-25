@@ -17,6 +17,7 @@ typedef enum : uint8_t  {
     REG_ANGLE = 0x09,           // RO - float
     REG_POSITION = 0x10,        // RO - double
     REG_VELOCITY = 0x11,        // RO - float
+    REG_SENSOR_ANGLE = 0x12,    // RO - float
 
     REG_VOLTAGE_Q = 0x20,       // RO - float
     REG_VOLTAGE_D = 0x21,       // RO - float

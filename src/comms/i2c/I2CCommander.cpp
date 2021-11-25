@@ -200,12 +200,12 @@ bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int nu
         case REG_ZERO_OFFSET:
             readBytes(&(motors[motorNum]->sensor_offset), 4);
             break;
-
-        // unknown register or RO register
+        // RO registers
         case REG_STATUS:
         case REG_ANGLE:
         case REG_POSITION:
         case REG_VELOCITY:
+        case REG_SENSOR_ANGLE:
         case REG_VOLTAGE_Q:
         case REG_VOLTAGE_D:
         case REG_CURRENT_Q:
@@ -220,7 +220,7 @@ bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int nu
         case REG_PHASE_RESISTANCE:
         case REG_NUM_MOTORS:
         case REG_SYS_TIME:
-        default:
+        default: // unknown register
             return false;   
     }
     return true;
@@ -270,6 +270,12 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             break;
         case REG_VELOCITY:
             writeFloat(motors[motorNum]->shaft_velocity);
+            break;
+        case REG_SENSOR_ANGLE:
+            if (motors[motorNum]->sensor)
+                writeFloat(motors[motorNum]->sensor->getAngle()); // stored angle
+            else
+                writeFloat(motors[motorNum]->shaft_angle);
             break;
 
         case REG_VOLTAGE_Q:
