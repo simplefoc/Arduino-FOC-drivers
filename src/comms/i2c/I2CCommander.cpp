@@ -237,9 +237,11 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
         case REG_STATUS:
             _wire->write(curMotor);
             _wire->write((uint8_t)lastcommandregister);
-            _wire->write((uint8_t)lastcommanderror);
-            for (int i=0;(i<numMotors && i<28); i++) // at most 28 motors, so we can fit in one packet
-                _wire->write(getMotorStatus(i));
+            _wire->write((uint8_t)lastcommanderror+1);
+            for (int i=0;(i<numMotors && i<28); i++) { // at most 28 motors, so we can fit in one packet
+                uint8_t status = (uint8_t)getMotorStatus(i);
+                _wire->write(status);
+            }
             break;
         case REG_MOTOR_ADDRESS:
             _wire->write(curMotor);

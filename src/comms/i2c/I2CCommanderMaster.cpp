@@ -16,7 +16,7 @@ void I2CCommanderMaster::init(){
 };
 
 
-
+// TODO handle multiple motors per target
 void I2CCommanderMaster::addI2CMotors(uint8_t i2cAddress, uint8_t motorCount, TwoWire *wire){
     for (int i=0;i<motorCount;i++){
         if (numMotors<maxMotors){
@@ -31,7 +31,7 @@ void I2CCommanderMaster::addI2CMotors(uint8_t i2cAddress, uint8_t motorCount, Tw
 
 int I2CCommanderMaster::writeRegister(int motor, I2CCommander_Register registerNum, void* data, uint8_t size){
     motors[motor].wire->beginTransmission(motors[motor].address);
-    motors[motor].wire->write(registerNum);
+    motors[motor].wire->write((uint8_t)registerNum);
     motors[motor].wire->write((uint8_t*)data, size);
     motors[motor].wire->endTransmission();
     return size;
@@ -40,9 +40,11 @@ int I2CCommanderMaster::writeRegister(int motor, I2CCommander_Register registerN
 
 int I2CCommanderMaster::readRegister(int motor, I2CCommander_Register registerNum, void* data, uint8_t size){
     motors[motor].wire->beginTransmission(motors[motor].address);
-    motors[motor].wire->write(registerNum); // TODO check return value
+    int numWrite = motors[motor].wire->write((uint8_t)registerNum); // TODO check return value
     motors[motor].wire->endTransmission();
-    return readLastUsedRegister(motor, data, size);
+    if (numWrite==1)
+        return readLastUsedRegister(motor, data, size);
+    return 0;
 };
 
 
