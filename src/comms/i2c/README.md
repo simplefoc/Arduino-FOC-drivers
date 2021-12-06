@@ -9,6 +9,10 @@ This code takes the point of view that the motor driver (the "muscle") is the I2
 
 This is new code, and has not been extensively tested. Your milage may vary. That said, basic use cases have been tested, and we would certainly appreciate feedback and help with testing it out.
 
+In particular, there are concurrency issues with reading/writing the SimpleFOC motor values from I2C while the motor is running. These should be solved soon in an upcoming version.
+
+**Do not run on 8-bit MCUs!** The code currently assumes atomic 32 bit reads, so running on Arduino UNO or Nano is unfortunately a no-go.
+
 ## Using
 
 As would be expected for I2C, each target device needs a unique I2C address on its bus, and setting up and discovering these addresses is out-of-scope for I2CCommander. Setting up and configuring the TwoWire objects (which pins, speed, etc...) is also out of scope and finished, initialized TwoWire objects must be passed to I2CCommander. If you don't specify a different reference, the standard *Wire* object is assumed.
