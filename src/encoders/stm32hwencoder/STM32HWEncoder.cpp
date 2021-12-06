@@ -124,7 +124,7 @@ void STM32HWEncoder::init() {
     HAL_GPIO_Init(digitalPinToPort(_pinB), &gpio);
 
     // set up timer for encoder
-    encoder_handle.Init.Period = ticks_per_overflow;
+    encoder_handle.Init.Period = ticks_per_overflow - 1;
     encoder_handle.Init.Prescaler = 0;
     encoder_handle.Init.ClockDivision = 0;
     encoder_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
