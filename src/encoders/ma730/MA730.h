@@ -32,6 +32,7 @@ enum FieldStrength {
 #endif
 
 static SPISettings MA730SPISettings(8000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
+static SPISettings MA730SSISettings(8000000, MA730_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
 
 
 class MA730 {
