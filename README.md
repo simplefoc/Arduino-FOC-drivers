@@ -1,5 +1,7 @@
 # SimpleFOC Driver and Support Library
 
+![Library Compile](https://github.com/simplefoc/Arduino-FOC-drivers/workflows/Library%20Compile/badge.svg)
+
 This library contains an assortment of drivers and supporting code for SimpleFOC.
 
 The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, understand and port to different platforms. In addition to this core, there are various drivers and supporting code which has grown around SimpleFOC, and which we would like to make available to the community.

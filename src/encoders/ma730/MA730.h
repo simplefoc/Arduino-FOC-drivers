@@ -25,11 +25,7 @@ enum FieldStrength {
 #define MA730_REG_RD 0x09
 #define MA730_REG_MGH_MGL 0x1B
 
-#if defined(ESP32)
 #define MA730_BITORDER MSBFIRST
-#else
-#define MA730_BITORDER BitOrder::MSBFIRST
-#endif
 
 static SPISettings MA730SPISettings(8000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
 

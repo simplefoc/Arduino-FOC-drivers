@@ -94,11 +94,7 @@ struct AS5047Error {
 #define AS5047_RESULT_MASK 0x3FFF
 
 
-#if defined(ESP32)
 #define AS5047_BITORDER MSBFIRST
-#else
-#define AS5047_BITORDER BitOrder::MSBFIRST
-#endif
 
 static SPISettings AS5047SPISettings(8000000, AS5047_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
 
