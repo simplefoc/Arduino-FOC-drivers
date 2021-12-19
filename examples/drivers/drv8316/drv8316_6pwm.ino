@@ -4,6 +4,7 @@
 #include "Arduino.h"
 #include <Wire.h>
 #include <SimpleFOC.h>
+#include <SimpleFOCDrivers.h>
 #include "drivers/drv8316/drv8316.h"
 
 
