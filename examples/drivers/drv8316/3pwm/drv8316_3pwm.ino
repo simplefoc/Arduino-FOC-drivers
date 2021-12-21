@@ -4,14 +4,14 @@
 #include "Arduino.h"
 #include <Wire.h>
 #include <SimpleFOC.h>
-#include <Math.h>
+#include <SimpleFOCDrivers.h>
 #include "drivers/drv8316/drv8316.h"
 
 
 
 
 BLDCMotor motor = BLDCMotor(11);
-DRV8316Driver3PWM driver = DRV8316Driver3PWM(A3,A4,2,7,false);          	  // MKR1010 3-PWM
+DRV8316Driver3PWM driver = DRV8316Driver3PWM(2,3,4,7,false); // use the right pins for your setup!
 #define ENABLE_A 0
 #define ENABLE_B 1
 #define ENABLE_C 6
