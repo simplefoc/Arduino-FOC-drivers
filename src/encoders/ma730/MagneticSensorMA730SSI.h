@@ -14,7 +14,8 @@ public:
 
 	virtual void init(SPIClass* _spi = &SPI);
 
-    uint16_t readRawAngle();
+    uint16_t readRawAngleSSI();
+	
 private:
 	SPIClass* spi;
 	SPISettings settings;

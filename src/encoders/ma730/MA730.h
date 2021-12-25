@@ -28,7 +28,7 @@ enum FieldStrength {
 #define MA730_BITORDER MSBFIRST
 
 static SPISettings MA730SPISettings(8000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
-static SPISettings MA730SSISettings(8000000, MA730_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
+static SPISettings MA730SSISettings(4000000, MA730_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
 
 
 class MA730 {
@@ -41,6 +41,7 @@ public:
 	float getCurrentAngle(); // angle in radians, return current value
 
 	uint16_t readRawAngle(); // 14bit angle value
+    uint16_t readRawAngleSSI(); // 14bit angle value
 
     uint16_t getZero();
     uint8_t getBiasCurrentTrimming();
