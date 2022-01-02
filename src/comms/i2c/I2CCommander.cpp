@@ -83,7 +83,6 @@ the run() method disables interrupts while the updates happen.
 */
 bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int numBytes) {
     int val;
-    float floatval;
     switch (registerNum) {
         case REG_MOTOR_ADDRESS:
             val = _wire->read(); // reading one more byte is definately ok, since numBytes>1
@@ -387,7 +386,8 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             writeFloat(motors[motorNum]->current_limit);
             break;
         case REG_MOTION_DOWNSAMPLE:
-            _wire->write((uint32_t)motors[motorNum]->motion_downsample);
+            _wire->write((int)motors[motorNum]->motion_downsample); // TODO int will have different sizes on different platforms
+                                                                    //      but using uint32 doesn't compile clean on all, e.g. RP2040
             break;            
 
         case REG_ZERO_ELECTRIC_ANGLE:
@@ -403,11 +403,12 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             writeFloat(motors[motorNum]->phase_resistance);
             break;
         case REG_POLE_PAIRS:
-            _wire->write((uint32_t)motors[motorNum]->pole_pairs);
+            _wire->write((int)motors[motorNum]->pole_pairs);
             break;
 
         case REG_SYS_TIME:
-            _wire->write(millis()); 
+            // TODO how big is millis()? Same on all platforms?
+            _wire->write((int)millis());
             break;
         case REG_NUM_MOTORS:   
             _wire->write(numMotors);

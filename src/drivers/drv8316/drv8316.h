@@ -21,8 +21,8 @@ enum DRV8316_PWMMode {
 
 
 enum DRV8316_SDOMode {
-	OpenDrain = 0b0,
-	PushPull = 0b1
+	SDOMode_OpenDrain = 0b0,
+	SDOMode_PushPull = 0b1
 };
 
 

@@ -112,7 +112,9 @@ void STM32HWEncoder::init() {
     gpio.Mode = GPIO_MODE_AF_PP;
     gpio.Pull = GPIO_NOPULL;
     gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+    #ifndef STM32F1xx_HAL_GPIO_H
     gpio.Alternate = pinmap_function(pinA, PinMap_PWM);
+    #endif
     HAL_GPIO_Init(digitalPinToPort(_pinA), &gpio);
 
     // lets assume pinB is on the same timer as pinA... otherwise it can't work but the API currently doesn't allow us to fail gracefully
@@ -120,7 +122,9 @@ void STM32HWEncoder::init() {
     gpio.Mode = GPIO_MODE_AF_PP;
     gpio.Pull = GPIO_NOPULL;
     gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+    #ifndef STM32F1xx_HAL_GPIO_H
     gpio.Alternate = pinmap_function(digitalPinToPinName(_pinB), PinMap_PWM);
+    #endif
     HAL_GPIO_Init(digitalPinToPort(_pinB), &gpio);
 
     // set up timer for encoder
