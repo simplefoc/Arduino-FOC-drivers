@@ -13,7 +13,8 @@ enum FieldStrength {
 };
 
 
-#define MA730_CPR 16384
+#define _2PI 6.28318530718f
+#define MA730_CPR 65536.0f
 
 #define MA730_REG_ZERO_POSITION_LSB 0x00
 #define MA730_REG_ZERO_POSITION_MSB 0x01
@@ -27,7 +28,7 @@ enum FieldStrength {
 
 #define MA730_BITORDER MSBFIRST
 
-static SPISettings MA730SPISettings(8000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
+static SPISettings MA730SPISettings(1000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
 static SPISettings MA730SSISettings(4000000, MA730_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
 
 
