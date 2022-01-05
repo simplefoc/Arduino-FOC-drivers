@@ -30,5 +30,5 @@ uint16_t MagneticSensorMA730SSI::readRawAngleSSI() {
     uint16_t value = spi->transfer16(0x0000);
     //uint16_t parity = spi->transfer(0x00);
     spi->endTransaction();
-    return (value>>1)&0x3FFF;
+    return (value<<1); //>>1)&0x3FFF;
 }; // 14bit angle value
