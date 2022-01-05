@@ -19,6 +19,8 @@ What's here? See the sections below. Each driver or function should come with it
  - [AS5048A SPI driver](src/encoders/as5048a/) - SPI driver for the AMS AS5048A absolute position magnetic rotary encoder IC.
  - [AS5047 SPI driver](src/encoders/as5047/) - SPI driver for the AMS AS5047P and AS5047D absolute position magnetic rotary encoder ICs.
  - [MA730 SPI driver](src/encoders/ma730/) - SPI driver for the MPS MagAlpha MA730 absolute position magnetic rotary encoder IC.
+ - [MA730 SSI driver](src/encoders/ma730/) - SSI driver for the MPS MagAlpha MA730 absolute position magnetic rotary encoder IC.
+ - [AS5145 SSI driver](src/encoders/as5145/) - SSI driver for the AMS AS5145 and AS5045 absolute position magnetic rotary encoder ICs.
  - [STM32 Hardware Encoder](src/encoders/stm32hwencoder/) - Hardware timer based encoder driver for ABI type quadrature encoders.
 
 ### Communications
