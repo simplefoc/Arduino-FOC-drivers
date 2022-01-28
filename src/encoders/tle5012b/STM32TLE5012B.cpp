@@ -102,7 +102,9 @@ void TLE5012B::init() {
     _spi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
     _spi.Init.CRCPolynomial = 7;
     _spi.Init.TIMode = SPI_TIMODE_DISABLE;
+    #if defined(SPI_NSS_PULSE_DISABLE)
     _spi.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+    #endif
 
     uint32_t spi_freq = spi_getClkFreqInst(spi_inst);
     if (_freq >= (spi_freq / SPI_SPEED_CLOCK_DIV2_MHZ)) {
