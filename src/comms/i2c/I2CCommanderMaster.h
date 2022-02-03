@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "I2CCommanderRegisters.h"
+#include "../CommanderRegisters.h"
 
 #define I2COMMANDER_DEFAULT_MAX_REMOTE_MOTORS 4
 

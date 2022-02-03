@@ -5,7 +5,7 @@
 #include "Arduino.h"
 #include "Wire.h"
 #include "common/base_classes/FOCMotor.h"
-#include "I2CCommanderRegisters.h"
+#include "../CommanderRegisters.h"
 
 #ifndef I2CCOMMANDER_MAX_MOTORS_COMMANDABLE
 #define I2CCOMMANDER_MAX_MOTORS_COMMANDABLE 4
