@@ -23,21 +23,6 @@ void I2CCommander::addMotor(FOCMotor* motor){
 
 
 
-I2CCommander_Motor_Status I2CCommander::getMotorStatus(uint8_t motorNum){
-    if (motorNum<numMotors){
-        if (motors[motorNum]->zero_electric_angle==NOT_SET) // TODO detect open-loop uninitialized state!
-            return I2CCommander_Motor_Status::MOT_UNINITIALIZED;
-        if (motors[motorNum]->enabled==0)
-            return I2CCommander_Motor_Status::MOT_DISABLED;
-        if (motors[motorNum]->shaft_velocity >= I2CCOMMANDER_MIN_VELOCITY_FOR_MOTOR_MOVING)
-            return I2CCommander_Motor_Status::MOT_MOVING;
-        return I2CCommander_Motor_Status::MOT_IDLE;
-    }
-    return I2CCommander_Motor_Status::MOT_UNKNOWN;
-};
-
-
-
 
 bool I2CCommander::readBytes(void* valueToSet, uint8_t numBytes){
     if (_wire->available()>=numBytes){
@@ -85,10 +70,19 @@ void I2CCommander::onRequest(){
 
 
 
+/*
+Reads values from I2C bus and updates the motor's values.
 
+Currently this isn't really thread-safe, but works ok in practice on 32-bit MCUs.
+
+Do not use on 8-bit architectures where the 32 bit writes may not be atomic!
+
+Plan to make this safe: the writes should be buffered, and not actually executed 
+until in the main loop by calling commander->run();
+the run() method disables interrupts while the updates happen.
+*/
 bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int numBytes) {
     int val;
-    float floatval;
     switch (registerNum) {
         case REG_MOTOR_ADDRESS:
             val = _wire->read(); // reading one more byte is definately ok, since numBytes>1
@@ -230,7 +224,23 @@ bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int nu
 
 
 
+/*
+    Reads values from motor/sensor and writes them to I2C bus. Intended to be run
+    from the Wire.onRequest interrupt.
 
+    Assumes atomic 32 bit reads. On 8-bit arduino this assumption does not hold and this
+    code is not safe on those platforms. You might read "half-written" floats.
+    
+    A solution might be to maintain a complete set of shadow registers  in the commander
+    class, and update them in the run() method (which runs with interrupts off). Not sure
+    of the performance impact of all those 32 bit read/writes though. In any case, since
+    I use only 32 bit MCUs I'll leave it as an excercise to the one who needs it. ;-)
+
+    On 32 bit platforms the implication is that reads will occur atomically, so data will
+    be intact, but they can occur at any time during motor updates, so different values might
+    not be in a fully consistent state (i.e. phase A current might be from the current iteration
+    but phase B current from the previous iteration).
+*/
 bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
         // read the current register
     switch(registerNum) {
@@ -239,8 +249,7 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             _wire->write((uint8_t)lastcommandregister);
             _wire->write((uint8_t)lastcommanderror+1);
             for (int i=0;(i<numMotors && i<28); i++) { // at most 28 motors, so we can fit in one packet
-                uint8_t status = (uint8_t)getMotorStatus(i);
-                _wire->write(status);
+                _wire->write(motors[motorNum]->motor_status);
             }
             break;
         case REG_MOTOR_ADDRESS:
@@ -377,7 +386,8 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             writeFloat(motors[motorNum]->current_limit);
             break;
         case REG_MOTION_DOWNSAMPLE:
-            _wire->write((uint32_t)motors[motorNum]->motion_downsample);
+            _wire->write((int)motors[motorNum]->motion_downsample); // TODO int will have different sizes on different platforms
+                                                                    //      but using uint32 doesn't compile clean on all, e.g. RP2040
             break;            
 
         case REG_ZERO_ELECTRIC_ANGLE:
@@ -393,11 +403,12 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             writeFloat(motors[motorNum]->phase_resistance);
             break;
         case REG_POLE_PAIRS:
-            _wire->write((uint32_t)motors[motorNum]->pole_pairs);
+            _wire->write((int)motors[motorNum]->pole_pairs);
             break;
 
         case REG_SYS_TIME:
-            _wire->write(millis()); 
+            // TODO how big is millis()? Same on all platforms?
+            _wire->write((int)millis());
             break;
         case REG_NUM_MOTORS:   
             _wire->write(numMotors);

@@ -13,7 +13,8 @@ enum FieldStrength {
 };
 
 
-#define MA730_CPR 16384
+#define _2PI 6.28318530718f
+#define MA730_CPR 65536.0f
 
 #define MA730_REG_ZERO_POSITION_LSB 0x00
 #define MA730_REG_ZERO_POSITION_MSB 0x01
@@ -25,13 +26,10 @@ enum FieldStrength {
 #define MA730_REG_RD 0x09
 #define MA730_REG_MGH_MGL 0x1B
 
-#if defined(ESP32)
 #define MA730_BITORDER MSBFIRST
-#else
-#define MA730_BITORDER BitOrder::MSBFIRST
-#endif
 
-static SPISettings MA730SPISettings(8000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
+static SPISettings MA730SPISettings(1000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
+static SPISettings MA730SSISettings(4000000, MA730_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
 
 
 class MA730 {
@@ -44,6 +42,7 @@ public:
 	float getCurrentAngle(); // angle in radians, return current value
 
 	uint16_t readRawAngle(); // 14bit angle value
+    uint16_t readRawAngleSSI(); // 14bit angle value
 
     uint16_t getZero();
     uint8_t getBiasCurrentTrimming();

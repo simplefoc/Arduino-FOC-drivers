@@ -1,4 +1,3 @@
-
 #ifndef __I2CCOMMANDERREGISTERS_H__
 #define __I2CCOMMANDERREGISTERS_H__
 
@@ -61,23 +60,6 @@ typedef enum : uint8_t  {
 } I2CCommander_Register;
 
 
-
-// TODO stati are work in progress. For example, it would be good to differentiate between not moving because stalled, 
-//  and not moving because target set-point has been reached. It would be good to be able to track initialization state
-// and error state.
-typedef enum : uint8_t {
-    MOT_UNINITIALIZED = 0x00,   // Motor is not initialized
-    MOT_INITIALIZING = 0x01,    // TODO - this status is not used at the moment, can't detect it
-    
-    MOT_DISABLED = 0x02,        // motor is disabled
-    MOT_IDLE = 0x03,            // motor is enabled, but not moving (current_velocity==target==0 in velocity mode, 
-                                //       or position==target in position mode)
-    MOT_MOVING = 0x04,          // motor is moving
-
-    MOT_ERROR = 0x05,           // TODO - motor is disabled because an error has occurred
-    MOT_INIT_FAILED = 0x0F,     // motor initialization failed
-    MOT_UNKNOWN = 0xFF          // incorrect motor number
-} I2CCommander_Motor_Status;
 
 
 

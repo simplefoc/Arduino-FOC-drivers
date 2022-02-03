@@ -26,8 +26,6 @@ class I2CCommander {
         void onReceive(int numBytes);
         void onRequest();
 
-        I2CCommander_Motor_Status getMotorStatus(uint8_t motorNum);
-
     protected:
         void writeFloat(float value);
         bool readBytes(void* valueToSet, uint8_t numBytes);

@@ -16,12 +16,12 @@ void MA730::init(SPIClass* _spi) {
 };
 
 float MA730::getCurrentAngle() {
-    return ((float)readRawAngle())/(float)MA730_CPR * 2.0f * (float)PI;
+    return (readRawAngle() * _2PI)/MA730_CPR;
 }; // angle in radians, return current value
 
 uint16_t MA730::readRawAngle() {
     uint16_t angle = transfer16(0x0000);
-    return angle>>2;
+    return angle;
 }; // 14bit angle value
 
 uint16_t MA730::getZero() {
