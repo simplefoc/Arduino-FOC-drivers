@@ -11,7 +11,8 @@ jobs:
           - arduino:sam:arduino_due_x                # arduino due
           - arduino:samd:nano_33_iot                 # samd21
           - adafruit:samd:adafruit_metro_m4          # samd51
-          - esp32:esp32:esp32doit-devkit-v1          # esm32
+          - esp32:esp32:esp32                        # esp32
+          - esp32:esp32:esp32s2                      # esp32s2
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8   # stm32 bluepill
           - STM32:stm32:Nucleo_64:pnum=NUCLEO_F411RE # stm32 nucleo
           - arduino:mbed_rp2040:pico                 # rpi pico          
