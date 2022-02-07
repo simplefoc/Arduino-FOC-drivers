@@ -2,9 +2,13 @@
 #ifndef __MAGNETIC_SENSOR_AS5145_H__
 #define __MAGNETIC_SENSOR_AS5145_H__
 
+#include "Arduino.h"
 #include "SPI.h"
 #include "common/base_classes/Sensor.h"
 
+#ifndef MSBFIRST
+#define MSBFIRST BitOrder::MSBFIRST
+#endif
 
 #define AS5145_BITORDER MSBFIRST
 #define AS5145_CPR 4096.0f

@@ -70,14 +70,12 @@ typedef union {
 } AEAT8800Q24_Status_t;
 
 
-#if defined(ESP32)
-#define AEAT8800Q24_BITORDER MSBFIRST
-#else
-#define AEAT8800Q24_BITORDER BitOrder::MSBFIRST
+#ifndef MSBFIRST
+#define MSBFIRST BitOrder::MSBFIRST
 #endif
 
-static SPISettings AEAT8800Q24SPISettings(1000000, AEAT8800Q24_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
-static SPISettings AEAT8800Q24SSISettings(4000000, AEAT8800Q24_BITORDER, SPI_MODE2); // @suppress("Invalid arguments")
+static SPISettings AEAT8800Q24SPISettings(1000000, MSBFIRST, SPI_MODE3); // @suppress("Invalid arguments")
+static SPISettings AEAT8800Q24SSISettings(4000000, MSBFIRST, SPI_MODE2); // @suppress("Invalid arguments")
 
 
 class AEAT8800Q24 {

@@ -1,6 +1,14 @@
 name: Library Compile
-on: push
+on: [push, pull_request]
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: arduino/arduino-lint-action@v1
+        with:
+          library-manager: submit
+          project-type: library
   build:
     name: Test compile
     runs-on: ubuntu-latest
@@ -11,7 +19,8 @@ jobs:
           - arduino:sam:arduino_due_x                # arduino due
           - arduino:samd:nano_33_iot                 # samd21
           - adafruit:samd:adafruit_metro_m4          # samd51
-          - esp32:esp32:esp32doit-devkit-v1          # esm32
+          - esp32:esp32:esp32                        # esp32
+          - esp32:esp32:esp32s2                      # esp32s2
           - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8   # stm32 bluepill
           - STM32:stm32:Nucleo_64:pnum=NUCLEO_F411RE # stm32 nucleo
           - arduino:mbed_rp2040:pico                 # rpi pico          
@@ -31,9 +40,17 @@ jobs:
           - arduino-boards-fqbn: adafruit:samd:adafruit_metro_m4
             platform-url: https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
             required-libraries: Simple FOC
-            sketch-names: '**.ino'          
-          - arduino-boards-fqbn: esp32:esp32:esp32doit-devkit-v1
-            platform-url: https://dl.espressif.com/dl/package_esp32_index.json
+            sketch-names: '**.ino'
+          # - arduino-boards-fqbn: esp32:esp32:esp32doit-devkit-v1
+          #   platform-url: https://dl.espressif.com/dl/package_esp32_index.json
+          #   required-libraries: Simple FOC
+          #   sketch-names: '**.ino'
+          - arduino-boards-fqbn: esp32:esp32:esp32 # esp32 
+            platform-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
+            required-libraries: Simple FOC
+            sketch-names: '**.ino'
+          - arduino-boards-fqbn: esp32:esp32:esp32s2 # esp32s2
+            platform-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
             required-libraries: Simple FOC
             sketch-names: '**.ino'
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8

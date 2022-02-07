@@ -1,6 +1,8 @@
 # SimpleFOC Driver and Support Library
 
 ![Library Compile](https://github.com/simplefoc/Arduino-FOC-drivers/workflows/Library%20Compile/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 This library contains an assortment of drivers and supporting code for SimpleFOC.
 
