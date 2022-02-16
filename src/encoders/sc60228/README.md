@@ -34,7 +34,7 @@ void setup() {
 Set some options:
 
 ```c++
-MagneticSensorSC60288 sensor1(SENSOR1_CS, true, mySPISettings);
+MagneticSensorSC60288 sensor1(SENSOR1_CS, mySPISettings);
 ```
 
 Use another SPI bus:
