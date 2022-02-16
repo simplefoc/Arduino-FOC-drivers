@@ -25,6 +25,7 @@ What's here? See the sections below. Each driver or function should come with it
  - [AS5145 SSI driver](src/encoders/as5145/) - SSI driver for the AMS AS5145 and AS5045 absolute position magnetic rotary encoder ICs.
  - [TLE5012B SPI driver](src/encoders/tle5012b/) - SPI (half duplex) driver for TLE5012B absolute position magnetic rotary encoder IC.
  - [STM32 Hardware Encoder](src/encoders/stm32hwencoder/) - Hardware timer based encoder driver for ABI type quadrature encoders.
+ - [SC60228 SPI driver](src/encoders/sc60228/) - SPI driver for SemiMent SC60288 magnetic encoder IC.
 
 ### Communications
 
