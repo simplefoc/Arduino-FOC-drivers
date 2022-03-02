@@ -20,10 +20,10 @@ Its actually easier to use than the standard SPI sensor class, because it is les
 #include "SPI.h"
 #include "SimpleFOC.h"
 #include "SimpleFOCDrivers.h"
-#include "encoders/sc60228/MagneticSensorSC60288.h"
+#include "encoders/sc60228/MagneticSensorSC60228.h"
 
 #define SENSOR1_CS 5 // some digital pin that you're using as the nCS pin
-MagneticSensorSC60288 sensor1(SENSOR1_CS);
+MagneticSensorSC60228 sensor1(SENSOR1_CS);
 
 
 void setup() {
@@ -34,7 +34,7 @@ void setup() {
 Set some options:
 
 ```c++
-MagneticSensorSC60288 sensor1(SENSOR1_CS, mySPISettings);
+MagneticSensorSC60228 sensor1(SENSOR1_CS, mySPISettings);
 ```
 
 Use another SPI bus:
