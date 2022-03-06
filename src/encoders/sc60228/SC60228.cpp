@@ -24,6 +24,10 @@ SC60228Angle SC60228::readRawAngle(){
     result.reg = spi_transfer16(0x0000);
     errorflag = (result.err==1);
     // TODO check parity
+    // Serial.print("0x");
+    // Serial.print(result.angle, HEX);
+    // Serial.print(" - 0x");
+    // Serial.println(result.reg, HEX);
     return result;
 };
 
