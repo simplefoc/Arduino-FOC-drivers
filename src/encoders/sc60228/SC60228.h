@@ -8,11 +8,11 @@
 
 typedef union {
     struct {
-        uint16_t angle:12;
-        uint16_t err:1;
-        uint16_t df1:1;
-        uint16_t df2:1;
         uint16_t parity:1;
+        uint16_t df2:1;
+        uint16_t df1:1;
+        uint16_t err:1;
+        uint16_t angle:12;
     };
     uint16_t reg;
 } SC60228Angle;
