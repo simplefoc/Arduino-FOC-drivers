@@ -49,7 +49,7 @@ void I2CCommander::onReceive(int numBytes){
     lastcommandregister = curRegister;
     commanderror = false;
     if (numBytes>=1) { // set the current register
-        curRegister = static_cast<I2CCommander_Register>(_wire->read());
+        curRegister = static_cast<SimpleFOCRegister>(_wire->read());
     }
     if (numBytes>1) { // read from i2c and update value represented by register as well...
         if (!receiveRegister(curMotor, curRegister, numBytes))

@@ -1,6 +1,7 @@
 #ifndef __I2CCOMMANDERREGISTERS_H__
 #define __I2CCOMMANDERREGISTERS_H__
 
+#include <inttypes.h>
 
 typedef enum : uint8_t  {
     REG_STATUS = 0x00,          // RO - 3 bytes (currently set motor, last command register, last command error status) + 1 byte / motor (motor stati)
@@ -57,7 +58,7 @@ typedef enum : uint8_t  {
     REG_NUM_MOTORS = 0x70,      // RO - 1 byte
     REG_SYS_TIME = 0x71,        // RO - uint32_t
 
-} I2CCommander_Register;
+} SimpleFOCRegister;
 
 
 

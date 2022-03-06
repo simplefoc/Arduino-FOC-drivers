@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "../CommanderRegisters.h"
+#include "../SimpleFOCRegisters.h"
 
 #define I2COMMANDER_DEFAULT_MAX_REMOTE_MOTORS 4
 
@@ -23,8 +23,8 @@ class I2CCommanderMaster {
         void init();
         void addI2CMotors(uint8_t i2cAddress, uint8_t motorCount, TwoWire *wire = &Wire);
 
-        int writeRegister(int motor, I2CCommander_Register registerNum, void* data, uint8_t size);
-        int readRegister(int motor, I2CCommander_Register registerNum, void* data, uint8_t size);
+        int writeRegister(int motor, SimpleFOCRegister registerNum, void* data, uint8_t size);
+        int readRegister(int motor, SimpleFOCRegister registerNum, void* data, uint8_t size);
         int readLastUsedRegister(int motor, void* data, uint8_t size);
 
         // Motor intialization interface for convenience - think about how this will best work
