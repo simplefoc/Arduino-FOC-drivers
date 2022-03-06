@@ -18,12 +18,17 @@ GenericVoltageSense::GenericVoltageSense(int pin, float fullScaleVoltage, float 
 
 bool GenericVoltageSense::init(int resolution){
     pinMode(pin, INPUT_ANALOG);
+#ifndef ARDUINO_ARCH_AVR
     if (resolution>0) {
         analogReadResolution(resolution);
-        maxValue = powl(2, resolution);
+        maxValue = pow(2, resolution);
     }
-    else
+    else {
         maxValue = pow(2, ADC_RESOLUTION);
+    }
+#else
+    maxValue = pow(2, ADC_RESOLUTION);
+#endif
     return true;
 };
 
