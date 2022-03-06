@@ -4,10 +4,16 @@
 
 
 
-GenericVoltageSense::GenericVoltageSense(int pin, float fullScaleVoltage, float gain, float offset, float Tf) : VoltageSense(gain, offset, Tf), pin(pin), fullScaleVoltage(fullScaleVoltage) {
+GenericVoltageSense::GenericVoltageSense(int pin, float fullScaleVoltage, float gain, float offset, float Tf) : VoltageSense(gain, offset, Tf), fullScaleVoltage(fullScaleVoltage), pin(pin) {
 };
 
+#ifndef INPUT_ANALOG
+#define INPUT_ANALOG INPUT
+#endif
 
+#ifndef ADC_RESOLUTION
+#define ADC_RESOLUTION 10
+#endif
 
 
 bool GenericVoltageSense::init(int resolution){
@@ -17,7 +23,8 @@ bool GenericVoltageSense::init(int resolution){
         maxValue = powl(2, resolution);
     }
     else
-        maxValue = powl(2, ADC_RESOLUTION);
+        maxValue = pow(2, ADC_RESOLUTION);
+    return true;
 };
 
 
