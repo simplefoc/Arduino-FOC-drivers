@@ -4,7 +4,7 @@ Driver for the Semiment 12bit magnetic encoder IC SC60288. According to specs it
 
 Link to [Datasheet](https://semiment.com/wp-content/uploads/2021/04/SC60228_EN-VA1.0.pdf)
 
-:warning: Driver currently not tested, still waiting on my test boards to try it out!
+The encoder and this driver were tested with a small gimbal motor and MKR1000 (SAMD21 MCU).
 
 ## Hardware setup
 

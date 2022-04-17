@@ -4,7 +4,7 @@
 
 
 
-GenericVoltageSense::GenericVoltageSense(int pin, float fullScaleVoltage, float gain, float offset, float Tf) : VoltageSense(gain, offset, Tf), fullScaleVoltage(fullScaleVoltage), pin(pin) {
+GenericVoltageSense::GenericVoltageSense(int pin, float gain, float offset, float Tf, float fullScaleVoltage) : VoltageSense(gain, offset, Tf), fullScaleVoltage(fullScaleVoltage), pin(pin) {
 };
 
 #ifndef INPUT_ANALOG
@@ -38,7 +38,7 @@ bool GenericVoltageSense::init(int resolution){
 
 float GenericVoltageSense::readRawVoltage(){
     uint32_t val = analogRead(pin);
-    val = (val / maxValue) * fullScaleVoltage;
+    val = (val / (float)maxValue) * fullScaleVoltage;
     return val;
 };
 

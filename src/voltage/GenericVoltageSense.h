@@ -6,7 +6,7 @@
 
 class GenericVoltageSense : public VoltageSense {
   public:
-    GenericVoltageSense(int pin, float fullScaleVoltage = 3.3f, float gain = 1.0f, float offset = 0.0f, float Tf = 0.1f);
+    GenericVoltageSense(int pin, float gain = 1.0f, float offset = 0.0f, float Tf = 0.1f, float fullScaleVoltage = 3.3f);
     bool init(int resolution = -1);
     float fullScaleVoltage;
   protected:

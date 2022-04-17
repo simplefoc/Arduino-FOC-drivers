@@ -18,6 +18,6 @@ float VoltageSense::getVoltage(){
 
 void VoltageSense::update(){
     float v = readRawVoltage();
-    v = (v + offset) * gain;
+    v = (v - offset) * gain;
     voltage = filter(v);
 };
