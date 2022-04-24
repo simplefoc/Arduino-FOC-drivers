@@ -1,28 +1,35 @@
 
-#include "./BinaryCommander.h"
+#include "./RegisterSender.h"
+
+
+void RegisterSender::addMotor(FOCMotor& motor) {
+    if (numMotors < TELEMETRY_MAX_MOTORS) {
+        motors[numMotors] = &motor;
+        numMotors++;
+    }
+};
 
 
 
-
-bool BinaryCommander::sendRegister(SimpleFOCRegister reg, uint8_t motorNum){
+bool RegisterSender::sendRegister(SimpleFOCRegister reg, uint8_t motorNum){
        // read the current register
     switch(reg) {
-        case REG_STATUS:
-            writeByte(curMotor);
-            writeByte((uint8_t)lastcommandregister);
-            writeByte((uint8_t)lastcommanderror+1);
-            for (int i=0;(i<numMotors && i<28); i++) { // at most 28 motors, so we can fit in one packet
-                writeByte(motors[motorNum]->motor_status);
-            }
-            break;
-        case REG_MOTOR_ADDRESS:
-            writeByte(curMotor);
-            break;
-        case REG_REPORT:
-            for (int i=0;i<numReportRegisters;i++)
-                if (reportRegisters[i]!=REG_REPORT) // prevent recursion
-                    sendRegister(reportRegisters[i], reportMotors[i]);
-            break;        
+        // case REG_STATUS:
+        //     writeByte(curMotor);
+        //     writeByte((uint8_t)lastcommandregister);
+        //     writeByte((uint8_t)lastcommanderror+1);
+        //     for (int i=0;(i<numMotors && i<28); i++) { // at most 28 motors, so we can fit in one packet
+        //         writeByte(motors[motorNum]->motor_status);
+        //     }
+        //     break;
+        // case REG_MOTOR_ADDRESS:
+        //     writeByte(curMotor);
+        //     break;
+        // case REG_REPORT:
+        //     for (int i=0;i<numReportRegisters;i++)
+        //         if (reportRegisters[i]!=REG_REPORT) // prevent recursion
+        //             sendRegister(reportRegisters[i], reportMotors[i]);
+        //     break;        
         case REG_ENABLE:
             writeByte(motors[motorNum]->enabled);
             break;

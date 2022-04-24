@@ -3,7 +3,7 @@
 
 
 
-SerialBinaryCommander::SerialBinaryCommander(bool echo) : echo(echo) {
+SerialBinaryCommander::SerialBinaryCommander(bool echo) : BinaryTelemetry(this), echo(echo) {
 
 };
 

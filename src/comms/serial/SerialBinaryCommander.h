@@ -11,7 +11,7 @@
 #define SERIALBINARY_COMMAND_WRITE 0x80
 
 
-class SerialBinaryCommander : public BinaryTelemetry, public BinaryCommander {
+class SerialBinaryCommander : public BinaryCommander, public BinaryTelemetry {
 public:
     SerialBinaryCommander(bool echo = false);
     virtual ~SerialBinaryCommander();
@@ -21,7 +21,6 @@ public:
 
     bool echo;
 protected:
-    using BinaryCommander::sendRegister;
     virtual void startFrame(uint8_t frameSize, uint8_t type = TELEMETRY_FRAMETYPE_DATA) override;
     virtual void endFrame() override;
     uint8_t readBytes(void* valueToSet, uint8_t numBytes) override;
