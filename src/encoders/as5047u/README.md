@@ -1,12 +1,11 @@
-# AS5047 SimpleFOC driver
+# AS5047U SimpleFOC driver
 
-While the AS5047 absolute position magnetic rotary encoder is supported by the standard MagneticSensorSPI driver included in the base distribution, this AS5047-specific driver includes some optimisations:
+While AS5047U absolute position magnetic rotary encoder is supported by the standard MagneticSensorSPI driver included in the base distribution, this AS5047U-specific driver includes some optimisations:
 
-- access to the other registers of the AS5047, including the magnitude value which can be used to check the magnet strength, and the diagnostics register
+- access to the other registers of the AS5047U, including the magnitude value which can be used to check the magnet strength, the velocity register and the diagnostics register
 - access to the error state of the sensor, and ability to clear errors
 - it has a fastMode setting, in which the sensor is sent only 1 command per getAngle() call - the value returned will be from previous getAngle() invocation
 
-This driver should work with AS5047P and AS5047D models. The AS5047U has it's own driver [here](../as5047u/).
 
 ## Hardware setup
 
@@ -22,10 +21,10 @@ Its actually easier to use than the standard SPI sensor class, because it is les
 #include "SPI.h"
 #include "SimpleFOC.h"
 #include "SimpleFOCDrivers.h"
-#include "encoders/as5047/MagneticSensorAS5047.h"
+#include "encoders/as5047u/MagneticSensorAS5047U.h"
 
 #define SENSOR1_CS 5 // some digital pin that you're using as the nCS pin
-MagneticSensorAS5047 sensor1(SENSOR1_CS);
+MagneticSensorAS5047U sensor1(SENSOR1_CS);
 
 
 void setup() {
@@ -36,7 +35,7 @@ void setup() {
 Set some options:
 
 ```c++
-MagneticSensorAS5047 sensor1(SENSOR1_CS, true, mySPISettings);
+MagneticSensorAS5047U sensor1(SENSOR1_CS, true, mySPISettings);
 ```
 
 Use another SPI bus:
@@ -67,7 +66,7 @@ Here's how you can use it:
 
     // check for errors
     if (sensor1.isErrorFlag()) {
-        AS5047Error error = sensor1.clearErrorFlag();
+        AS5047UError error = sensor1.clearErrorFlag();
         if (error.parityError) { // also error.framingError, error.commandInvalid
             // etc...            
         }
