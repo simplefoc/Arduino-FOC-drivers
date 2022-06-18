@@ -94,7 +94,7 @@ void MA730::setRotationDirection(uint8_t value) {
         writeRegister(MA730_REG_RD, 0x80);
 };
 void MA730::setFieldStrengthThresholds(uint8_t high, uint8_t low) {
-    uint8_t val = (low<<5) | (high&0x07);
+    uint8_t val = (low<<5) | (high<<2);
     writeRegister(MA730_REG_MGLT_MGHT, val);
 };
 

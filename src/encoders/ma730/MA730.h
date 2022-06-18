@@ -5,7 +5,7 @@
 #include "Arduino.h"
 #include "SPI.h"
 
-enum FieldStrength {
+enum FieldStrength : uint8_t {
     FS_NORMAL = 0x00,
     FS_LOW = 0x01,
     FS_HIGH = 0x02,
