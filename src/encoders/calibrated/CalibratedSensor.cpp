@@ -55,9 +55,9 @@ void CalibratedSensor::calibrate(BLDCMotor& motor){
     const int n2_ticks = 40;                                        // increments between saved samples (for smoothing motion)
     float deltaElectricalAngle = _2PI*_NPP/(n_ticks*n2_ticks);      // Electrical Angle increments for calibration steps    
     float* error_f  = new float[n_ticks]();                         // pointer to error array rotating forwards
-    float* raw_f = new float[n_ticks]();                            // pointer to raw forward position
+  //  float* raw_f = new float[n_ticks]();                            // pointer to raw forward position
     float* error_b  = new float[n_ticks]();                         // pointer to error array rotating forwards
-    float* raw_b = new float[n_ticks]();                            // pointer to raw backword position
+  //  float* raw_b = new float[n_ticks]();                            // pointer to raw backword position
     float* error = new float[n_ticks]();                            // pointer to error array (average of forward & backward)
     float* error_filt = new float[n_ticks]();                       // pointer to filtered error array (low pass filter)
     const int window = 128;                                         // window size for moving average filter of raw error
@@ -100,11 +100,6 @@ void CalibratedSensor::calibrate(BLDCMotor& motor){
     }
 
     //Set voltage angle to zero, wait for rotor position to settle
-    for(int i = 0; i<40000; i++)
-        {
-            motor.setPhaseVoltage(voltage_calibration, 0, elec_angle);
-        }
-
     // keep the motor in position while getting the initial positions
     motor.setPhaseVoltage(voltage_calibration, 0, elec_angle);
     _delay(1000);
@@ -146,7 +141,7 @@ void CalibratedSensor::calibrate(BLDCMotor& motor){
 			error_f[i] = elec_angle/_NPP - theta_actual;
 		}
 		// if overflow happened track it as full rotation
-		raw_f[i] = theta_actual;
+//		raw_f[i] = theta_actual;
 
 		// storing the normalized angle every time the electrical angle 3PI/2 to calculate average zero electrical angle
 		if(i==(k*128+96))
@@ -184,7 +179,7 @@ void CalibratedSensor::calibrate(BLDCMotor& motor){
 			{
 			error_b[i] = elec_angle/_NPP - theta_actual;
 			}
-			raw_b[i] = theta_actual;
+//			raw_b[i] = theta_actual;
 	}
 
 	// get post calibration mechanical angle.
