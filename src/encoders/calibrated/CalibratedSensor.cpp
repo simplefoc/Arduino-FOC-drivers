@@ -7,6 +7,12 @@ CalibratedSensor::CalibratedSensor(Sensor& wrapped) : _wrapped(wrapped)
 {
 };
 
+
+CalibratedSensor::~CalibratedSensor()
+{
+	delete calibrationLut;
+};
+
 // call update of calibrated sensor
 void CalibratedSensor::update(){
     _wrapped.update();
@@ -236,6 +242,14 @@ void CalibratedSensor::calibrate(BLDCMotor& motor){
 		_delay(1);
 	}
    
+   // de-allocate memory
+    delete error_filt;
+    delete error;
+  //  delete raw_b;
+    delete error_b;
+  //  delete raw_f;
+    delete error_f;
+
     Serial.println("Sensor Calibration Done.");
 
 }

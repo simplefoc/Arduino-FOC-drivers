@@ -11,6 +11,7 @@ class CalibratedSensor: public Sensor{
 public:
     // constructor of class with pointer to base class sensor and driver
     CalibratedSensor(Sensor& wrapped);
+    ~CalibratedSensor();
 
     /*
     Override the update function
