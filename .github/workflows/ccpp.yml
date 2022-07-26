@@ -27,20 +27,25 @@ jobs:
         include:
           - arduino-boards-fqbn: arduino:avr:uno
             sketch-names: '**.ino'
+            sketches-exclude: calibrated
             required-libraries: Simple FOC
           - arduino-boards-fqbn: arduino:sam:arduino_due_x
             required-libraries: Simple FOC
             sketch-names: '**.ino'            
+            sketches-exclude: calibrated
           - arduino-boards-fqbn: arduino:samd:nano_33_iot
             required-libraries: Simple FOC
             sketch-names: '**.ino'            
+            sketches-exclude: calibrated
           - arduino-boards-fqbn: arduino:mbed_rp2040:pico
             required-libraries: Simple FOC
             sketch-names: '**.ino'            
+            sketches-exclude: calibrated
           - arduino-boards-fqbn: adafruit:samd:adafruit_metro_m4
             platform-url: https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
             required-libraries: Simple FOC
             sketch-names: '**.ino'
+            sketches-exclude: calibrated
           # - arduino-boards-fqbn: esp32:esp32:esp32doit-devkit-v1
           #   platform-url: https://dl.espressif.com/dl/package_esp32_index.json
           #   required-libraries: Simple FOC
@@ -49,10 +54,12 @@ jobs:
             platform-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
             required-libraries: Simple FOC
             sketch-names: '**.ino'
+            sketches-exclude: calibrated
           - arduino-boards-fqbn: esp32:esp32:esp32s2 # esp32s2
             platform-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
             required-libraries: Simple FOC
             sketch-names: '**.ino'
+            sketches-exclude: calibrated
           - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json 
             required-libraries: Simple FOC
