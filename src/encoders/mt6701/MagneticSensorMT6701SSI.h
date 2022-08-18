@@ -9,6 +9,11 @@
 
 #define MT6701_BITORDER MSBFIRST
 
+#if defined(TARGET_RP2040)
+#define MT6701_DATA_POS 1
+#else
+#define MT6701_DATA_POS 2
+#endif
 
 // Use SPI mode 2, capture on falling edge. First bit is not valid data, so have to read 25 bits to get a full SSI frame.
 // SSI frame is 1 bit ignore, 14 bits angle, 4 bit status and 6 bit CRC.

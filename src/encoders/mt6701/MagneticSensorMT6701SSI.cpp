@@ -38,5 +38,5 @@ uint16_t MagneticSensorMT6701SSI::readRawAngleSSI() {
     spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
-    return (value>>2)&0x3FFF;
+    return (value>>MT6701_DATA_POS)&0x3FFF;
 };
