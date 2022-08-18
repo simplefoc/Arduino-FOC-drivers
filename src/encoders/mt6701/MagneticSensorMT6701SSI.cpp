@@ -13,11 +13,12 @@ MagneticSensorMT6701SSI::~MagneticSensorMT6701SSI() {
 
 void MagneticSensorMT6701SSI::init(SPIClass* _spi) {
     this->spi=_spi;
-    this->Sensor::init();
     if (nCS >= 0) {
         pinMode(nCS, OUTPUT);
         digitalWrite(nCS, HIGH);
     }
+    this->spi->begin();
+    this->Sensor::init();
 }
 
 // check 40us delay between each read?
