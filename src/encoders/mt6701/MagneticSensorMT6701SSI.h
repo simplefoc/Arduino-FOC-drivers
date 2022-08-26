@@ -1,6 +1,7 @@
 #ifndef __MAGNETIC_SENSOR_MT6701_SSI_H__
 #define __MAGNETIC_SENSOR_MT6701_SSI_H__
 
+#include "Arduino.h"
 #include "SPI.h"
 #include "common/base_classes/Sensor.h"
 
