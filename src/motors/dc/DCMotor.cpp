@@ -121,3 +121,14 @@ void DCMotor::setPhaseVoltage(float U) {
     if (enabled==1)
         driver->setPwm(U);
 };
+
+
+int DCMotor::initFOC(float zero_electric_offset, Direction sensor_direction) {
+    // nothing to do for DC motors
+    return 0; // always return failure
+}; 
+
+
+void DCMotor::loopFOC() {
+    // nothing to do for DC motors
+};
