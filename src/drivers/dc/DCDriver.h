@@ -17,8 +17,7 @@ class DCDriver{
         long pwm_frequency; //!< pwm frequency value in hertz
         float voltage_power_supply; //!< power supply voltage 
         float voltage_limit; //!< limiting voltage set to the motor
-        float voltage_limit_min; //!< minimum voltage set to the motor, below which it will not turn
-   
+
         int pinEN = NOT_SET;
         bool enable_active_high = true; // !< polarity of enable pin, if used
         bool initialized = false; // true if driver was successfully initialized
