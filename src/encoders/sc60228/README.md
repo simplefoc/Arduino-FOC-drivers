@@ -34,7 +34,10 @@ void setup() {
 Set some options:
 
 ```c++
-MagneticSensorSC60228 sensor1(SENSOR1_CS, mySPISettings);
+// set counts_per_revolution (which should be the default 4096, but one some hardware appears to be 2048), and spi settings
+MagneticSensorSC60228 sensor1(SENSOR1_CS, 4096, mySPISettings);
+// or with default SPI settings, just override cpr to a non-default value
+MagneticSensorSC60228 sensor1(SENSOR1_CS, 2048);  
 ```
 
 Use another SPI bus:
