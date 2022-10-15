@@ -8,6 +8,15 @@ This library contains an assortment of drivers and supporting code for SimpleFOC
 
 The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, understand and port to different platforms. In addition to this core, there are various drivers and supporting code which has grown around SimpleFOC, and which we would like to make available to the community.
 
+## New Release
+
+v1.0.2 - Released Oct 2022, for Simple FOC 2.2.3
+
+- Calibrated sensor by @MarethyuPrefect
+- New Sensors: MT6701, MA330, MT6816
+- Fixes bugs
+
+
 ## What's contained
 
 What's here? See the sections below. Each driver or function should come with its own more detailed README.
