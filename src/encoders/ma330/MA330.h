@@ -1,5 +1,5 @@
-#ifndef __MA730_H__
-#define __MA730_H__
+#ifndef __MA330_H__
+#define __MA330_H__
 
 
 #include "Arduino.h"
@@ -14,35 +14,35 @@ enum FieldStrength : uint8_t {
 
 
 #define _2PI 6.28318530718f
-#define MA730_CPR 65536.0f
+#define MA330_CPR 65536.0f
 
-#define MA730_REG_ZERO_POSITION_LSB 0x00
-#define MA730_REG_ZERO_POSITION_MSB 0x01
-#define MA730_REG_BCT 0x02
-#define MA730_REG_ET 0x03
-#define MA730_REG_ILIP_PPT_LSB 0x04
-#define MA730_REG_PPT_MSB 0x05
-#define MA730_REG_MGLT_MGHT 0x06
-#define MA730_REG_RD 0x09
-#define MA730_REG_MGH_MGL 0x1B
+#define MA330_REG_ZERO_POSITION_LSB 0x00
+#define MA330_REG_ZERO_POSITION_MSB 0x01
+#define MA330_REG_BCT 0x02
+#define MA330_REG_ET 0x03
+#define MA330_REG_ILIP_PPT_LSB 0x04
+#define MA330_REG_PPT_MSB 0x05
+#define MA330_REG_MGLT_MGHT 0x06
+#define MA330_REG_NPP 0x07
+#define MA330_REG_RD 0x09
+#define MA330_REG_FW 0x0E
+#define MA330_REG_HYS 0x10
+#define MA330_REG_MGH_MGL 0x1B
 
-#define MA730_BITORDER MSBFIRST
+#define MA330_BITORDER MSBFIRST
 
-static SPISettings MA730SPISettings(1000000, MA730_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
-static SPISettings MA730SSISettings(4000000, MA730_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
+static SPISettings MA330SPISettings(1000000, MA330_BITORDER, SPI_MODE3); // @suppress("Invalid arguments")
 
-
-class MA730 {
+class MA330 {
 public:
-	MA730(SPISettings settings = MA730SPISettings, int nCS = -1);
-	virtual ~MA730();
+	MA330(SPISettings settings = MA330SPISettings, int nCS = -1);
+	virtual ~MA330();
 
 	virtual void init(SPIClass* _spi = &SPI);
 
 	float getCurrentAngle(); // angle in radians, return current value
 
-	uint16_t readRawAngle(); // 14bit angle value
-    uint16_t readRawAngleSSI(); // 14bit angle value
+	uint16_t readRawAngle(); // 9-14bit angle value
 
     uint16_t getZero();
     uint8_t getBiasCurrentTrimming();
@@ -50,7 +50,10 @@ public:
     bool isBiasCurrrentTrimmingY();
     uint16_t getPulsesPerTurn();
     uint8_t getIndexLength();
+    uint8_t getNumberPolePairs();
     uint8_t getRotationDirection();
+    uint8_t getFilterWidth();
+    uint8_t getHysteresis();
     uint8_t getFieldStrengthHighThreshold();
     uint8_t getFieldStrengthLowThreshold();
     FieldStrength getFieldStrength();
@@ -60,7 +63,10 @@ public:
     void setBiasCurrrentTrimmingEnabled(bool Xenabled, bool Yenabled);
     void setPulsesPerTurn(uint16_t);
     void setIndexLength(uint8_t);
+    void setNumberPolePairs(uint8_t);
     void setRotationDirection(uint8_t);
+    void setFilterWidth(uint8_t);
+    void setHysteresis(uint8_t);
     void setFieldStrengthThresholds(uint8_t high, uint8_t low);
 
 private:

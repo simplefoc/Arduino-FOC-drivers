@@ -2,15 +2,25 @@
 
 ![Library Compile](https://github.com/simplefoc/Arduino-FOC-drivers/workflows/Library%20Compile/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+![Release](https://img.shields.io/badge/version-1.0.2-blue)
 
 This library contains an assortment of drivers and supporting code for SimpleFOC.
 
 The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, understand and port to different platforms. In addition to this core, there are various drivers and supporting code which has grown around SimpleFOC, and which we would like to make available to the community.
 
-## What's contained
+## New Release
 
-What's here? See the sections below. Each driver or function should come with its own more detailed README.
+v1.0.2 - Released Oct 2022, for Simple FOC 2.2.3
+
+What's changed since 1.0.1?
+- Calibrated sensor by @MarethyuPrefect
+- New Sensors: MT6701, MA330, MT6816
+- Fixes bugs
+
+
+## What is included
+
+What is here? See the sections below. Each driver or function should come with its own more detailed README.
 
 ### Motor/Gate driver ICs
 
@@ -27,6 +37,9 @@ What's here? See the sections below. Each driver or function should come with it
  - [TLE5012B SPI driver](src/encoders/tle5012b/) - SPI (half duplex) driver for TLE5012B absolute position magnetic rotary encoder IC.
  - [STM32 Hardware Encoder](src/encoders/stm32hwencoder/) - Hardware timer based encoder driver for ABI type quadrature encoders.
  - [SC60228 SPI driver](src/encoders/sc60228/) - SPI driver for SemiMent SC60288 magnetic encoder IC.
+ - [MA330 SPI driver](src/encoders/ma330/) - SPI driver for the MPS MagAlpha MA330 absolute position magnetic rotary encoder IC.
+ - [MT6816 SPI driver](src/encoders/mt6816/) - SPI driver for the MagnTek MT6816 absolute position magnetic rotary encoder IC.
+ - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
 
 ### Communications
 

@@ -44,7 +44,7 @@ uint16_t AS5048A::readRawAngle(){
 
 uint16_t AS5048A::readMagnitude(){
 	uint16_t command = AS5048A_MAGNITUDE_REG | AS5048A_RW; // set r=1, result ix 0x7FFE
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	uint16_t result = nop();
 	return result;
 }
@@ -57,7 +57,7 @@ bool AS5048A::isErrorFlag(){
 
 AS5048Error AS5048A::clearErrorFlag(){
 	uint16_t command = AS5048A_ERROR_REG | AS5048A_RW; // set r=1, result ix 0x4001
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	uint16_t result = nop();
 	AS5048Error err = {
 			.parityError = ((result&0x0004)!=0x0000),
@@ -70,7 +70,7 @@ AS5048Error AS5048A::clearErrorFlag(){
 
 AS5048Diagnostics AS5048A::readDiagnostics(){
 	uint16_t command = AS5048A_DIAGNOSTICS_REG | AS5048A_RW; // set r=1, result ix 0x7FFD
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5048Diagnostics result = {
 			.reg = nop()
 	};

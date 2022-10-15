@@ -49,7 +49,7 @@ uint16_t AS5047::readCorrectedAngle(){
 
 uint16_t AS5047::readMagnitude(){
 	uint16_t command = AS5047_MAGNITUDE_REG | AS5047_RW; // set r=1, result is 0x7FFD
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	uint16_t result = nop();
 	return result;
 }
@@ -62,7 +62,7 @@ bool AS5047::isErrorFlag(){
 
 AS5047Error AS5047::clearErrorFlag(){
 	uint16_t command = AS5047_ERROR_REG | AS5047_RW; // set r=1, result is 0x4001
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	uint16_t result = nop();
 	AS5047Error err = {
 			.framingError = ((result&0x0001)!=0x0000),
@@ -75,7 +75,7 @@ AS5047Error AS5047::clearErrorFlag(){
 
 AS5047Settings1 AS5047::readSettings1(){
 	uint16_t command = AS5047_SETTINGS1_REG | AS5047_PARITY | AS5047_RW; // set r=1, result is 0xC018
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047Settings1 result = {
 			.reg = nop()
 	};
@@ -85,14 +85,14 @@ AS5047Settings1 AS5047::readSettings1(){
 
 void AS5047::writeSettings1(AS5047Settings1 settings){
 	uint16_t command = AS5047_SETTINGS1_REG;  // set r=0, result is 0x0018
-	uint16_t cmdresult = spi_transfer16(command);
-	cmdresult = spi_transfer16(settings.reg);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
+	/*cmdresult =*/ spi_transfer16(settings.reg);
 }
 
 
 AS5047Settings2 AS5047::readSettings2(){
 	uint16_t command = AS5047_SETTINGS2_REG | AS5047_RW; // set r=1, result is 0x4019
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047Settings2 result = {
 			.reg = nop()
 	};
@@ -102,7 +102,7 @@ AS5047Settings2 AS5047::readSettings2(){
 
 AS5047Diagnostics AS5047::readDiagnostics(){
 	uint16_t command = AS5047_DIAGNOSTICS_REG | AS5047_PARITY | AS5047_RW; // set r=1, result is 0xFFFC
-	uint16_t cmdresult = spi_transfer16(command);
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047Diagnostics result = {
 			.reg = nop()
 	};
