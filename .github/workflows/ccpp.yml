@@ -27,7 +27,7 @@ jobs:
         include:
           - arduino-boards-fqbn: arduino:avr:uno
             sketches-exclude: calibrated mt6816_spi
-            required-libraries: Simple FOCs
+            required-libraries: Simple FOC
           - arduino-boards-fqbn: arduino:sam:arduino_due_x
             required-libraries: Simple FOC
             sketches-exclude: calibrated
