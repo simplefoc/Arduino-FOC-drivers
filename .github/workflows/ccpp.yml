@@ -26,8 +26,8 @@ jobs:
           - arduino:mbed_rp2040:pico                 # rpi pico          
         include:
           - arduino-boards-fqbn: arduino:avr:uno
-            sketches-exclude: calibrated
-            required-libraries: Simple FOC
+            sketches-exclude: calibrated mt6816_spi
+            required-libraries: Simple FOCs
           - arduino-boards-fqbn: arduino:sam:arduino_due_x
             required-libraries: Simple FOC
             sketches-exclude: calibrated
