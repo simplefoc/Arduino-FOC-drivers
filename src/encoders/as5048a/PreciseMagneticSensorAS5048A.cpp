@@ -18,7 +18,7 @@ void PreciseMagneticSensorAS5048A::init(SPIClass* _spi) {
     this->AS5048A::init(_spi);
 	// velocity calculation init
     current_ts = _micros();
-    uint16_t angle_data = readRawAngle();
+    /*uint16_t angle_data =*/ readRawAngle();
     current_angle = PreciseAngle(readRawAngle(), 0);
     getAngle();
 }
