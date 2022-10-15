@@ -2,7 +2,7 @@
 
 ![Library Compile](https://github.com/simplefoc/Arduino-FOC-drivers/workflows/Library%20Compile/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+![Release](https://img.shields.io/badge/version-1.2.3-blue)
 
 This library contains an assortment of drivers and supporting code for SimpleFOC.
 
@@ -12,14 +12,15 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 v1.0.2 - Released Oct 2022, for Simple FOC 2.2.3
 
+What's changed since 1.0.1?
 - Calibrated sensor by @MarethyuPrefect
 - New Sensors: MT6701, MA330, MT6816
 - Fixes bugs
 
 
-## What's contained
+## What is included
 
-What's here? See the sections below. Each driver or function should come with its own more detailed README.
+What is here? See the sections below. Each driver or function should come with its own more detailed README.
 
 ### Motor/Gate driver ICs
 
