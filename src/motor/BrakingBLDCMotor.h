@@ -5,9 +5,12 @@
 
 
 enum BrakeMode : uint8_t {
-    brakemode_none,
-    brakemode_daxis,
-    brakemode_extern
+    brakemode_none           = 0x00,    // no braking
+    brakemode_passive        = 0x01,    // brake by opening low-side FETs - all drivers can do this
+    brakemode_daxis          = 0x02,    // brake by applying a voltage to the D axis
+    brakemode_velocity       = 0x03,    // brake by driving the motor against its current motion
+    brakemode_extern         = 0x04,    // brake by switching the FET of an external brake circuit
+    brakemode_regen          = 0x05,    // brake by switching motor FETs using a control loop to control voltage and current
 };
 
 enum RegenMode : uint8_t {
@@ -32,6 +35,7 @@ public:
     void loopFOC() override;
     void move(float target) override;
     void brake(float target);
+    void coast();
 
 protected:
     BrakeMode brakeMode = brakemode_none;
