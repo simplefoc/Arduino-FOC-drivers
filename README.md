@@ -40,6 +40,7 @@ What is here? See the sections below. Each driver or function should come with i
  - [MA330 SPI driver](src/encoders/ma330/) - SPI driver for the MPS MagAlpha MA330 absolute position magnetic rotary encoder IC.
  - [MT6816 SPI driver](src/encoders/mt6816/) - SPI driver for the MagnTek MT6816 absolute position magnetic rotary encoder IC.
  - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
+ - [MT6835 SPI driver](src/encoders/mt6835/) - SPI driver for the MagnTek MT6835 21 bit magnetic rotary encoder IC.
 
 ### Communications
 
