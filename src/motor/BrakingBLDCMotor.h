@@ -22,24 +22,24 @@ enum RegenMode : uint8_t {
 
 class BrakingBLDCMotor : public BLDCMotor {
 public:
-    BrakingBLDCMotor(int pp, float R = NOT_SET, float KV = NOT_SET, BrakeMode brakeMode = brakemode_none, RegenMode regenMode = regenmode_none);
+    BrakingBLDCMotor(int pp, float R = NOT_SET, float KV = NOT_SET, enum BrakeMode brakeMode = brakemode_none, enum RegenMode regenMode = regenmode_none);
     ~BrakingBLDCMotor();
 
-    void setBrakeMode(BrakeMode mode);
-    void setRegenMode(RegenMode mode);
+    void setBrakeMode(enum BrakeMode mode);
+    void setRegenMode(enum RegenMode mode);
     void setAutoCoast(bool enable);
     void setRegenVoltage(float voltage);
 
     void linkDriver(BLDCDriver *driver) override;
 
     void loopFOC() override;
-    void move(float target) override;
+    void move(float target = NOT_SET) override;
     void brake(float target);
-    void coast();
+    void coast(bool coast = true);
 
 protected:
-    BrakeMode brakeMode = brakemode_none;
-    RegenMode regenMode = regenmode_none;
+    enum BrakeMode brakeMode = brakemode_none;
+    enum RegenMode regenMode = regenmode_none;
     bool autoCoast = false;
     float regenVoltage = NOT_SET;
 

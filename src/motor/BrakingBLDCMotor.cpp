@@ -2,7 +2,7 @@
 #include "BrakingBLDCMotor.h"
 
 
-BrakingBLDCMotor::BrakingBLDCMotor(int pp, float R, float KV, BrakeMode brakeMode, RegenMode regenMode) : BLDCMotor(pp, R, KV) {
+BrakingBLDCMotor::BrakingBLDCMotor(int pp, float R, float KV, enum BrakeMode brakeMode, enum RegenMode regenMode) : BLDCMotor(pp, R, KV) {
     this->brakeMode = brakeMode;
     this->regenMode = regenMode;
 };
@@ -13,12 +13,12 @@ BrakingBLDCMotor::~BrakingBLDCMotor() {
 };
 
 
-void BrakingBLDCMotor::setBrakeMode(BrakeMode mode) {
+void BrakingBLDCMotor::setBrakeMode(enum BrakeMode mode) {
     this->brakeMode = mode;
 };
 
 
-void BrakingBLDCMotor::setRegenMode(RegenMode mode) {
+void BrakingBLDCMotor::setRegenMode(enum RegenMode mode) {
     this->regenMode = mode;
 };
 
@@ -46,7 +46,7 @@ void BrakingBLDCMotor::loopFOC() {
 
 
 void BrakingBLDCMotor::move(float target) {
-    // TODO implement brake mode
+    driver->setPhaseState(PhaseState::PHASE_ON, PhaseState::PHASE_ON, PhaseState::PHASE_ON);
     BLDCMotor::move(target);
 };
 
@@ -81,8 +81,9 @@ void BrakingBLDCMotor::brake(float target) {
     }
 };
 
-void BrakingBLDCMotor::coast() {
-    // TODO implement coasting
-    driver->setPhaseState(PhaseState::PHASE_OFF, PhaseState::PHASE_OFF, PhaseState::PHASE_OFF);
-    // next call to loopFOC() will set the phase state to PHASE_OFF
+void BrakingBLDCMotor::coast(bool coast) {
+    if (coast) // next call to loopFOC() will set the phase state to PHASE_OFF
+        driver->setPhaseState(PhaseState::PHASE_OFF, PhaseState::PHASE_OFF, PhaseState::PHASE_OFF);
+    else
+        driver->setPhaseState(PhaseState::PHASE_ON, PhaseState::PHASE_ON, PhaseState::PHASE_ON);
 };
