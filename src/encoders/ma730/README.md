@@ -70,5 +70,5 @@ Here's how you can use it:
     Serial.println(fs);
 
     // set pulses per turn for encoder mode
-    sensor1.setPulsesPerTurn(1000); // if we want 1000 PPR == 4000 CPR
+    sensor1.setPulsesPerTurn(999); // set to 999 if we want 1000 PPR == 4000 CPR
 ```
