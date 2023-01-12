@@ -35,14 +35,14 @@ void setup() {
 Set some options:
 
 ```c++
-MagneticSensorMA730 sensor1(SENSOR1_CS, true, mySPISettings);
+MagneticSensorMA730 sensor1(SENSOR1_CS, mySPISettings);
 ```
 
 Use another SPI bus:
 
 ```c++
 void setup() {
-    sensor1.init(SPI2);
+    sensor1.init(&SPI2);
 }
 ```
 
@@ -63,4 +63,12 @@ Here's how you can use it:
 
     // get the raw 14 bit value
     uint16_t raw = sensor1.readRawAngle();
+
+    // get the field strength
+    FieldStrength fs = sensor1.getFieldStrength();
+    Serial.print("Field strength: ");
+    Serial.println(fs);
+
+    // set pulses per turn for encoder mode
+    sensor1.setPulsesPerTurn(1000); // if we want 1000 PPR == 4000 CPR
 ```
