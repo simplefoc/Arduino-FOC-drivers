@@ -3,6 +3,25 @@
 #include "common/foc_utils.h"
 
 
+MT6835::MT6835(SPISettings settings, int nCS) : settings(settings), nCS(nCS) {
+    // nix
+};
+
+MT6835::~MT6835() {
+    // nix
+};
+
+
+
+void MT6835::init(SPIClass* _spi) {
+    spi = _spi;
+    if (nCS >= 0)
+        pinMode(nCS, OUTPUT);
+    spi->begin();
+};
+
+
+
 
 float MT6835::getCurrentAngle(){
     return readRawAngle21() / MT6835_CPR * _2PI;

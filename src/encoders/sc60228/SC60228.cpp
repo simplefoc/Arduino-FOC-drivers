@@ -44,8 +44,10 @@ uint16_t SC60228::spi_transfer16(uint16_t outdata){
     if (nCS>=0)
         digitalWrite(nCS, LOW);
     // min delay here: 250ns
+    spi->beginTransaction(settings);
     result = spi->transfer16(outdata);
     // min delay here: clock period / 2
+    spi->endTransaction();
     if (nCS>=0)
         digitalWrite(nCS, HIGH);
     // min delay until next read: 250ns
