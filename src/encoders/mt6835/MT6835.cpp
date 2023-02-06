@@ -15,8 +15,10 @@ MT6835::~MT6835() {
 
 void MT6835::init(SPIClass* _spi) {
     spi = _spi;
-    if (nCS >= 0)
+    if (nCS >= 0) {
         pinMode(nCS, OUTPUT);
+        digitalWrite(nCS, HIGH);
+    }
     spi->begin();
 };
 
@@ -24,15 +26,19 @@ void MT6835::init(SPIClass* _spi) {
 
 
 float MT6835::getCurrentAngle(){
-    return readRawAngle21() / MT6835_CPR * _2PI;
+    return readRawAngle21() / (float)MT6835_CPR * _2PI;
 };
 
 
 
 uint32_t MT6835::readRawAngle21(){
     uint8_t data[6]; // transact 48 bits
-    data[0] = (MT6835_OP_ANGLE<<4) | (MT6835_REG_ANGLE1 >> 8);
-    data[1] = MT6835_REG_ANGLE1 & 0x00FF;
+    data[0] = (MT6835_OP_ANGLE<<4);
+    data[1] = MT6835_REG_ANGLE1;
+    data[2] = 0;
+    data[3] = 0;
+    data[4] = 0;
+    data[5] = 0;
     if (nCS >= 0)
         digitalWrite(nCS, LOW);
     spi->beginTransaction(settings);
@@ -40,7 +46,7 @@ uint32_t MT6835::readRawAngle21(){
     spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
-    return (data[2] << 12) | (data[3] << 4) | (data[4] >> 3);
+    return (data[2] << 13) | (data[3] << 5) | (data[4] >> 3);
 };
 
 
