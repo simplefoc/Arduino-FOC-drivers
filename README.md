@@ -10,7 +10,7 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.3 - Released Oct 2022, for Simple FOC 2.3.0
+v1.0.3 - Released March 2023, for Simple FOC 2.3.0
 
 What's changed since 1.0.2?
 - New Sensor: MT6835
