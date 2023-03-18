@@ -2,7 +2,7 @@
 #include "MagneticSensorMT6835.h"
 
 
-MagneticSensorMT6835::MagneticSensorMT6835(int nCS, SPISettings settings) : MT6835(settings, nCS), Sensor() {
+MagneticSensorMT6835::MagneticSensorMT6835(int nCS, SPISettings settings) : Sensor(), MT6835(settings, nCS) {
     // nix
 };
 
