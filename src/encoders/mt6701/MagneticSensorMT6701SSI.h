@@ -10,7 +10,7 @@
 
 #define MT6701_BITORDER MSBFIRST
 
-#if defined(TARGET_RP2040)
+#if defined(TARGET_RP2040)||defined(ESP_H)
 #define MT6701_DATA_POS 1
 #else
 #define MT6701_DATA_POS 2

@@ -23,7 +23,7 @@ BLDCMotor motor = BLDCMotor(7);
 BLDCDriver3PWM driver = BLDCDriver3PWM(32, 25, 26, 33);
 
 // Inline Current Sense instance
-InlineCurrentSense current_sense = InlineCurrentSense(0.01, 50.0, 35, 34);
+InlineCurrentSense current_sense = InlineCurrentSense(0.01f, 50.0f, 35, 34);
 
 // commander interface
 Commander command = Commander(Serial);
