@@ -88,21 +88,21 @@ void MT6835::setBandwidth(uint8_t bw){
 };
 
 uint8_t MT6835::getHysteresis(){
-    MT6835Options3 opts = { .reg = getOptions3() };
+    MT6835Options3 opts = { .reg = getOptions3().reg };
     return opts.hyst;
 };
 void MT6835::setHysteresis(uint8_t hyst){
-    MT6835Options3 opts = { .reg = getOptions3() };
+    MT6835Options3 opts = { .reg = getOptions3().reg };
     opts.hyst = hyst;
     setOptions3(opts);
 };
 
 uint8_t MT6835::getRotationDirection(){
-    MT6835Options3 opts = { .reg = getOptions3() };
+    MT6835Options3 opts = { .reg = getOptions3().reg };
     return opts.rot_dir;
 };
 void MT6835::setRotationDirection(uint8_t dir){
-    MT6835Options3 opts = { .reg = getOptions3() };
+    MT6835Options3 opts = { .reg = getOptions3().reg };
     opts.rot_dir = dir;
     setOptions3(opts);
 };
