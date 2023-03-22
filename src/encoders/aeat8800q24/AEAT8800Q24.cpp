@@ -98,5 +98,5 @@ uint8_t AEAT8800Q24::readRegister(uint8_t reg) {
 };
 void AEAT8800Q24::writeRegister(uint8_t reg, uint8_t value) {
     uint16_t cmd = 0x4000 | ((reg&0x1F)<<8) | value;
-    uint16_t result = transfer16SPI(cmd);
+    /*uint16_t result =*/ transfer16SPI(cmd);
 };

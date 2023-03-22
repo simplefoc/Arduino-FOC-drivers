@@ -1,5 +1,5 @@
 
-#include "MagneticSensorSC60228.h"
+#include "./MagneticSensorSC60228.h"
 #include "common/foc_utils.h"
 #include "common/time_utils.h"
 

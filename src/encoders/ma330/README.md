@@ -1,8 +1,8 @@
-# MA730 SimpleFOC driver
+# MA330 SimpleFOC driver
 
-While MA730 absolute position magnetic rotary encoder is supported by the standard MagneticSensorSPI driver included in the base distribution, this MA730-specific driver includes some optimisations:
+While MA330 absolute position magnetic rotary encoder is supported by the standard MagneticSensorSPI driver included in the base distribution, this MA330-specific driver includes some optimisations:
 
-- access to the other registers of the MA730
+- access to the other registers of the MA330
 - this driver directly reads the angle with one call to SPI
 - this will halve the number of 16-bit SPI transfers per simpleFOC loop iteration
 
@@ -21,10 +21,10 @@ Its actually easier to use than the standard SPI sensor class, because it is les
 #include "SPI.h"
 #include "SimpleFOC.h"
 #include "SimpleFOCDrivers.h"
-#include "encoders/ma730/MagneticSensorMA730.h"
+#include "encoders/MA330/MagneticSensorMA330.h"
 
 #define SENSOR1_CS 5 // some digital pin that you're using as the nCS pin
-MagneticSensorMA730 sensor1(SENSOR1_CS);
+MagneticSensorMA330 sensor1(SENSOR1_CS);
 
 
 void setup() {
@@ -35,14 +35,14 @@ void setup() {
 Set some options:
 
 ```c++
-MagneticSensorMA730 sensor1(SENSOR1_CS, mySPISettings);
+MagneticSensorMA330 sensor1(SENSOR1_CS, true, mySPISettings);
 ```
 
 Use another SPI bus:
 
 ```c++
 void setup() {
-    sensor1.init(&SPI2);
+    sensor1.init(SPI2);
 }
 ```
 
@@ -63,12 +63,4 @@ Here's how you can use it:
 
     // get the raw 14 bit value
     uint16_t raw = sensor1.readRawAngle();
-
-    // get the field strength
-    FieldStrength fs = sensor1.getFieldStrength();
-    Serial.print("Field strength: ");
-    Serial.println(fs);
-
-    // set pulses per turn for encoder mode
-    sensor1.setPulsesPerTurn(999); // set to 999 if we want 1000 PPR == 4000 CPR
 ```

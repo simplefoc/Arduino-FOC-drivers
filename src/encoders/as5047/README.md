@@ -50,6 +50,9 @@ void setup() {
 Here's how you can use it:
 
 ```c++
+    // update the sensor (only needed if using the sensor without a motor)
+    sensor1.update();
+
     // get the angle, in radians, including full rotations
     float a1 = sensor1.getAngle();
 
