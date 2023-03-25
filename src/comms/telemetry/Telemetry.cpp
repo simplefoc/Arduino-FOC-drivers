@@ -34,76 +34,34 @@ void Telemetry::setTelemetryRegisters(uint8_t numRegisters, uint8_t* registers, 
 
 
 void Telemetry::init() {
-    sendHeader();
+    headerSent = false;
 };
 
 
 
-BinaryTelemetry::BinaryTelemetry(RegisterSender* sender) : sender(sender) {
-    // nix
-};
-
-BinaryTelemetry::~BinaryTelemetry(){
-
-};
-
-
-void BinaryTelemetry::sendHeader() {
-    if (numRegisters > 0) {
-        startFrame(numRegisters*2, TELEMETRY_FRAMETYPE_HEADER);
-        for (uint8_t i = 0; i < numRegisters; i++) {
-            sender->writeByte(registers[i]);
-            sender->writeByte(registers_motor[i]);
-        };
-        endFrame();
-    };
-};
+void Telemetry::run() {
+    if (numRegisters<1)
+        return;
+    if (!headerSent) {
+        sendHeader();
+        headerSent = true;
+    }
+    if (downsampleCnt++ < downsample) return;
+    downsampleCnt = 0;
+    if (min_elapsed_time > 0) {
+        long now = _micros();
+        if (now - last_run_time < min_elapsed_time) return;
+        last_run_time = now;
+    }
+    sendTelemetry();
+}
 
 
 
-void BinaryTelemetry::sendTelemetry(){
-    if (numRegisters > 0) {
-        startFrame(frameSize, TELEMETRY_FRAMETYPE_DATA);
-        for (uint8_t i = 0; i < numRegisters; i++) {
-            sender->sendRegister(static_cast<SimpleFOCRegister>(registers[i]), registers_motor[i]);
-        };
-        endFrame();
+void Telemetry::addMotor(FOCMotor* motor) {
+    if (numMotors < TELEMETRY_MAX_MOTORS) {
+        motors[numMotors] = motor;
+        numMotors++;
     }
 };
 
-
-ASCIITelemetry::ASCIITelemetry(ASCIIRegisterSender* sender) : sender(sender) {
-    // nix
-};
-
-ASCIITelemetry::~ASCIITelemetry(){
-
-};
-
-void ASCIITelemetry::sendHeader() {
-    if (numRegisters > 0) {
-        sender->writeChar('H');
-        sender->writeChar(' ');
-        for (uint8_t i = 0; i < numRegisters; i++) {
-            sender->writeByte(registers_motor[i]);
-            sender->writeChar(':');
-            sender->writeByte(registers[i]);
-            if (i < numRegisters-1)
-                sender->writeChar(' ');
-        };
-        sender->writeChar('\n');
-    };
-};
-
-
-
-void ASCIITelemetry::sendTelemetry(){
-    if (numRegisters > 0) {
-        for (uint8_t i = 0; i < numRegisters; i++) {
-            sender->sendRegister(static_cast<SimpleFOCRegister>(registers[i]), registers_motor[i]);
-            if (i < numRegisters-1)
-                sender->writeChar(' ');
-        };
-        sender->writeChar('\n');
-    }
-};

@@ -3,7 +3,7 @@
 
 
 
-SerialBinaryCommander::SerialBinaryCommander(bool echo) : BinaryTelemetry(this), echo(echo) {
+SerialBinaryCommander::SerialBinaryCommander(bool echo) : Telemetry(), echo(echo) {
 
 };
 
@@ -22,25 +22,27 @@ void SerialBinaryCommander::init(Stream &serial) {
 
 
 
-void SerialBinaryCommander::runCommander() {
+void SerialBinaryCommander::run() {
     if (_serial->available()>2) { // TODO make this work with partial packets...
         uint8_t command = _serial->read();
         uint8_t registerNum = _serial->read();
         uint8_t motorNum = _serial->read();
         if (command==SERIALBINARY_COMMAND_READ){
-            startFrame(registerNum, SERIALBINARY_FRAMETYPE_REGISTER);
-            sendRegister(static_cast<SimpleFOCRegister>(registerNum), motorNum);
+            startFrame(registerNum, SERIALBINARY_FRAMETYPE_REGISTER); // TODO call is incorrect
+            sendRegister(static_cast<SimpleFOCRegister>(registerNum), motors[motorNum]);
             endFrame();
         }
         else if (command==SERIALBINARY_COMMAND_WRITE) {
-            receiveRegister(static_cast<SimpleFOCRegister>(registerNum), motorNum);
+            setRegister(static_cast<SimpleFOCRegister>(registerNum), NULL, motors[motorNum]);
             if (echo) {
-                startFrame(registerNum, SERIALBINARY_FRAMETYPE_REGISTER);
-                sendRegister(static_cast<SimpleFOCRegister>(registerNum), motorNum);
+                startFrame(registerNum, SERIALBINARY_FRAMETYPE_REGISTER); // TODO call is incorrect
+                sendRegister(static_cast<SimpleFOCRegister>(registerNum), motors[motorNum]);
                 endFrame();
             }
         }
     }
+    // and handle the telemetry
+    this->Telemetry::run();
 };
 
 
@@ -86,3 +88,66 @@ void SerialBinaryCommander::endFrame(){
 
 
 
+
+uint8_t SerialBinaryCommander::writeByte(uint8_t value){
+    return writeBytes(&value, 1);
+};
+
+
+
+uint8_t SerialBinaryCommander::writeFloat(float value){
+    return writeBytes(&value, 4);
+};
+
+
+
+uint8_t SerialBinaryCommander::writeInt(uint32_t value){
+    return writeBytes(&value, 4);
+};
+
+
+
+
+uint8_t SerialBinaryCommander::readByte(void* valueToSet){
+    return readBytes(valueToSet, 1);
+};
+
+
+
+uint8_t SerialBinaryCommander::readFloat(void* valueToSet){
+    return readBytes(valueToSet, 4);
+};
+
+
+
+uint8_t SerialBinaryCommander::readInt(void* valueToSet){
+    return readBytes(valueToSet, 4);
+};
+
+
+
+
+
+
+void SerialBinaryCommander::sendHeader() {
+    if (numRegisters > 0) {
+        startFrame(numRegisters*2, TELEMETRY_FRAMETYPE_HEADER);
+        for (uint8_t i = 0; i < numRegisters; i++) {
+            writeByte(registers[i]);
+            writeByte(registers_motor[i]);
+        };
+        endFrame();
+    };
+};
+
+
+
+void SerialBinaryCommander::sendTelemetry(){
+    if (numRegisters > 0) {
+        startFrame(frameSize, TELEMETRY_FRAMETYPE_DATA);
+        for (uint8_t i = 0; i < numRegisters; i++) {
+            sendRegister(static_cast<SimpleFOCRegister>(registers[i]), motors[registers_motor[i]]);
+        };
+        endFrame();
+    }
+};

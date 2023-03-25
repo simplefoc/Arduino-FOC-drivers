@@ -1,14 +1,19 @@
-#ifndef __TELEMETRY_H__
-#define __TELEMETRY_H__
 
+#pragma once
 
 #include "../SimpleFOCRegisters.h"
-#include "../ascii/ASCIIRegisterSender.h"
-#include "../binary/BinaryRegisterSender.h"
+#include "../RegisterSender.h"
 
 #ifndef TELEMETRY_MAX_REGISTERS
 #define TELEMETRY_MAX_REGISTERS 8
 #endif
+
+#ifndef TELEMETRY_MAX_MOTORS
+#define TELEMETRY_MAX_MOTORS 4
+#endif
+
+
+#define DEF_TELEMETRY_DOWNSAMPLE 100
 
 
 enum : uint8_t {
@@ -19,54 +24,30 @@ enum : uint8_t {
 
 
 
-class Telemetry {
+class Telemetry : public RegisterSender {
 public:
     Telemetry();
     virtual ~Telemetry();
     virtual void init();
+    void addMotor(FOCMotor* motor);
     void setTelemetryRegisters(uint8_t numRegisters, uint8_t* registers, uint8_t* motors = NULL);
-    virtual void sendTelemetry() = 0;
+    void run();
+
+    uint16_t downsample = DEF_TELEMETRY_DOWNSAMPLE;
+    uint32_t min_elapsed_time = 0;
 protected:
+    virtual void sendTelemetry() = 0;
     virtual void sendHeader() = 0;
+
+    FOCMotor* motors[TELEMETRY_MAX_MOTORS];
+    uint8_t numMotors = 0;    
 
     uint8_t numRegisters;
     uint8_t registers[TELEMETRY_MAX_REGISTERS];
     uint8_t registers_motor[TELEMETRY_MAX_REGISTERS];
     uint8_t frameSize;
+    bool headerSent;
+    long last_run_time = 0;
+    uint16_t downsampleCnt = 0;
 };
 
-
-
-class BinaryTelemetry : public Telemetry {
-public:
-    BinaryTelemetry(RegisterSender* sender);
-    virtual ~BinaryTelemetry();
-    void sendTelemetry() override;
-    void sendHeader() override;
-    virtual void startFrame(uint8_t frameSize, uint8_t type = TELEMETRY_FRAMETYPE_DATA) = 0;
-    virtual void endFrame() = 0;
-protected:
-    RegisterSender* sender;
-};
-
-
-
-
-
-
-class ASCIITelemetry : public Telemetry {
-public:
-    ASCIITelemetry(ASCIIRegisterSender* sender);
-    virtual ~ASCIITelemetry();
-    void sendTelemetry() override;
-    void sendHeader() override;
-protected:
-    ASCIIRegisterSender* sender;
-};
-
-
-
-
-
-
-#endif

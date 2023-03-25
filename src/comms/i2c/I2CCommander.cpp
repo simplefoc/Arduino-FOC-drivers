@@ -182,10 +182,10 @@ bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int nu
         case REG_CURD_LPF_T:
             readBytes(&(motors[motorNum]->LPF_current_d.Tf), 4);
             break;
-        case REG_MAX_VOLTAGE:
+        case REG_VOLTAGE_LIMIT:
             readBytes(&(motors[motorNum]->voltage_limit), 4);
             break;
-        case REG_MAX_CURRENT:
+        case REG_CURRENT_LIMIT:
             readBytes(&(motors[motorNum]->current_limit), 4);
             break;
         case REG_MOTION_DOWNSAMPLE:
@@ -249,7 +249,7 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             _wire->write((uint8_t)lastcommandregister);
             _wire->write((uint8_t)lastcommanderror+1);
             for (int i=0;(i<numMotors && i<28); i++) { // at most 28 motors, so we can fit in one packet
-                _wire->write(motors[motorNum]->motor_status);
+                _wire->write(motors[i]->motor_status);
             }
             break;
         case REG_MOTOR_ADDRESS:
@@ -379,10 +379,10 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             writeFloat(motors[motorNum]->LPF_current_d.Tf);
             break;
 
-        case REG_MAX_VOLTAGE:
+        case REG_VOLTAGE_LIMIT:
             writeFloat(motors[motorNum]->voltage_limit);
             break;
-        case REG_MAX_CURRENT:
+        case REG_CURRENT_LIMIT:
             writeFloat(motors[motorNum]->current_limit);
             break;
         case REG_MOTION_DOWNSAMPLE:
