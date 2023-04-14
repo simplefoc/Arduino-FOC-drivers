@@ -51,13 +51,13 @@ class STM32HWEncoder : public Sensor {
 
     TIM_HandleTypeDef encoder_handle;
 
-    static constexpr u_int16_t overflow_margin = 20000;
-    u_int16_t rotations_per_overflow;
-    u_int16_t ticks_per_overflow;
+    static constexpr uint16_t overflow_margin = 20000;
+    uint16_t rotations_per_overflow;
+    uint16_t ticks_per_overflow;
 
     volatile int32_t overflow_count;
-    volatile u_int16_t count;  //!< current pulse counter
-    volatile u_int16_t prev_count;
+    volatile uint16_t count;  //!< current pulse counter
+    volatile uint16_t prev_count;
     volatile int32_t prev_overflow_count;
 
     // velocity calculation variables
