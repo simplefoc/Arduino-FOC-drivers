@@ -10,17 +10,11 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.3 - Released March 2023, for Simple FOC 2.3.0
+v1.0.4 - Released May 2023, for Simple FOC 2.3.0
 
-What's changed since 1.0.2?
-- New Sensor: MT6835
-- Fixed bugs
-
-What's changed since 1.0.1?
-- Calibrated sensor by @MarethyuPrefect
-- New Sensors: MT6701, MA330, MT6816
-- Fixed bugs
-
+What's changed since 1.0.3?
+- New Input: STM32SpeedDirCommander
+- Fixed MT6835 driver bugs
 
 ## What is included
 
@@ -49,6 +43,11 @@ What is here? See the sections below. Each driver or function should come with i
 ### Communications
 
  - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices. 
+ - [STM32 SpeedDir Input](src/comms/stm32speeddir/) - Control target velocity with PWM speed and direction inputs
+
+### Utilities
+
+ - [STM32 PWM Input driver](src/utilities/stm32pwm/) - PWM Input driver for STM32 MCUs. Accurately measure PWM inputs with zero MCU overhead.
 
 
 ## How to use
@@ -74,3 +73,14 @@ If you do so, please be sure to adhere to and include the [LICENSE](https://gith
 ## Further Documentation
 
 Find out more information about the Arduino SimpleFOC project on the [docs website](https://docs.simplefoc.com/) 
+
+## Release History
+
+What's changed since 1.0.2?
+- New Sensor: MT6835
+- Fixed bugs
+
+What's changed since 1.0.1?
+- Calibrated sensor by @MarethyuPrefect
+- New Sensors: MT6701, MA330, MT6816
+- Fixed bugs
