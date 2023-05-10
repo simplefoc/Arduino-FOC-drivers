@@ -1,6 +1,5 @@
 
-#ifndef STM32_HARDWARE_ENCODER_H
-#define STM32_HARDWARE_ENCODER_H
+#pragma once
 
 #include <Arduino.h>
 
@@ -44,6 +43,9 @@ class STM32HWEncoder : public Sensor {
      */
     int needsSearch() override;
 
+    bool initialized = false;
+    PinName _pinA, _pinB, _pinI;
+    
   private:
     int hasIndex();  // !< function returning 1 if encoder has index pin and 0 if not.
 
@@ -62,9 +64,6 @@ class STM32HWEncoder : public Sensor {
 
     // velocity calculation variables
     volatile int32_t pulse_timestamp, prev_timestamp;
-
-    int8_t _pinA, _pinB, _pinI;
 };
 
-#endif
 #endif
