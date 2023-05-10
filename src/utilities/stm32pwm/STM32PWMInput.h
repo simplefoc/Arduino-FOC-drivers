@@ -10,13 +10,13 @@ class STM32PWMInput {
         STM32PWMInput(int pin);
         ~STM32PWMInput();
 
-        int init();
+        int initialize();
 
         float getDutyCyclePercent();
         uint32_t getDutyCycleTicks();
         uint32_t getPeriodTicks();
     protected:
-        int _pin;
+        PinName _pin;
         TIM_HandleTypeDef timer;
 };
 

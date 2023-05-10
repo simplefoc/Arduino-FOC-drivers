@@ -12,7 +12,7 @@ STM32SpeedDirInput::~STM32SpeedDirInput(){};
 
 int STM32SpeedDirInput::init(){
     pinMode(_pin_dir, INPUT);
-    return STM32PWMInput::init();
+    return STM32PWMInput::initialize();
 };
 
 

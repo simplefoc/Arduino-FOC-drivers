@@ -6,7 +6,7 @@
 
 
 STM32PWMInput::STM32PWMInput(int pin){
-    _pin = pin;
+    _pin = digitalPinToPinName(pin);
 };
 
 
@@ -16,11 +16,10 @@ STM32PWMInput::~STM32PWMInput(){};
 
 
 
-int STM32PWMInput::init(){
-    PinName pinN = digitalPinToPinName(_pin);
-    pinmap_pinout(pinN, PinMap_TIM);
-    uint32_t channel = STM_PIN_CHANNEL(pinmap_function(pinN, PinMap_TIM));
-    timer.Instance = (TIM_TypeDef *)pinmap_peripheral(pinN, PinMap_TIM);
+int STM32PWMInput::initialize(){
+    pinmap_pinout(_pin, PinMap_TIM);
+    uint32_t channel = STM_PIN_CHANNEL(pinmap_function(_pin, PinMap_TIM));
+    timer.Instance = (TIM_TypeDef *)pinmap_peripheral(_pin, PinMap_TIM);
     timer.Init.Prescaler = 0;
     timer.Init.CounterMode = TIM_COUNTERMODE_UP;
     timer.Init.Period = 4.294967295E9;    // TODO max period, depends on which timer is used - 32 bits or 16 bits
