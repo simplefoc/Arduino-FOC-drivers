@@ -206,6 +206,7 @@ public:
 	void enableUVW(bool enable);
 
 	uint16_t setZero(uint16_t);
+	uint16_t getZero();
 
 private:
 

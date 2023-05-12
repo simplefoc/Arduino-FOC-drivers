@@ -264,10 +264,36 @@ void AS5047U::enableUVW(bool enable){
 
 
 
-uint16_t AS5047U::setZero(uint16_t value){
-	// TODO implement me!
-	return 0;
+
+uint16_t AS5047U::getZero(){
+	uint16_t command = AS5047U_ZPOSM_REG | AS5047U_RW;
+	spi_transfer16(command);
+	command = AS5047U_ZPOSL_REG | AS5047U_RW;
+	uint16_t result = spi_transfer16(command);
+	AS5047UZPosL posL = {
+			.reg = nop()
+	};
+	return ((result&0x00FF)<<6) | posL.zposl;
 }
+
+
+
+uint16_t AS5047U::setZero(uint16_t value){
+	uint16_t command = AS5047U_ZPOSL_REG | AS5047U_RW;
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
+	command = AS5047U_ZPOSL_REG;
+	AS5047UZPosL posL = {
+			.reg = spi_transfer16(command)
+	};
+	posL.zposl = value&0x003F;
+	spi_transfer16(posL.reg);
+	command = AS5047U_ZPOSM_REG;
+	spi_transfer16(command);
+	spi_transfer16((value>>6)&0x00FF);
+	delayMicroseconds(50);
+	return getZero();
+}
+
 
 
 
