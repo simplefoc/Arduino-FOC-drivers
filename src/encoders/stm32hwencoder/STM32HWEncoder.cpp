@@ -36,7 +36,7 @@ void STM32HWEncoder::update() {
     count = encoder_handle.Instance->CNT;
 
     prev_timestamp = pulse_timestamp;
-    pulse_timestamp = getCurrentMicros();
+    pulse_timestamp = _micros(); // micros() rollover is handled in velocity calculation
 
     prev_overflow_count = overflow_count;
     if (prev_count > (ticks_per_overflow - overflow_margin) &&
@@ -76,6 +76,7 @@ int32_t STM32HWEncoder::getFullRotations() {
 float STM32HWEncoder::getVelocity() {
     // sampling time calculation
     float dt = (pulse_timestamp - prev_timestamp) * 1e-6f;
+    // this also handles the moment when micros() rolls over
     if (dt < min_elapsed_time) return velocity; // don't update velocity if deltaT is too small
 
     // time from last impulse
