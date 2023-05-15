@@ -39,12 +39,14 @@ void STM32HWEncoder::update() {
     pulse_timestamp = _micros(); // micros() rollover is handled in velocity calculation
 
     prev_overflow_count = overflow_count;
-    if (prev_count > (ticks_per_overflow - overflow_margin) &&
-        prev_count <= ticks_per_overflow && count < overflow_margin)
-        ++overflow_count;
-    if (prev_count >= 0 && prev_count < overflow_margin &&
-        count >= (ticks_per_overflow - overflow_margin))
+    // if (prev_count > (ticks_per_overflow - overflow_margin) && count < overflow_margin)
+    //     ++overflow_count;
+    // if (prev_count < overflow_margin && count >= (ticks_per_overflow - overflow_margin))
+    //     --overflow_count;
+    if (prev_count < count && (count - prev_count > ticks_per_overflow / 2))
         --overflow_count;
+    if (prev_count > count && (prev_count - count > ticks_per_overflow / 2))
+        ++overflow_count;
 }
 
 
@@ -110,8 +112,8 @@ void STM32HWEncoder::init() {
     ticks_per_overflow = cpr * rotations_per_overflow;
 
     // GPIO configuration
-    TIM_TypeDef *InstanceA = (TIM_TypeDef *)pinmap_peripheral(_pinA, PinMap_PWM);
-    TIM_TypeDef *InstanceB = (TIM_TypeDef *)pinmap_peripheral(_pinB, PinMap_PWM);
+    TIM_TypeDef *InstanceA = (TIM_TypeDef *)pinmap_peripheral(_pinA, PinMap_TIM);
+    TIM_TypeDef *InstanceB = (TIM_TypeDef *)pinmap_peripheral(_pinB, PinMap_TIM);
     if (InstanceA != InstanceB) {
         initialized = false;
         return;
@@ -143,6 +145,7 @@ void STM32HWEncoder::init() {
 
     encoder_handle.Instance = InstanceA; // e.g. TIM4;
     enableTimerClock(&encoder_handle);
+
     if (HAL_TIM_Encoder_Init(&encoder_handle, &encoder_config) != HAL_OK) {
         initialized = false;
         return;
