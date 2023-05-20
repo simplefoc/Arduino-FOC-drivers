@@ -317,7 +317,10 @@ uint8_t AS5047U::calcCRC(uint16_t data){
 }
 
 uint16_t AS5047U::writeRegister24(uint16_t reg, uint16_t data) {
-	uint8_t buff[3] = { (reg>>8)&0x3F, reg&0xFF, calcCRC(reg) };
+	uint8_t buff[3];
+	buff[0] = (reg>>8)&0x3F;
+	buff[1] = reg&0xFF;
+	buff[2] = calcCRC(reg);
 	if (nCS>=0)
 		digitalWrite(nCS, 0);
 	spi->beginTransaction(settings);
