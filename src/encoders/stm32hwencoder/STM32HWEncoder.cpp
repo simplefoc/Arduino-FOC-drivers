@@ -21,9 +21,9 @@ STM32HWEncoder::STM32HWEncoder(unsigned int _ppr, int8_t pinA, int8_t pinB, int8
     prev_timestamp = getCurrentMicros();
     pulse_timestamp = getCurrentMicros();
 
-    _pinA = pinA;
-    _pinB = pinB;
-    _pinI = pinI;
+    _pinA = digitalPinToPinName(pinA);
+    _pinB = digitalPinToPinName(pinB);
+    _pinI = digitalPinToPinName(pinI);
 }
 
 
@@ -36,15 +36,17 @@ void STM32HWEncoder::update() {
     count = encoder_handle.Instance->CNT;
 
     prev_timestamp = pulse_timestamp;
-    pulse_timestamp = getCurrentMicros();
+    pulse_timestamp = _micros(); // micros() rollover is handled in velocity calculation
 
     prev_overflow_count = overflow_count;
-    if (prev_count > (ticks_per_overflow - overflow_margin) &&
-        prev_count <= ticks_per_overflow && count < overflow_margin)
-        ++overflow_count;
-    if (prev_count >= 0 && prev_count < overflow_margin &&
-        count >= (ticks_per_overflow - overflow_margin))
+    // if (prev_count > (ticks_per_overflow - overflow_margin) && count < overflow_margin)
+    //     ++overflow_count;
+    // if (prev_count < overflow_margin && count >= (ticks_per_overflow - overflow_margin))
+    //     --overflow_count;
+    if (prev_count < count && (count - prev_count > ticks_per_overflow / 2))
         --overflow_count;
+    if (prev_count > count && (prev_count - count > ticks_per_overflow / 2))
+        ++overflow_count;
 }
 
 
@@ -76,9 +78,8 @@ int32_t STM32HWEncoder::getFullRotations() {
 float STM32HWEncoder::getVelocity() {
     // sampling time calculation
     float dt = (pulse_timestamp - prev_timestamp) * 1e-6f;
-    // quick fix for strange cases (micros overflow)
-    if (dt <= 0 || dt > 0.5f)
-        dt = 1e-3f;
+    // this also handles the moment when micros() rolls over
+    if (dt < min_elapsed_time) return velocity; // don't update velocity if deltaT is too small
 
     // time from last impulse
     int32_t overflow_diff = overflow_count - prev_overflow_count;
@@ -87,7 +88,8 @@ float STM32HWEncoder::getVelocity() {
     float pulse_per_second = dN / dt;
 
     // velocity calculation
-    return pulse_per_second / (static_cast<float>(cpr)) * _2PI;
+    velocity = pulse_per_second / (static_cast<float>(cpr)) * _2PI;
+    return velocity;
 }
 
 // getter for index pin
@@ -99,33 +101,25 @@ int STM32HWEncoder::hasIndex() { return 0; }
 // encoder initialisation of the hardware pins
 // and calculation variables
 void STM32HWEncoder::init() {
+    // counter setup
+    overflow_count = 0;
+    count = 0;
+    prev_count = 0;
+    prev_overflow_count = 0;
+
     // overflow handling
     rotations_per_overflow = 0xFFFF / cpr;
     ticks_per_overflow = cpr * rotations_per_overflow;
 
-    // set up GPIO
-    GPIO_InitTypeDef gpio;
-
-    PinName pinA = digitalPinToPinName(_pinA);
-    TIM_TypeDef *InstanceA = (TIM_TypeDef *)pinmap_peripheral(pinA, PinMap_PWM);
-    gpio.Pin = digitalPinToBitMask(_pinA);
-    gpio.Mode = GPIO_MODE_AF_PP;
-    gpio.Pull = GPIO_NOPULL;
-    gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
-    #ifndef STM32F1xx_HAL_GPIO_H
-    gpio.Alternate = pinmap_function(pinA, PinMap_PWM);
-    #endif
-    HAL_GPIO_Init(digitalPinToPort(_pinA), &gpio);
-
-    // lets assume pinB is on the same timer as pinA... otherwise it can't work but the API currently doesn't allow us to fail gracefully
-    gpio.Pin = digitalPinToBitMask(_pinB);
-    gpio.Mode = GPIO_MODE_AF_PP;
-    gpio.Pull = GPIO_NOPULL;
-    gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
-    #ifndef STM32F1xx_HAL_GPIO_H
-    gpio.Alternate = pinmap_function(digitalPinToPinName(_pinB), PinMap_PWM);
-    #endif
-    HAL_GPIO_Init(digitalPinToPort(_pinB), &gpio);
+    // GPIO configuration
+    TIM_TypeDef *InstanceA = (TIM_TypeDef *)pinmap_peripheral(_pinA, PinMap_TIM);
+    TIM_TypeDef *InstanceB = (TIM_TypeDef *)pinmap_peripheral(_pinB, PinMap_TIM);
+    if (InstanceA != InstanceB) {
+        initialized = false;
+        return;
+    }
+    pinmap_pinout(_pinA, PinMap_TIM);
+    pinmap_pinout(_pinB, PinMap_TIM);
 
     // set up timer for encoder
     encoder_handle.Init.Period = ticks_per_overflow - 1;
@@ -151,20 +145,20 @@ void STM32HWEncoder::init() {
 
     encoder_handle.Instance = InstanceA; // e.g. TIM4;
     enableTimerClock(&encoder_handle);
+
     if (HAL_TIM_Encoder_Init(&encoder_handle, &encoder_config) != HAL_OK) {
-        _Error_Handler(__FILE__, __LINE__);
+        initialized = false;
+        return;
     }
 
-    HAL_TIM_Encoder_Start(&encoder_handle, TIM_CHANNEL_1);
-
-    // counter setup
-    overflow_count = 0;
-    count = 0;
-    prev_count = 0;
-    prev_overflow_count = 0;
+    if (HAL_TIM_Encoder_Start(&encoder_handle, TIM_CHANNEL_1) != HAL_OK) {
+        initialized = false;
+        return;
+    }
 
     prev_timestamp = getCurrentMicros();
     pulse_timestamp = getCurrentMicros();
+    initialized = true;
 }
 
 #endif

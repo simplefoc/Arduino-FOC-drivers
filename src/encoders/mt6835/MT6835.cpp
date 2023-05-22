@@ -120,11 +120,11 @@ uint16_t MT6835::getABZResolution(){
     return (hi << 6) | lo.abz_res_low;
 };
 void MT6835::setABZResolution(uint16_t res){
-     uint8_t hi = (res >> 2);
+    uint8_t hi = (res >> 6);
     MT6835ABZRes lo = {
 			.reg = readRegister(MT6835_REG_ABZ_RES2)
 	};
-    lo.abz_res_low = res & 0x3F;
+    lo.abz_res_low = (res & 0x3F);
     writeRegister(MT6835_REG_ABZ_RES1, hi);
     writeRegister(MT6835_REG_ABZ_RES2, lo.reg);
 };
