@@ -9,7 +9,6 @@
 #include <HardwareTimer.h>
 #include "common/base_classes/Sensor.h"
 #include "common/foc_utils.h"
-#include "common/time_utils.h"
 
 class STM32HWEncoder : public Sensor {
   public:
@@ -19,51 +18,19 @@ class STM32HWEncoder : public Sensor {
     */
     explicit STM32HWEncoder(unsigned int ppr, int8_t pinA, int8_t pinB, int8_t pinI=-1);
 
-    /** encoder initialise pins */
     void init() override;
-
-    // Encoder configuration
-    unsigned int cpr;  //!< encoder cpr number
-
-    // Abstract functions of the Sensor class implementation
-    /** get current angle (rad) */
-    float getSensorAngle() override;
-    float getMechanicalAngle() override;
-    /**  get current angular velocity (rad/s) */
-    float getVelocity() override;
-    float getAngle() override;
-    double getPreciseAngle() override;
-    int32_t getFullRotations() override;
-    void update() override;
-
-    /**
-     * returns 0 if it does need search for absolute zero
-     * 0 - encoder without index
-     * 1 - ecoder with index
-     */
     int needsSearch() override;
-
-    bool initialized = false;
-    PinName _pinA, _pinB, _pinI;
-    
-  private:
     int hasIndex();  // !< function returning 1 if encoder has index pin and 0 if not.
 
-    void handleOverflow();
-
+    bool initialized = false;
+    uint32_t cpr;  //!< encoder cpr number
+    PinName _pinA, _pinB, _pinI;
+    
+  protected:
+    float getSensorAngle() override;
+    
     TIM_HandleTypeDef encoder_handle;
 
-    static constexpr uint16_t overflow_margin = 20000;
-    uint16_t rotations_per_overflow;
-    uint16_t ticks_per_overflow;
-
-    volatile int32_t overflow_count;
-    volatile uint16_t count;  //!< current pulse counter
-    volatile uint16_t prev_count;
-    volatile int32_t prev_overflow_count;
-
-    // velocity calculation variables
-    volatile int32_t pulse_timestamp, prev_timestamp;
 };
 
 #endif

@@ -6,90 +6,17 @@
   HardwareEncoder(int cpr)
 */
 STM32HWEncoder::STM32HWEncoder(unsigned int _ppr, int8_t pinA, int8_t pinB, int8_t pinI) {
-    rotations_per_overflow = 0;
-    ticks_per_overflow = 0;
-
-    overflow_count = 0;
-    count = 0;
-    prev_count = 0;
-    prev_overflow_count = 0;
-    pulse_timestamp = 0;
-
     cpr = _ppr * 4; // 4x for quadrature
-
-    // velocity calculation variables
-    prev_timestamp = getCurrentMicros();
-    pulse_timestamp = getCurrentMicros();
-
     _pinA = digitalPinToPinName(pinA);
     _pinB = digitalPinToPinName(pinB);
     _pinI = digitalPinToPinName(pinI);
 }
 
-
-
-void STM32HWEncoder::update() {
-    // handle overflow of the 16-bit counter here
-    // must be called at least twice per traversal of overflow range
-    // TODO(conroy-cheers): investigate performance impact
-    prev_count = count;
-    count = encoder_handle.Instance->CNT;
-
-    prev_timestamp = pulse_timestamp;
-    pulse_timestamp = _micros(); // micros() rollover is handled in velocity calculation
-
-    prev_overflow_count = overflow_count;
-    // if (prev_count > (ticks_per_overflow - overflow_margin) && count < overflow_margin)
-    //     ++overflow_count;
-    // if (prev_count < overflow_margin && count >= (ticks_per_overflow - overflow_margin))
-    //     --overflow_count;
-    if (prev_count < count && (count - prev_count > ticks_per_overflow / 2))
-        --overflow_count;
-    if (prev_count > count && (prev_count - count > ticks_per_overflow / 2))
-        ++overflow_count;
-}
-
-
-
 /*
   Shaft angle calculation
 */
-float STM32HWEncoder::getSensorAngle() { return getAngle(); }
-
-float STM32HWEncoder::getMechanicalAngle() {
-    return _2PI * (count % static_cast<int>(cpr)) / static_cast<float>(cpr);
-}
-float STM32HWEncoder::getAngle() {
-    return _2PI * (count / static_cast<float>(cpr) +
-                   overflow_count * rotations_per_overflow);
-}
-double STM32HWEncoder::getPreciseAngle() {
-    return _2PI * (count / static_cast<double>(cpr) +
-                   overflow_count * rotations_per_overflow);
-}
-int32_t STM32HWEncoder::getFullRotations() {
-    return count / static_cast<int>(cpr) +
-           overflow_count * rotations_per_overflow;
-}
-
-/*
-  Shaft velocity calculation
-*/
-float STM32HWEncoder::getVelocity() {
-    // sampling time calculation
-    float dt = (pulse_timestamp - prev_timestamp) * 1e-6f;
-    // this also handles the moment when micros() rolls over
-    if (dt < min_elapsed_time) return velocity; // don't update velocity if deltaT is too small
-
-    // time from last impulse
-    int32_t overflow_diff = overflow_count - prev_overflow_count;
-    int32_t dN = (count - prev_count) + (ticks_per_overflow * overflow_diff);
-
-    float pulse_per_second = dN / dt;
-
-    // velocity calculation
-    velocity = pulse_per_second / (static_cast<float>(cpr)) * _2PI;
-    return velocity;
+float STM32HWEncoder::getSensorAngle() { 
+    return _2PI * encoder_handle.Instance->CNT / static_cast<float>(cpr);
 }
 
 // getter for index pin
@@ -99,18 +26,7 @@ int STM32HWEncoder::needsSearch() { return false; }
 int STM32HWEncoder::hasIndex() { return 0; }
 
 // encoder initialisation of the hardware pins
-// and calculation variables
 void STM32HWEncoder::init() {
-    // counter setup
-    overflow_count = 0;
-    count = 0;
-    prev_count = 0;
-    prev_overflow_count = 0;
-
-    // overflow handling
-    rotations_per_overflow = 0xFFFF / cpr;
-    ticks_per_overflow = cpr * rotations_per_overflow;
-
     // GPIO configuration
     TIM_TypeDef *InstanceA = (TIM_TypeDef *)pinmap_peripheral(_pinA, PinMap_TIM);
     TIM_TypeDef *InstanceB = (TIM_TypeDef *)pinmap_peripheral(_pinB, PinMap_TIM);
@@ -122,7 +38,7 @@ void STM32HWEncoder::init() {
     pinmap_pinout(_pinB, PinMap_TIM);
 
     // set up timer for encoder
-    encoder_handle.Init.Period = ticks_per_overflow - 1;
+    encoder_handle.Init.Period = cpr - 1;
     encoder_handle.Init.Prescaler = 0;
     encoder_handle.Init.ClockDivision = 0;
     encoder_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -156,8 +72,6 @@ void STM32HWEncoder::init() {
         return;
     }
 
-    prev_timestamp = getCurrentMicros();
-    pulse_timestamp = getCurrentMicros();
     initialized = true;
 }
 
