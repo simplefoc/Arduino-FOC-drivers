@@ -10,11 +10,14 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.4 - Released May 2023, for Simple FOC 2.3.0
+v1.0.4 - Released June 2023, for Simple FOC 2.3.0
 
 What's changed since 1.0.3?
-- New Input: STM32SpeedDirCommander
+- New Comms/Input: STM32SpeedDirCommander
+- New Utility: STM32PWMInput
 - Fixed MT6835 driver bugs
+- Improved AS5047 driver, fixed bugs
+- Improved AS5047U driver, fixed bugs
 
 ## What is included
 
@@ -39,6 +42,7 @@ What is here? See the sections below. Each driver or function should come with i
  - [MT6816 SPI driver](src/encoders/mt6816/) - SPI driver for the MagnTek MT6816 absolute position magnetic rotary encoder IC.
  - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
  - [MT6835 SPI driver](src/encoders/mt6835/) - SPI driver for the MagnTek MT6835 21 bit magnetic rotary encoder IC.
+ - [STM32 PWM sensor driver](src/encoders/stm32pwmsensor/) - STM32 native timer-based driver for PWM angle sensors.
 
 ### Communications
 
