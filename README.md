@@ -10,17 +10,14 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.3 - Released March 2023, for Simple FOC 2.3.0
+v1.0.4 - Released June 2023, for Simple FOC 2.3.0
 
-What's changed since 1.0.2?
-- New Sensor: MT6835
-- Fixed bugs
-
-What's changed since 1.0.1?
-- Calibrated sensor by @MarethyuPrefect
-- New Sensors: MT6701, MA330, MT6816
-- Fixed bugs
-
+What's changed since 1.0.3?
+- New Comms/Input: STM32SpeedDirCommander
+- New Utility: STM32PWMInput
+- Fixed MT6835 driver bugs
+- Improved AS5047 driver, fixed bugs
+- Improved AS5047U driver, fixed bugs
 
 ## What is included
 
@@ -45,10 +42,16 @@ What is here? See the sections below. Each driver or function should come with i
  - [MT6816 SPI driver](src/encoders/mt6816/) - SPI driver for the MagnTek MT6816 absolute position magnetic rotary encoder IC.
  - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
  - [MT6835 SPI driver](src/encoders/mt6835/) - SPI driver for the MagnTek MT6835 21 bit magnetic rotary encoder IC.
+ - [STM32 PWM sensor driver](src/encoders/stm32pwmsensor/) - STM32 native timer-based driver for PWM angle sensors.
 
 ### Communications
 
  - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices. 
+ - [STM32 SpeedDir Input](src/comms/stm32speeddir/) - Control target velocity with PWM speed and direction inputs
+
+### Utilities
+
+ - [STM32 PWM Input driver](src/utilities/stm32pwm/) - PWM Input driver for STM32 MCUs. Accurately measure PWM inputs with zero MCU overhead.
 
 
 ## How to use
@@ -74,3 +77,14 @@ If you do so, please be sure to adhere to and include the [LICENSE](https://gith
 ## Further Documentation
 
 Find out more information about the Arduino SimpleFOC project on the [docs website](https://docs.simplefoc.com/) 
+
+## Release History
+
+What's changed since 1.0.2?
+- New Sensor: MT6835
+- Fixed bugs
+
+What's changed since 1.0.1?
+- Calibrated sensor by @MarethyuPrefect
+- New Sensors: MT6701, MA330, MT6816
+- Fixed bugs

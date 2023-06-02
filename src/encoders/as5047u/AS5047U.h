@@ -206,11 +206,14 @@ public:
 	void enableUVW(bool enable);
 
 	uint16_t setZero(uint16_t);
+	uint16_t getZero();
 
 private:
 
-	uint16_t nop();
+	uint16_t nop16();
 	uint16_t spi_transfer16(uint16_t outdata);
+	uint8_t calcCRC(uint16_t data);
+	uint16_t writeRegister24(uint16_t reg, uint16_t data);
 	SPIClass* spi;
 	SPISettings settings;
 	bool errorflag = false;

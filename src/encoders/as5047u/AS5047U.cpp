@@ -52,7 +52,7 @@ uint16_t AS5047U::readCorrectedAngle(){
 uint16_t AS5047U::readMagnitude(){
 	uint16_t command = AS5047U_MAGNITUDE_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	uint16_t result = nop();
+	uint16_t result = nop16();
 	return result;
 }
 
@@ -60,7 +60,7 @@ uint16_t AS5047U::readMagnitude(){
 uint16_t AS5047U::readVelocity(){
 	uint16_t command = AS5047U_VELOCITY_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	uint16_t result = nop();
+	uint16_t result = nop16();
 	return result;
 }
 
@@ -78,7 +78,7 @@ AS5047UError AS5047U::clearErrorFlag(){
 	uint16_t command = AS5047U_ERROR_REG | AS5047U_RW; // set r=1, result is 0x4001
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047UError result;
-	result.reg = nop();
+	result.reg = nop16();
 	return result;
 }
 
@@ -87,7 +87,7 @@ AS5047USettings1 AS5047U::readSettings1(){
 	uint16_t command = AS5047U_SETTINGS1_REG | AS5047U_RW; // set r=1, result is 0xC018
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047USettings1 result = {
-			.reg = nop()
+			.reg = nop16()
 	};
 	return result;
 }
@@ -96,9 +96,7 @@ AS5047USettings1 AS5047U::readSettings1(){
 
 
 void AS5047U::writeSettings1(AS5047USettings1 settings){
-	uint16_t command = AS5047U_SETTINGS1_REG;  // set r=0, result is 0x0018
-	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	/*cmdresult =*/ spi_transfer16(settings.reg);
+	writeRegister24(AS5047U_SETTINGS1_REG, settings.reg);
 }
 
 
@@ -108,7 +106,7 @@ AS5047USettings2 AS5047U::readSettings2(){
 	uint16_t command = AS5047U_SETTINGS2_REG | AS5047U_RW; // set r=1, result is 0x4019
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047USettings2 result = {
-			.reg = nop()
+			.reg = nop16()
 	};
 	return result;
 }
@@ -118,9 +116,7 @@ AS5047USettings2 AS5047U::readSettings2(){
 
 
 void AS5047U::writeSettings2(AS5047USettings2 settings){
-	uint16_t command = AS5047U_SETTINGS2_REG;
-	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	/*cmdresult =*/ spi_transfer16(settings.reg);
+	writeRegister24(AS5047U_SETTINGS2_REG, settings.reg);
 }
 
 
@@ -131,7 +127,7 @@ AS5047USettings3 AS5047U::readSettings3(){
 	uint16_t command = AS5047U_SETTINGS3_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047USettings3 result = {
-			.reg = nop()
+			.reg = nop16()
 	};
 	return result;
 }
@@ -141,9 +137,7 @@ AS5047USettings3 AS5047U::readSettings3(){
 
 
 void AS5047U::writeSettings3(AS5047USettings3 settings){
-	uint16_t command = AS5047U_SETTINGS3_REG;
-	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	/*cmdresult =*/ spi_transfer16(settings.reg);
+	writeRegister24(AS5047U_SETTINGS3_REG, settings.reg);
 }
 
 
@@ -153,7 +147,7 @@ AS5047UDiagnostics AS5047U::readDiagnostics(){
 	uint16_t command = AS5047U_DIAGNOSTICS_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047UDiagnostics result = {
-			.reg = nop()
+			.reg = nop16()
 	};
 	return result;
 }
@@ -164,7 +158,7 @@ AS5047UDiagnostics AS5047U::readDiagnostics(){
 uint8_t AS5047U::readAGC(){
 	uint16_t command = AS5047U_AGC_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	uint16_t result = nop();
+	uint16_t result = nop16();
 	return result & 0x00FF;
 };
 
@@ -173,7 +167,7 @@ uint8_t AS5047U::readAGC(){
 uint8_t AS5047U::readECCCHK(){
 	uint16_t command = AS5047U_ECCCHK_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	uint16_t result = nop();
+	uint16_t result = nop16();
 	return result & 0x007F;
 };
 
@@ -184,7 +178,7 @@ AS5047UDisableSettings AS5047U::readDisableSettings(){
 	uint16_t command = AS5047U_DISABLE_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047UDisableSettings result = {
-			.reg = nop()
+			.reg = nop16()
 	};
 	return result;
 };
@@ -192,9 +186,7 @@ AS5047UDisableSettings AS5047U::readDisableSettings(){
 
 
 void AS5047U::writeDisableSettings(AS5047UDisableSettings settings){
-	uint16_t command = AS5047U_DISABLE_REG;
-	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	/*cmdresult =*/ spi_transfer16(settings.reg);
+	writeRegister24(AS5047U_DISABLE_REG, settings.reg);
 };
 
 
@@ -203,7 +195,7 @@ AS5047UECCSettings AS5047U::readECCSettings(){
 	uint16_t command = AS5047U_ECC_REG | AS5047U_RW;
 	/*uint16_t cmdresult =*/ spi_transfer16(command);
 	AS5047UECCSettings result = {
-			.reg = nop()
+			.reg = nop16()
 	};
 	return result;
 };
@@ -211,9 +203,7 @@ AS5047UECCSettings AS5047U::readECCSettings(){
 
 
 void AS5047U::writeECCSettings(AS5047UECCSettings settings){
-	uint16_t command = AS5047U_ECC_REG;
-	/*uint16_t cmdresult =*/ spi_transfer16(command);
-	/*cmdresult =*/ spi_transfer16(settings.reg);
+	writeRegister24(AS5047U_ECC_REG, settings.reg);
 };
 
 
@@ -264,14 +254,36 @@ void AS5047U::enableUVW(bool enable){
 
 
 
-uint16_t AS5047U::setZero(uint16_t value){
-	// TODO implement me!
-	return 0;
+
+uint16_t AS5047U::getZero(){
+	uint16_t command = AS5047U_ZPOSM_REG | AS5047U_RW;
+	spi_transfer16(command);
+	command = AS5047U_ZPOSL_REG | AS5047U_RW;
+	uint16_t result = spi_transfer16(command);
+	AS5047UZPosL posL = {
+			.reg = nop16()
+	};
+	return ((result&0x00FF)<<6) | posL.zposl;
 }
 
 
 
-uint16_t AS5047U::nop(){
+uint16_t AS5047U::setZero(uint16_t value){
+	uint16_t command = AS5047U_ZPOSL_REG | AS5047U_RW;
+	/*uint16_t cmdresult =*/ spi_transfer16(command);
+	AS5047UZPosL posL = {
+			.reg = nop16()
+	};
+	posL.zposl = value&0x003F;
+	writeRegister24(AS5047U_ZPOSL_REG, posL.reg);
+	writeRegister24(AS5047U_ZPOSM_REG, (value>>6)&0x00FF);
+	return getZero();
+}
+
+
+
+
+uint16_t AS5047U::nop16(){
 	uint16_t result = spi_transfer16(0xFFFF); // using 0xFFFF as nop instead of 0x0000, then next call to fastAngle will return an angle
 	return result&AS5047U_RESULT_MASK;
 }
@@ -291,4 +303,48 @@ uint16_t AS5047U::spi_transfer16(uint16_t outdata) {
 	return result;
 }
 
+uint8_t AS5047U::calcCRC(uint16_t data){
+	uint8_t crc = 0xC4;  // Initial value
+    for (int i = 0; i < 16; i++) {
+        if ((crc ^ data) & 0x8000) {
+            crc = (crc << 1) ^ 0x1D;
+        } else {
+            crc <<= 1;
+        }
+        data <<= 1;
+    }
+    return crc ^ 0xFF;
+}
 
+uint16_t AS5047U::writeRegister24(uint16_t reg, uint16_t data) {
+	uint8_t buff[3];
+	buff[0] = (reg>>8)&0x3F;
+	buff[1] = reg&0xFF;
+	buff[2] = calcCRC(reg);
+	if (nCS>=0)
+		digitalWrite(nCS, 0);
+	spi->beginTransaction(settings);
+	spi->transfer(buff, 3);
+	spi->endTransaction();
+	if (nCS>=0)
+		digitalWrite(nCS, 1);
+	errorflag = ((buff[0]&0x40)>0);
+	warningflag = ((buff[0]&0x80)>0);
+
+	buff[0] = (data>>8)&0x3F;
+	buff[1] = data&0xFF;
+	buff[2] = calcCRC(data);
+	if (nCS>=0)
+		digitalWrite(nCS, 0);
+	spi->beginTransaction(settings);
+	spi->transfer(buff, 3);
+	spi->endTransaction();
+	if (nCS>=0)
+		digitalWrite(nCS, 1);
+	errorflag = ((buff[0]&0x40)>0);
+	warningflag = ((buff[0]&0x80)>0);
+
+	delayMicroseconds(50);
+
+	return buff[0]<<8 | buff[1];
+}
