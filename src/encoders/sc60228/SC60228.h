@@ -18,7 +18,6 @@ typedef union {
 } SC60228Angle;
 
 
-#define SC60228_CPR 4096
 #define SC60228_BITORDER MSBFIRST
 
 static SPISettings SC60228SPISettings(8000000, SC60228_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
