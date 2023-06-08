@@ -53,9 +53,9 @@
 
 union MT6835ABZRes {
 	struct {
-		uint8_t abz_res_low:6;
-		uint8_t abz_off:1;
 		uint8_t ab_swap:1;
+		uint8_t abz_off:1;
+		uint8_t abz_res_low:6;
 	};
 	uint8_t reg;
 };
@@ -64,9 +64,9 @@ union MT6835ABZRes {
 
 union MT6835Options0 {
 	struct {
-		uint8_t zero_pos_low:4;
-		uint8_t z_edge:1;
 		uint8_t z_pul_wid:3;
+		uint8_t z_edge:1;
+		uint8_t zero_pos_low:4;
 	};
 	uint8_t reg;
 };
@@ -75,10 +75,10 @@ union MT6835Options0 {
 
 union MT6835Options1 {
 	struct {
-		uint8_t z_phase:2;
-		uint8_t uvw_mux:1;
-		uint8_t uvw_off:1;
 		uint8_t uvw_res:4;
+		uint8_t uvw_off:1;
+		uint8_t uvw_mux:1;
+		uint8_t z_phase:2;
 	};
 	uint8_t reg;
 };
@@ -87,11 +87,11 @@ union MT6835Options1 {
 
 union MT6835Options2 {
 	struct {
-		uint8_t reserved:2;
-		uint8_t nlc_en:1;
-		uint8_t pwm_fq:1;
-		uint8_t pwm_pol:1;
 		uint8_t pwm_sel:3;
+		uint8_t pwm_pol:1;
+		uint8_t pwm_fq:1;
+		uint8_t nlc_en:1;
+		uint8_t reserved:2;
 	};
 	uint8_t reg;
 };
@@ -100,9 +100,9 @@ union MT6835Options2 {
 
 union MT6835Options3 {
 	struct {
-		uint8_t reserved:4;
-		uint8_t rot_dir:1;
 		uint8_t hyst:3;
+		uint8_t rot_dir:1;
+		uint8_t reserved:4;
 	};
 	uint8_t reg;
 };
@@ -111,9 +111,9 @@ union MT6835Options3 {
 
 union MT6835Options4 {
 	struct {
-		uint8_t gpio_ds:1;
-		uint8_t autocal_freq:3;
 		uint8_t reserved:4;
+		uint8_t autocal_freq:3;
+		uint8_t gpio_ds:1;
 	};
 	uint8_t reg;
 };
@@ -122,8 +122,8 @@ union MT6835Options4 {
 
 union MT6835Options5 {
 	struct {
-		uint8_t reserved:5;
 		uint8_t bw:3;
+		uint8_t reserved:5;
 	};
 	uint8_t reg;
 };
@@ -133,10 +133,10 @@ union MT6835Options5 {
 
 union MT6835Command {
 	struct {
-		uint32_t cmd:4;
-		uint32_t addr:12;
-		uint32_t data:8;
 		uint32_t unused:8;
+		uint32_t data:8;
+		uint32_t addr:12;
+		uint32_t cmd:4;
 	};
 	uint32_t val;
 };
@@ -197,6 +197,8 @@ public:
     MT6835Options4 getOptions4();
     void setOptions4(MT6835Options4 opts);
 
+	uint8_t getStatus();
+
 	bool setZeroFromCurrentPosition();
 	bool writeEEPROM(); // wait 6s after calling this method
 
@@ -204,6 +206,7 @@ private:
 	SPIClass* spi;
 	SPISettings settings;
 	int nCS = -1;
+	uint8_t laststatus = 0;
 
     void transfer24(MT6835Command* outValue);
     uint8_t readRegister(uint16_t reg);

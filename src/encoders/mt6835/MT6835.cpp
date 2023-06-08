@@ -46,10 +46,14 @@ uint32_t MT6835::readRawAngle21(){
     spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
+    laststatus = data[4]&0x07;
     return (data[2] << 13) | (data[3] << 5) | (data[4] >> 3);
 };
 
 
+uint8_t MT6835::getStatus(){
+    return laststatus;
+};
 
 
 bool MT6835::setZeroFromCurrentPosition(){
@@ -116,11 +120,11 @@ uint16_t MT6835::getABZResolution(){
     return (hi << 6) | lo.abz_res_low;
 };
 void MT6835::setABZResolution(uint16_t res){
-     uint8_t hi = (res >> 2);
+    uint8_t hi = (res >> 6);
     MT6835ABZRes lo = {
 			.reg = readRegister(MT6835_REG_ABZ_RES2)
 	};
-    lo.abz_res_low = res & 0x3F;
+    lo.abz_res_low = (res & 0x3F);
     writeRegister(MT6835_REG_ABZ_RES1, hi);
     writeRegister(MT6835_REG_ABZ_RES2, lo.reg);
 };
@@ -237,17 +241,25 @@ void MT6835::setOptions4(MT6835Options4 opts){
 
 
 
+uint32_t swap_bytes(uint32_t net)
+{
+    return __builtin_bswap32(net);
+}
+
+
 
 
 
 void MT6835::transfer24(MT6835Command* outValue) {
+    uint32_t buff = swap_bytes(outValue->val);
     if (nCS >= 0)
         digitalWrite(nCS, LOW);
     spi->beginTransaction(settings);
-    spi->transfer(outValue, 3);
+    spi->transfer(&buff, 3);
     spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
+    outValue->val = swap_bytes(buff);
 };
 uint8_t MT6835::readRegister(uint16_t reg) {
     MT6835Command cmd;
@@ -258,7 +270,7 @@ uint8_t MT6835::readRegister(uint16_t reg) {
 };
 bool MT6835::writeRegister(uint16_t reg, uint8_t value) {
     MT6835Command cmd;
-    cmd.cmd = MT6835_OP_READ;
+    cmd.cmd = MT6835_OP_WRITE;
     cmd.addr = reg;
     cmd.data = value;
     transfer24(&cmd);
