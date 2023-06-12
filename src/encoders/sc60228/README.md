@@ -31,9 +31,10 @@ void setup() {
 }
 ```
 
-Set some options:
+Set some SPI options:
 
 ```c++
+SPISettings mySPISettings(1000000, SC60228_BITORDER, SPI_MODE0); // lower speed to 1Mhz
 MagneticSensorSC60228 sensor1(SENSOR1_CS, mySPISettings);
 ```
 
