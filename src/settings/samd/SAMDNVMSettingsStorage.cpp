@@ -1,5 +1,11 @@
 
+
+
 #include "./SAMDNVMSettingsStorage.h"
+
+
+#if defined(_SAMD21_)
+
 #include "communication/SimpleFOCDebug.h"
 
 
@@ -154,3 +160,5 @@ uint8_t SAMDNVMSettingsStorage::writeFloat(float value){
 uint8_t SAMDNVMSettingsStorage::writeInt(uint32_t value){
     return writeBytes(&value, 4);
 };
+
+#endif

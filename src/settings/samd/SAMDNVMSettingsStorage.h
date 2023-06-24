@@ -36,6 +36,9 @@
 
 
 #include <Arduino.h>
+
+#if defined(_SAMD21_)
+
 #include "../SettingsStorage.h"
 
 #define RWWEE_BASE 0x00400000
@@ -78,3 +81,5 @@ protected:
     int _writeIndex;    // index into current page being written
     uint8_t _writeBuffer[NVMCTRL_PAGE_SIZE];  // buffer for writing to NVM
 };
+
+#endif
