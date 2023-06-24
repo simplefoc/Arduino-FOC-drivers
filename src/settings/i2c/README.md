@@ -19,7 +19,7 @@ If you want to use a different I2C bus than the default, you can pass it to the 
 
 You can use multiple settings objects in the same EEPROM, by providing an offset to the constructor:
 
-```
+```c++
 CAT24I2CFlashSettingsStorage settings = CAT24I2CFlashSettingsStorage(0xA0);
 CAT24I2CFlashSettingsStorage settings = CAT24I2CFlashSettingsStorage(0xA0, 80);
 CAT24I2CFlashSettingsStorage settings = CAT24I2CFlashSettingsStorage(0xA0, 160);

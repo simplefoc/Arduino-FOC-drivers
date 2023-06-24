@@ -5,6 +5,8 @@ Serial communications classes for register-based control and telemetry from Simp
 
 ## SerialASCIITelemetry
 
+:warning: unfinished, untested
+
 Telemetry class that sends telemetry as ASCII on a serial port. Similar to the classic "monitoring" functionality of SimpleFOC, but allows you to configure telemetry based on most of the defined registers.
 
 Usage:
@@ -39,6 +41,8 @@ Some options are supported:
 
 
 ## SerialBinaryCommander
+
+:warning: unfinished, untested!
 
 Control SimpleFOC via a binary protocol over the serial port. The standard SimpleFOC registers are used.
 

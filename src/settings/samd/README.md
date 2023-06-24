@@ -21,7 +21,7 @@ Otherwise there is nothing special to do. When reprogramming the chip, be carefu
 You can use multiple settings objects to store to different areas of the RWW. 
 To do so, specify an offset to the constructor:
 
-```
+```c++
 SAMDNVMSettingsStorage settings0 = SAMDNVMSettingsStorage();
 SAMDNVMSettingsStorage settings1 = SAMDNVMSettingsStorage(NVMCTRL_ROW_SIZE);
 SAMDNVMSettingsStorage settings2 = SAMDNVMSettingsStorage(NVMCTRL_ROW_SIZE*2);
