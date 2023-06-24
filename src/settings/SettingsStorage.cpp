@@ -50,17 +50,17 @@ SettingsStatus SettingsStorage::loadSettings() {
     uint8_t magic; readByte(&magic);
     if (magic != SIMPLEFOC_SETTINGS_MAGIC_BYTE) {
         SimpleFOCDebug::println("No settings found ");
-        return NO_SETTINGS;
+        return SFOC_SETTINGS_NONE;
     }
     uint8_t rversion; readByte(&rversion);
     if (rversion != SIMPLEFOC_REGISTERS_VERSION) {
         SimpleFOCDebug::println("Registers version mismatch");
-        return OLD_SETTINGS;
+        return SFOC_SETTINGS_OLD;
     }
     uint8_t version; readByte(&version);
     if (version != settings_version) {
         SimpleFOCDebug::println("Settings version mismatch");
-        return OLD_SETTINGS;
+        return SFOC_SETTINGS_OLD;
     }
     for (int m = 0; m < numMotors; m++) {
         if (numMotors>1)
@@ -76,7 +76,7 @@ SettingsStatus SettingsStorage::loadSettings() {
     }
     afterLoad();
     SimpleFOCDebug::println("Settings loaded");
-    return SETTINGS_SUCCESS;
+    return SFOC_SETTINGS_SUCCESS;
 };
 
 
@@ -100,7 +100,7 @@ SettingsStatus SettingsStorage::saveSettings() {
     }
     afterSave();
     SimpleFOCDebug::println("Settings saved");
-    return SETTINGS_SUCCESS;
+    return SFOC_SETTINGS_SUCCESS;
 };
 
 // empty implementation for these

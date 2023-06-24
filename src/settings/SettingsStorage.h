@@ -19,10 +19,10 @@
 
 
 typedef enum : uint8_t  {
-    SETTINGS_SUCCESS = 0,   // settings loaded/saved successfully
-    NO_SETTINGS = 1,        // no settings found to load
-    OLD_SETTINGS = 2,       // settings found, but version is old
-    ERROR = 3               // other error
+    SFOC_SETTINGS_SUCCESS = 0,   // settings loaded/saved successfully
+    SFOC_SETTINGS_NONE = 1,      // no settings found to load
+    SFOC_SETTINGS_OLD = 2,       // settings found, but version is old
+    SFOC_SETTINGS_ERROR = 3      // other error
 } SettingsStatus;
 
 

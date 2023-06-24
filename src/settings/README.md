@@ -59,7 +59,7 @@ void setup() {
     motor.initFOC();
 
     // and if the settings were not loaded earlier, then save them
-    if (motor.motor_status == FOCMotorStatus::motor_ready && loadStatus != SETTINGS_SUCCESS) {
+    if (motor.motor_status == FOCMotorStatus::motor_ready && loadStatus != SFOC_SETTINGS_SUCCESS) {
         settings.saveSettings();
     }
 
