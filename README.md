@@ -46,8 +46,18 @@ What is here? See the sections below. Each driver or function should come with i
 
 ### Communications
 
- - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices. 
+ - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices, based on register abstraction
  - [STM32 SpeedDir Input](src/comms/stm32speeddir/) - Control target velocity with PWM speed and direction inputs
+ - [SerialBinaryCommander](src/comms/serial/) - Serial communications with binary protocol, based on register abstraction
+ - [Telemetry](src/comms/telemetry/) - Telemetry abstraction, based on registers
+ - [SerialASCIITelemetry](src/comms/serial/) - Serial communications with ascii protocol, based on register abstraction
+
+### Settings
+
+Load and store SimpleFOC motor settings, based on register abstraction.
+
+ - [SAMD NVM storage driver](src/settings/samd/) - Store settings to the NVM flash memory in your SAMD MCU
+ - [CAT24 I2C EEPROM storage driver](src/settings/i2c/) - Store settings to CAT24 I2C EEPROMs
 
 ### Utilities
 

@@ -4,7 +4,7 @@
 #include "BLDCMotor.h"
 
 bool RegisterSender::sendRegister(SimpleFOCRegister reg, FOCMotor* motor){
-       // read the current register
+    // write a register value for the given motor
     switch(reg) {
         case REG_STATUS:
             writeByte(motor->motor_status);
@@ -21,7 +21,6 @@ bool RegisterSender::sendRegister(SimpleFOCRegister reg, FOCMotor* motor){
         case REG_CONTROL_MODE:
             writeByte(motor->controller);
             break;
-
         case REG_TARGET:
             writeFloat(motor->target);
             break;
@@ -151,7 +150,7 @@ bool RegisterSender::sendRegister(SimpleFOCRegister reg, FOCMotor* motor){
             writeFloat(((BLDCMotor*)motor)->driver->voltage_limit);
             break;
         case REG_PWM_FREQUENCY:
-            writeFloat(((BLDCMotor*)motor)->driver->pwm_frequency);
+            writeInt(((BLDCMotor*)motor)->driver->pwm_frequency);
             break;
 
         case REG_ZERO_ELECTRIC_ANGLE:

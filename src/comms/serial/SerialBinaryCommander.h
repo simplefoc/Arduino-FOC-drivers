@@ -36,9 +36,9 @@ protected:
     uint8_t writeFloat(float value) override;
     uint8_t writeInt(uint32_t value) override;
 
-    uint8_t readByte(void* valueToSet) override;
-    uint8_t readFloat(void* valueToSet) override;
-    uint8_t readInt(void* valueToSet) override;
+    uint8_t readByte(uint8_t* valueToSet) override;
+    uint8_t readFloat(float* valueToSet) override;
+    uint8_t readInt(uint32_t* valueToSet) override;
 
     void sendTelemetry() override;
     void sendHeader() override;

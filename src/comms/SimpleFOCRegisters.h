@@ -3,6 +3,13 @@
 
 #include <inttypes.h>
 
+
+// this constant is changed each time the registers definition are changed *in an incompatible way*. This means that just adding new registers 
+// does not change the version, but removing or changing the meaning of existing registers does, or changing the number of an existing register.
+#define SIMPLEFOC_REGISTERS_VERSION 0x01
+
+
+
 typedef enum : uint8_t  {
     REG_STATUS = 0x00,          // RO - 1 byte (motor status)
     REG_MOTOR_ADDRESS = 0x01,   // R/W - 1 byte

@@ -33,7 +33,7 @@ void SerialBinaryCommander::run() {
             endFrame();
         }
         else if (command==SERIALBINARY_COMMAND_WRITE) {
-            setRegister(static_cast<SimpleFOCRegister>(registerNum), NULL, motors[motorNum]);
+            setRegister(static_cast<SimpleFOCRegister>(registerNum), motors[motorNum]);
             if (echo) {
                 startFrame(registerNum, SERIALBINARY_FRAMETYPE_REGISTER); // TODO call is incorrect
                 sendRegister(static_cast<SimpleFOCRegister>(registerNum), motors[motorNum]);
@@ -108,19 +108,19 @@ uint8_t SerialBinaryCommander::writeInt(uint32_t value){
 
 
 
-uint8_t SerialBinaryCommander::readByte(void* valueToSet){
+uint8_t SerialBinaryCommander::readByte(uint8_t* valueToSet){
     return readBytes(valueToSet, 1);
 };
 
 
 
-uint8_t SerialBinaryCommander::readFloat(void* valueToSet){
+uint8_t SerialBinaryCommander::readFloat(float* valueToSet){
     return readBytes(valueToSet, 4);
 };
 
 
 
-uint8_t SerialBinaryCommander::readInt(void* valueToSet){
+uint8_t SerialBinaryCommander::readInt(uint32_t* valueToSet){
     return readBytes(valueToSet, 4);
 };
 

@@ -8,8 +8,8 @@
 
 class RegisterReceiver {
 protected:
-    virtual void setRegister(SimpleFOCRegister reg, void* value, FOCMotor* motor);
-    virtual uint8_t readByte(void* valueToSet) = 0;
-    virtual uint8_t readFloat(void* valueToSet) = 0;
-    virtual uint8_t readInt(void* valueToSet) = 0;
+    virtual void setRegister(SimpleFOCRegister reg, FOCMotor* motor);
+    virtual uint8_t readByte(uint8_t* valueToSet) = 0;
+    virtual uint8_t readFloat(float* valueToSet) = 0;
+    virtual uint8_t readInt(uint32_t* valueToSet) = 0;
 };
