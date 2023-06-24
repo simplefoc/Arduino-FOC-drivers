@@ -10,14 +10,13 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.4 - Released June 2023, for Simple FOC 2.3.0
+v1.0.5 - Released July 2023, for Simple FOC 2.3.0
 
-What's changed since 1.0.3?
-- New Comms/Input: STM32SpeedDirCommander
-- New Utility: STM32PWMInput
-- Fixed MT6835 driver bugs
-- Improved AS5047 driver, fixed bugs
-- Improved AS5047U driver, fixed bugs
+What's changed since 1.0.4?
+- New Settings abstraction to load and save SimpleFOC settings and calibration
+- New Settings driver: SAMDNVMSettingsStorage
+- SimpleFOCRegisters abstraction, mapping SimpleFOC parameters to virtual "Registers"
+- Updated I2CCommander to use the new registers abstraction
 
 ## What is included
 
@@ -89,6 +88,13 @@ If you do so, please be sure to adhere to and include the [LICENSE](https://gith
 Find out more information about the Arduino SimpleFOC project on the [docs website](https://docs.simplefoc.com/) 
 
 ## Release History
+
+What's changed since 1.0.3?
+- New Comms/Input: STM32SpeedDirCommander
+- New Utility: STM32PWMInput
+- Fixed MT6835 driver bugs
+- Improved AS5047 driver, fixed bugs
+- Improved AS5047U driver, fixed bugs
 
 What's changed since 1.0.2?
 - New Sensor: MT6835
