@@ -5,7 +5,7 @@
 #include "Arduino.h"
 #include "Wire.h"
 #include "common/base_classes/FOCMotor.h"
-#include "I2CCommanderRegisters.h"
+#include "../SimpleFOCRegisters.h"
 
 #ifndef I2CCOMMANDER_MAX_MOTORS_COMMANDABLE
 #define I2CCOMMANDER_MAX_MOTORS_COMMANDABLE 4
@@ -36,7 +36,7 @@ class I2CCommander {
         TwoWire* _wire;
         uint8_t numMotors = 0;
         uint8_t curMotor = 0;
-        I2CCommander_Register curRegister = REG_STATUS;
+        SimpleFOCRegister curRegister = REG_STATUS;
         bool commanderror = false;
         bool lastcommanderror = false;
         uint8_t lastcommandregister = REG_STATUS;
