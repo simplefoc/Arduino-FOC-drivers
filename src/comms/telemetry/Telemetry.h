@@ -16,7 +16,7 @@
 #define DEF_TELEMETRY_DOWNSAMPLE 100
 
 
-enum : uint8_t {
+typedef enum : uint8_t {
     TELEMETRY_FRAMETYPE_DATA = 0x01,
     TELEMETRY_FRAMETYPE_HEADER = 0x02
 } TelemetryFrameType;
