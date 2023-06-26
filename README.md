@@ -10,7 +10,7 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.5 - Released July 2023, for Simple FOC 2.3.0
+v1.0.5 - Released July 2023, for Simple FOC 2.3.1
 
 What's changed since 1.0.4?
 - Added smoothing sensor by [@dekutree64](https://github.com/dekutree64)
