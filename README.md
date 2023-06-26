@@ -13,6 +13,7 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 v1.0.5 - Released July 2023, for Simple FOC 2.3.0
 
 What's changed since 1.0.4?
+- Added smoothing sensor by [@dekutree64](https://github.com/dekutree64)
 - New Settings abstraction to load and save SimpleFOC settings and calibration
 - New Settings driver: SAMDNVMSettingsStorage
 - SimpleFOCRegisters abstraction, mapping SimpleFOC parameters to virtual "Registers"
@@ -42,6 +43,7 @@ What is here? See the sections below. Each driver or function should come with i
  - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
  - [MT6835 SPI driver](src/encoders/mt6835/) - SPI driver for the MagnTek MT6835 21 bit magnetic rotary encoder IC.
  - [STM32 PWM sensor driver](src/encoders/stm32pwmsensor/) - STM32 native timer-based driver for PWM angle sensors.
+ - [SmoothingSensor](src/encoders/smoothing/) - A SimpleFOC Sensor wrapper implementation which adds angle extrapolation.
 
 ### Communications
 
