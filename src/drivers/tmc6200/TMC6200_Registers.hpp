@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 // ------
 
 #define TMC_WRITE_BIT 0x80
