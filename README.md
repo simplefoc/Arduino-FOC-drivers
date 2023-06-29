@@ -14,6 +14,7 @@ v1.0.5 - Released July 2023, for Simple FOC 2.3.1
 
 What's changed since 1.0.4?
 - Added smoothing sensor by [@dekutree64](https://github.com/dekutree64)
+- Added TMD6200 SPI driver by [@YaseenTwati](https://github.com/YaseenTwati)
 - New Settings abstraction to load and save SimpleFOC settings and calibration
 - New Settings driver: SAMDNVMSettingsStorage
 - SimpleFOCRegisters abstraction, mapping SimpleFOC parameters to virtual "Registers"
@@ -25,6 +26,7 @@ What is here? See the sections below. Each driver or function should come with i
 
 ### Motor/Gate driver ICs
 
+ - [TMC6200 driver](src/drivers/tmc6200/) - SPI driver for Trinamics TMC6200 motor driver IC.
  - [DRV8316 driver](src/drivers/drv8316/) - SPI driver for TI's DRV8316 motor driver IC.
 
 ### Encoders

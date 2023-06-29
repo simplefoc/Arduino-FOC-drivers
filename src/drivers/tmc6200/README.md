@@ -1,6 +1,8 @@
 
 # TMC6200 SimpleFOC Driver
 
+by [@YaseenTwati](https://github.com/YaseenTwati)
+
 The TMC6200 is a Universal high voltage BLDC/PMSM/Servo MOSFET 3-halfbridge gate-driver with in line motor current
 sensing. External MOSFETs for up to 100A motor current.
 
