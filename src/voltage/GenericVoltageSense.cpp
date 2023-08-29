@@ -37,7 +37,7 @@ bool GenericVoltageSense::init(int resolution){
 
 
 float GenericVoltageSense::readRawVoltage(){
-    uint32_t val = analogRead(pin);
+    float val = analogRead(pin);
     val = (val / (float)maxValue) * fullScaleVoltage;
     return val;
 };
