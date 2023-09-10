@@ -3,6 +3,7 @@
 #define __GENERICVOLTAGESENSE_H__
 
 #include "./VoltageSense.h"
+#include "common/foc_utils.h"
 
 class GenericVoltageSense : public VoltageSense {
   public:

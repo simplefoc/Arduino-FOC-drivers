@@ -21,13 +21,13 @@ bool GenericVoltageSense::init(int resolution){
 #ifndef ARDUINO_ARCH_AVR
     if (resolution>0) {
         analogReadResolution(resolution);
-        maxValue = pow(2, resolution);
+        maxValue = _powtwo(resolution);
     }
     else {
-        maxValue = pow(2, ADC_RESOLUTION);
+        maxValue = _powtwo(ADC_RESOLUTION);
     }
 #else
-    maxValue = pow(2, ADC_RESOLUTION);
+    maxValue = _powtwo(ADC_RESOLUTION);
 #endif
     return true;
 };
