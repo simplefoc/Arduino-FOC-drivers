@@ -430,9 +430,8 @@ void HybridStepperMotor::setPhaseVoltage(float Uq, float Ud, float angle_el)
     uint8_t sector = floor(4.0 * angle_el / _PI) + 1;
     Ua = (_ca * Ud) - (_sa * Uq);
     Ub = (_sa * Ud) + (_ca * Uq);
-    // Ua = _ca * Ud;
-    // Ub = _sa * Uq;
 
+    // Determine max/ min of [Ua, Ub, 0] based on phase angle.
     switch (sector)
     {
     case 1:
