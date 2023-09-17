@@ -27,7 +27,7 @@ typedef union {
         uint32_t : 1;
         uint32_t AMPLIFICATION: 2;
         uint32_t AMPLIFIER_OFF: 1;
-        uint32_t TEST_MODE: 1;
+        uint32_t TMC6200_TEST_MODE: 1;
         uint32_t : 24;
     };
     uint32_t reg;
