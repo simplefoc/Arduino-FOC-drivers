@@ -94,24 +94,13 @@ void HybridStepperMotor::enable()
 }
 
 /**
-  FOC functions
-*/
-// FOC initialization function
-int HybridStepperMotor::initFOC(float zero_electric_offset, Direction _sensor_direction)
+ * FOC functions
+ */
+int HybridStepperMotor::initFOC()
 {
   int exit_flag = 1;
 
   motor_status = FOCMotorStatus::motor_calibrating;
-
-  // align motor if necessary
-  // alignment necessary for encoders!
-  if (_isset(zero_electric_offset))
-  {
-    // abosolute zero offset provided - no need to align
-    zero_electric_angle = zero_electric_offset;
-    // set the sensor direction - default CW
-    sensor_direction = _sensor_direction;
-  }
 
   // sensor and motor alignment - can be skipped
   // by setting motor.sensor_direction and motor.zero_electric_angle
@@ -148,8 +137,7 @@ int HybridStepperMotor::alignSensor()
   SIMPLEFOC_DEBUG("MOT: Align sensor.");
 
   // if unknown natural direction
-  if (!_isset(sensor_direction))
-  {
+  if(sensor_direction==Direction::UNKNOWN) {
     // check if sensor needs zero search
     if (sensor->needsSearch())
       exit_flag = absoluteZeroSearch();
@@ -411,8 +399,14 @@ void HybridStepperMotor::setPhaseVoltage(float Uq, float Ud, float angle_el)
   float _sa = _sin(angle_el);
   float center;
 
-  switch (foc_modulation)
-  {
+  switch (foc_modulation) {
+  case FOCModulationType::Trapezoid_120:
+  case FOCModulationType::Trapezoid_150:
+    // not handled
+    Ua = 0;
+    Ub = 0;
+    Uc = 0;
+    break;
   case FOCModulationType::SinePWM:
     // C phase is fixed at half-rail to provide bias point for A, B legs
     Ua = (_ca * Ud) - (_sa * Uq);

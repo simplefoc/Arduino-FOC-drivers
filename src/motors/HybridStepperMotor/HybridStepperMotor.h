@@ -51,14 +51,8 @@ public:
     /**
      * Function initializing FOC algorithm
      * and aligning sensor's and motors' zero position
-     *
-     * - If zero_electric_offset parameter is set the alignment procedure is skipped
-     *
-     * @param zero_electric_offset value of the sensors absolute position electrical offset in respect to motor's electrical 0 position.
-     * @param sensor_direction  sensor natural direction - default is CW
-     *
      */
-    int initFOC(float zero_electric_offset = NOT_SET, Direction sensor_direction = Direction::CW) override;
+    int initFOC() override;
 
     /**
      * Function running FOC algorithm in real-time
