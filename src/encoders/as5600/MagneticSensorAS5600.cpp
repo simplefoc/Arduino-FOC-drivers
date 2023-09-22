@@ -3,7 +3,7 @@
 #include "./MagneticSensorAS5600.h"
 #include "common/foc_utils.h"
 
-MagneticSensorAS5600::MagneticSensorAS5600() : AS5600(_address) {};
+MagneticSensorAS5600::MagneticSensorAS5600(uint8_t _address) : AS5600(_address) {};
 MagneticSensorAS5600::~MagneticSensorAS5600() {};
 
 void MagneticSensorAS5600::init(TwoWire* wire) {

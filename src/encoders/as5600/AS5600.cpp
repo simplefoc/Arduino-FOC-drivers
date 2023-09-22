@@ -1,5 +1,6 @@
 
-#include "AS5600.h"
+
+#include "./AS5600.h"
 
 
 AS5600::AS5600(uint8_t address) : _address(address) {};
@@ -29,7 +30,7 @@ uint16_t AS5600::angle() {
     if (!closeTransactions) {
         setAngleRegister();
     }
-    _wire->requestFrom(_address, 2, closeTransactions);
+    _wire->requestFrom(_address, (uint8_t)2, (uint8_t)closeTransactions);
     result = _wire->read()<<8;
     result |= _wire->read();
     return result;
@@ -92,27 +93,31 @@ uint8_t AS5600::readZMCO() {
 };
 
 uint8_t AS5600::readI2CAddr() {
-    return (readRegister(AS5600_REG_I2C_ADDR, 1)>>1);
+    return (readRegister(AS5600_REG_I2CADDR, 1)>>1);
 };
 
 
 // set registers
 void AS5600::setConf(AS5600Conf value) {
+    // TODO: read before write
     writeRegister(AS5600_REG_CONF, value.reg);
 };
 
 
 void AS5600::setMang(uint16_t value) {
+    // TODO: read before write
     writeRegister(AS5600_REG_MANG, value);
 };
 
 
 void AS5600::setMPos(uint16_t value) {
+    // TODO: read before write
     writeRegister(AS5600_REG_MPOS, value);
 };
 
 
 void AS5600::setZPos(uint16_t value) {
+    // TODO: read before write
     writeRegister(AS5600_REG_ZPOS, value);
 };
 
@@ -131,7 +136,6 @@ void AS5600::setI2CUpdt(uint8_t value) {
 
 void AS5600::burnSettings(){
     writeRegister(AS5600_REG_BURN, 0x40, 1);
-    delay(50);
 }
 
 
@@ -141,7 +145,7 @@ uint16_t AS5600::readRegister(uint8_t reg, uint8_t len){
     _wire->beginTransmission(_address);
     _wire->write(reg);
     _wire->endTransmission(false);
-    _wire->requestFrom(_address, len, closeTransactions);
+    _wire->requestFrom(_address, len, (uint8_t)closeTransactions);
     if (!closeTransactions) {
         setAngleRegister();
     }
