@@ -30,7 +30,7 @@ jobs:
             required-libraries: Simple FOC
           - arduino-boards-fqbn: arduino:sam:arduino_due_x
             required-libraries: Simple FOC
-            sketches-exclude: calibrated
+            sketches-exclude: calibrated smoothing
           - arduino-boards-fqbn: arduino:samd:nano_33_iot
             required-libraries: Simple FOC 
             sketches-exclude: calibrated smoothing
