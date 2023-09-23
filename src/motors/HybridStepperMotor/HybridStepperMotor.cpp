@@ -453,6 +453,10 @@ void HybridStepperMotor::setPhaseVoltage(float Uq, float Ud, float angle_el)
     case 7:
       center = (driver->voltage_limit - 0 - Ub) / 2;
       break;
+
+    default: // this case does not occur, but compilers complain about uninitialized variables
+      center = (driver->voltage_limit - 0) / 2;
+      break;
     }
 
     Ua += center;
