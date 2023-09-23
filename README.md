@@ -13,6 +13,7 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 v1.0.6 - Released July 2023, for Simple FOC 2.3.1 or later
 
 What's changed since 1.0.5?
+- Added AS5600 Sensor Driver
 - Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=is%3Aissue+milestone%3A1.0.6+)
 
 ## What is included
@@ -29,6 +30,7 @@ What is here? See the sections below. Each driver or function should come with i
  - [AS5048A SPI driver](src/encoders/as5048a/) - SPI driver for the AMS AS5048A absolute position magnetic rotary encoder IC.
  - [AS5047 SPI driver](src/encoders/as5047/) - SPI driver for the AMS AS5047P and AS5047D absolute position magnetic rotary encoder ICs.
  - [AS5047U SPI driver](src/encoders/as5047u/) - SPI driver for the AMS AS5047U absolute position magnetic rotary encoder ICs.
+ - [AS5600 I2C driver](src/encoders/as5600/) - I2C driver for the AMS AS5600 and AS5600L absolute position magnetic rotary encoder ICs.
  - [MA730 SPI driver](src/encoders/ma730/) - SPI driver for the MPS MagAlpha MA730 absolute position magnetic rotary encoder IC.
  - [MA730 SSI driver](src/encoders/ma730/) - SSI driver for the MPS MagAlpha MA730 absolute position magnetic rotary encoder IC.
  - [AS5145 SSI driver](src/encoders/as5145/) - SSI driver for the AMS AS5145 and AS5045 absolute position magnetic rotary encoder ICs.
@@ -87,6 +89,16 @@ If you do so, please be sure to adhere to and include the [LICENSE](https://gith
 Find out more information about the Arduino SimpleFOC project on the [docs website](https://docs.simplefoc.com/) 
 
 ## Release History
+
+What's changed since 1.0.4?
+- Added smoothing sensor by [@dekutree64](https://github.com/dekutree64)
+- Added TMD6200 SPI driver by [@YaseenTwati](https://github.com/YaseenTwati)
+- Added HybridStepperMotor by [@VIPQualityPost](https://github.com/VIPQualityPost)
+- New Settings abstraction to load and save SimpleFOC settings and calibration
+- New Settings driver: SAMDNVMSettingsStorage
+- SimpleFOCRegisters abstraction, mapping SimpleFOC parameters to virtual "Registers"
+- Updated I2CCommander to use the new registers abstraction
+- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=is%3Aissue+milestone%3A1.0.5+)
 
 What's changed since 1.0.3?
 - New Comms/Input: STM32SpeedDirCommander
