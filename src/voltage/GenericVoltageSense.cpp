@@ -18,16 +18,16 @@ GenericVoltageSense::GenericVoltageSense(int pin, float gain, float offset, floa
 
 bool GenericVoltageSense::init(int resolution){
     pinMode(pin, INPUT_ANALOG);
-#ifndef ARDUINO_ARCH_AVR
+#if !defined(ARDUINO_ARCH_AVR) && !defined(ARDUINO_ARCH_MEGAAVR)
     if (resolution>0) {
         analogReadResolution(resolution);
-        maxValue = pow(2, resolution);
+        maxValue = _powtwo(resolution);
     }
     else {
-        maxValue = pow(2, ADC_RESOLUTION);
+        maxValue = _powtwo(ADC_RESOLUTION);
     }
 #else
-    maxValue = pow(2, ADC_RESOLUTION);
+    maxValue = _powtwo(ADC_RESOLUTION);
 #endif
     return true;
 };
@@ -37,7 +37,7 @@ bool GenericVoltageSense::init(int resolution){
 
 
 float GenericVoltageSense::readRawVoltage(){
-    uint32_t val = analogRead(pin);
+    float val = analogRead(pin);
     val = (val / (float)maxValue) * fullScaleVoltage;
     return val;
 };

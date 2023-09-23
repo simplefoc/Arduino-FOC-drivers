@@ -25,6 +25,9 @@ int STM32PWMInput::initialize(){
     timer.Init.Period = 4.294967295E9;    // TODO max period, depends on which timer is used - 32 bits or 16 bits
     timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+    if (channel!=1 && channel!=2) // only channels 1 & 2 supported
+        return -10;
+    useChannel2 = (channel==2);// remember the channel
     if (HAL_TIM_Base_Init(&timer) != HAL_OK) {
         return -1;
     }
@@ -47,7 +50,7 @@ int STM32PWMInput::initialize(){
         return -4;
     }
     TIM_IC_InitTypeDef icCfg = {
-        .ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING,
+        .ICPolarity = (channel==1)?TIM_INPUTCHANNELPOLARITY_RISING:TIM_INPUTCHANNELPOLARITY_FALLING,
         .ICSelection = (channel==1)?TIM_ICSELECTION_DIRECTTI:TIM_ICSELECTION_INDIRECTTI,
         .ICPrescaler = TIM_ICPSC_DIV1,
         .ICFilter = 0
@@ -55,7 +58,7 @@ int STM32PWMInput::initialize(){
     if (HAL_TIM_IC_ConfigChannel(&timer, &icCfg, TIM_CHANNEL_1) != HAL_OK) {
         return -5;
     }
-    icCfg.ICPolarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+    icCfg.ICPolarity = (channel==1)?TIM_INPUTCHANNELPOLARITY_FALLING:TIM_INPUTCHANNELPOLARITY_RISING;
     icCfg.ICSelection = (channel==1)?TIM_ICSELECTION_INDIRECTTI:TIM_ICSELECTION_DIRECTTI;
     if (HAL_TIM_IC_ConfigChannel(&timer, &icCfg, TIM_CHANNEL_2) != HAL_OK) {
         return -6;
@@ -86,12 +89,18 @@ float STM32PWMInput::getDutyCyclePercent(){
 
 
 uint32_t STM32PWMInput::getDutyCycleTicks(){
-    return timer.Instance->CCR2;
+    if (useChannel2)
+        return timer.Instance->CCR1;
+    else
+        return timer.Instance->CCR2;
 };
 
 
 uint32_t STM32PWMInput::getPeriodTicks(){
-    return timer.Instance->CCR1;
+    if (useChannel2)
+        return timer.Instance->CCR2;
+    else
+        return timer.Instance->CCR1;
 };
 
 

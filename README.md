@@ -10,14 +10,17 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.4 - Released June 2023, for Simple FOC 2.3.0
+v1.0.5 - Released July 2023, for Simple FOC 2.3.1
 
-What's changed since 1.0.3?
-- New Comms/Input: STM32SpeedDirCommander
-- New Utility: STM32PWMInput
-- Fixed MT6835 driver bugs
-- Improved AS5047 driver, fixed bugs
-- Improved AS5047U driver, fixed bugs
+What's changed since 1.0.4?
+- Added smoothing sensor by [@dekutree64](https://github.com/dekutree64)
+- Added TMD6200 SPI driver by [@YaseenTwati](https://github.com/YaseenTwati)
+- Added HybridStepperMotor by [@VIPQualityPost](https://github.com/VIPQualityPost)
+- New Settings abstraction to load and save SimpleFOC settings and calibration
+- New Settings driver: SAMDNVMSettingsStorage
+- SimpleFOCRegisters abstraction, mapping SimpleFOC parameters to virtual "Registers"
+- Updated I2CCommander to use the new registers abstraction
+- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=is%3Aissue+milestone%3A1.0.5+)
 
 ## What is included
 
@@ -25,6 +28,7 @@ What is here? See the sections below. Each driver or function should come with i
 
 ### Motor/Gate driver ICs
 
+ - [TMC6200 driver](src/drivers/tmc6200/) - SPI driver for Trinamics TMC6200 motor driver IC.
  - [DRV8316 driver](src/drivers/drv8316/) - SPI driver for TI's DRV8316 motor driver IC.
 
 ### Encoders
@@ -43,11 +47,22 @@ What is here? See the sections below. Each driver or function should come with i
  - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
  - [MT6835 SPI driver](src/encoders/mt6835/) - SPI driver for the MagnTek MT6835 21 bit magnetic rotary encoder IC.
  - [STM32 PWM sensor driver](src/encoders/stm32pwmsensor/) - STM32 native timer-based driver for PWM angle sensors.
+ - [SmoothingSensor](src/encoders/smoothing/) - A SimpleFOC Sensor wrapper implementation which adds angle extrapolation.
 
 ### Communications
 
- - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices. 
+ - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices, based on register abstraction
  - [STM32 SpeedDir Input](src/comms/stm32speeddir/) - Control target velocity with PWM speed and direction inputs
+ - [SerialBinaryCommander](src/comms/serial/) - Serial communications with binary protocol, based on register abstraction
+ - [Telemetry](src/comms/telemetry/) - Telemetry abstraction, based on registers
+ - [SerialASCIITelemetry](src/comms/serial/) - Serial communications with ascii protocol, based on register abstraction
+
+### Settings
+
+Load and store SimpleFOC motor settings, based on register abstraction.
+
+ - [SAMD NVM storage driver](src/settings/samd/) - Store settings to the NVM flash memory in your SAMD MCU
+ - [CAT24 I2C EEPROM storage driver](src/settings/i2c/) - Store settings to CAT24 I2C EEPROMs
 
 ### Utilities
 
@@ -79,6 +94,13 @@ If you do so, please be sure to adhere to and include the [LICENSE](https://gith
 Find out more information about the Arduino SimpleFOC project on the [docs website](https://docs.simplefoc.com/) 
 
 ## Release History
+
+What's changed since 1.0.3?
+- New Comms/Input: STM32SpeedDirCommander
+- New Utility: STM32PWMInput
+- Fixed MT6835 driver bugs
+- Improved AS5047 driver, fixed bugs
+- Improved AS5047U driver, fixed bugs
 
 What's changed since 1.0.2?
 - New Sensor: MT6835

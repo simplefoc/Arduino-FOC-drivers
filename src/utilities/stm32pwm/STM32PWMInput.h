@@ -19,6 +19,7 @@ class STM32PWMInput {
         PinName _pin;
     protected:
         TIM_HandleTypeDef timer;
+        bool useChannel2 = false;
 };
 
 

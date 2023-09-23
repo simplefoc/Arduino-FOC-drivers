@@ -153,7 +153,7 @@ void CalibratedSensor::calibrate(BLDCMotor& motor){
 		if(i==(k*128+96))
 			{
 				_delay(50);
-				avg_elec_angle += _normalizeAngle(_wrapped.getMechanicalAngle()*_NPP);
+				avg_elec_angle += _normalizeAngle(directionSensor*_wrapped.getMechanicalAngle()*_NPP);
 				k += 1;
 			}
 	}

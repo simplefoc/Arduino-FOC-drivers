@@ -29,7 +29,7 @@ void I2CCommanderMaster::addI2CMotors(uint8_t i2cAddress, uint8_t motorCount, Tw
 
 
 
-int I2CCommanderMaster::writeRegister(int motor, I2CCommander_Register registerNum, void* data, uint8_t size){
+int I2CCommanderMaster::writeRegister(int motor, SimpleFOCRegister registerNum, void* data, uint8_t size){
     motors[motor].wire->beginTransmission(motors[motor].address);
     motors[motor].wire->write((uint8_t)registerNum);
     motors[motor].wire->write((uint8_t*)data, size);
@@ -38,7 +38,7 @@ int I2CCommanderMaster::writeRegister(int motor, I2CCommander_Register registerN
 };
 
 
-int I2CCommanderMaster::readRegister(int motor, I2CCommander_Register registerNum, void* data, uint8_t size){
+int I2CCommanderMaster::readRegister(int motor, SimpleFOCRegister registerNum, void* data, uint8_t size){
     motors[motor].wire->beginTransmission(motors[motor].address);
     int numWrite = motors[motor].wire->write((uint8_t)registerNum); // TODO check return value
     motors[motor].wire->endTransmission();
