@@ -2,7 +2,8 @@
 #pragma once
 
 
-#include "Wire.h"
+#include <Arduino.h>
+#include <Wire.h>
 
 
 #define AS5600_REG_ZMCO 0x00
