@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 
-#ifdef _STM32_DEF_
+#ifdef ARDUINO_GENERIC_G431VBTX
 
 #include "Wire.h"
 #include "drivers/BLDCDriver6PWM.h"
