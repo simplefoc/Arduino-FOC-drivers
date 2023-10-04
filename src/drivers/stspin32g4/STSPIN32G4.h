@@ -29,7 +29,7 @@
 #define STSPIN32G4_REG_LOGIC  0x02
 #define STSPIN32G4_REG_READY  0x07
 #define STSPIN32G4_REG_NFAULT 0x08
-#define STSPIN32G4_REG_CLEAR  0x19
+#define STSPIN32G4_REG_CLEAR  0x09
 #define STSPIN32G4_REG_STBY   0x0A
 #define STSPIN32G4_REG_LOCK   0x0B
 #define STSPIN32G4_REG_RESET  0x0C
@@ -116,7 +116,7 @@ public:
     STSPIN32G4();
     ~STSPIN32G4();
 
-    int init() override;
+    int initSTSPIN();
 
     void wake();
     void sleep();

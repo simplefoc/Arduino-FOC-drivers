@@ -18,28 +18,38 @@ STSPIN32G4::~STSPIN32G4(){
 
 
 
-int STSPIN32G4::init(){
+int STSPIN32G4::initSTSPIN(){
     // init pins
     pinMode(STSPIN32G4_PIN_WAKE, OUTPUT);
+    digitalWrite(STSPIN32G4_PIN_WAKE, LOW);
     pinMode(STSPIN32G4_PIN_READY, INPUT_PULLUP);
     pinMode(STSPIN32G4_PIN_FAULT, INPUT_PULLUP);
-
-    // wake up
-    digitalWrite(STSPIN32G4_PIN_WAKE, HIGH);
+    pinMode(STSPIN32G4_PIN_INUH, OUTPUT);
+    pinMode(STSPIN32G4_PIN_INUL, OUTPUT);
+    pinMode(STSPIN32G4_PIN_INVH, OUTPUT);
+    pinMode(STSPIN32G4_PIN_INVL, OUTPUT);
+    pinMode(STSPIN32G4_PIN_INWH, OUTPUT);
+    pinMode(STSPIN32G4_PIN_INWL, OUTPUT);
+    digitalWrite(STSPIN32G4_PIN_INUH, LOW);
+    digitalWrite(STSPIN32G4_PIN_INUL, LOW);
+    digitalWrite(STSPIN32G4_PIN_INVH, LOW);
+    digitalWrite(STSPIN32G4_PIN_INVL, LOW);
+    digitalWrite(STSPIN32G4_PIN_INWH, LOW);
+    digitalWrite(STSPIN32G4_PIN_INWL, LOW);    
 
     // init I2C
     _wire.begin();
 
-    // init PWM
-    return BLDCDriver6PWM::init();
-
     // TODO init fault monitor
+    return 0;
 };
 
 
 
 void STSPIN32G4::wake() {
     digitalWrite(STSPIN32G4_PIN_WAKE, HIGH);
+    delayMicroseconds(50); // 50ms high pulse to wake up
+    digitalWrite(STSPIN32G4_PIN_WAKE, LOW);
 };
 
 
