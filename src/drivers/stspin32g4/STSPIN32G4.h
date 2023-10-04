@@ -116,7 +116,7 @@ public:
     STSPIN32G4();
     ~STSPIN32G4();
 
-    int initSTSPIN();
+    int init() override;
 
     void wake();
     void sleep();

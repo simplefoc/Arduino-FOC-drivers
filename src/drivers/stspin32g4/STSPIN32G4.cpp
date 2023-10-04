@@ -18,30 +18,26 @@ STSPIN32G4::~STSPIN32G4(){
 
 
 
-int STSPIN32G4::initSTSPIN(){
+int STSPIN32G4::init(){
     // init pins
     pinMode(STSPIN32G4_PIN_WAKE, OUTPUT);
     digitalWrite(STSPIN32G4_PIN_WAKE, LOW);
     pinMode(STSPIN32G4_PIN_READY, INPUT_PULLUP);
     pinMode(STSPIN32G4_PIN_FAULT, INPUT_PULLUP);
-    pinMode(STSPIN32G4_PIN_INUH, OUTPUT);
-    pinMode(STSPIN32G4_PIN_INUL, OUTPUT);
-    pinMode(STSPIN32G4_PIN_INVH, OUTPUT);
-    pinMode(STSPIN32G4_PIN_INVL, OUTPUT);
-    pinMode(STSPIN32G4_PIN_INWH, OUTPUT);
-    pinMode(STSPIN32G4_PIN_INWL, OUTPUT);
-    digitalWrite(STSPIN32G4_PIN_INUH, LOW);
-    digitalWrite(STSPIN32G4_PIN_INUL, LOW);
-    digitalWrite(STSPIN32G4_PIN_INVH, LOW);
-    digitalWrite(STSPIN32G4_PIN_INVL, LOW);
-    digitalWrite(STSPIN32G4_PIN_INWH, LOW);
-    digitalWrite(STSPIN32G4_PIN_INWL, LOW);    
+
+    int result = this->BLDCDriver6PWM::init();
+    if(result == 0) return result;
+    setPwm(0,0,0); // set the phases to off
 
     // init I2C
     _wire.begin();
 
+    delayMicroseconds(50);  // give driver a moment to wake up
+    clearFaults();          // clear the faults
+
     // TODO init fault monitor
-    return 0;
+
+    return isReady() ? 1 : 0;
 };
 
 
