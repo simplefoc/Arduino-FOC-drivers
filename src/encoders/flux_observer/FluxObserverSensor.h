@@ -35,6 +35,7 @@ class FluxObserverSensor : public Sensor
     float i_beta_prev = 0;
     float electrical_angle_prev = 0;
     float full_electrical_rotations = 0;
+    float angle_track = 0;
 
   protected:    
     const FOCMotor& _motor;

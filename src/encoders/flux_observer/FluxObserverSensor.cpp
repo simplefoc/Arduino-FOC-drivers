@@ -58,16 +58,28 @@ void FluxObserverSensor::update() {
 
   // Electrical angle difference
   float d_electrical_angle = electrical_angle - electrical_angle_prev;
-  //if(abs(d_electrical_angle) > _PI ) full_electrical_rotations += ( d_electrical_angle > 0 ) ? -1 : 1;
-  if(abs(d_electrical_angle) > _PI ){
+
+  if(abs(d_electrical_angle) > _2PI * 0.9 ){ //change the 0.9 factor based on sample rate can also just use _PI for simplicity 
     if (d_electrical_angle > 0){
-      full_electrical_rotations -= 1;
-      d_electrical_angle += _2PI;
-    }else{
-      full_electrical_rotations += 1;
       d_electrical_angle -= _2PI;
+    }else{
+      d_electrical_angle += _2PI;
     }
   }
+
+  angle_track += d_electrical_angle;
+
+  // Count full rotations
+  if(abs(angle_track) > _2PI * _motor.pole_pairs){
+    if (angle_track > 0){
+      full_rotations -= 1;
+      angle_track-=_2PI;
+    }else{
+      full_rotations += 1;
+      angle_track+=_2PI;
+    }
+  }
+  angle_prev = angle_track /_motor.pole_pairs;
 
   // Mechanical angles
   angle_prev += d_electrical_angle /_motor.pole_pairs;
