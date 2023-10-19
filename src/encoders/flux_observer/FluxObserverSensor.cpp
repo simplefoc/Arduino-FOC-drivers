@@ -45,6 +45,16 @@ void FluxObserverSensor::update() {
       i_beta = _1_SQRT3 * a + _2_SQRT3 * b;
   }
 
+
+  // This work deviates slightly from the BSD 3 clause licence.
+  // The work here is entirely original to the MESC FOC project, and not based
+  // on any appnotes, or borrowed from another project. This work is free to
+  // use, as granted in BSD 3 clause, with the exception that this note must
+  // be included in where this code is implemented/modified to use your
+  // variable names, structures containing variables or other minor
+  // rearrangements in place of the original names I have chosen, and credit
+  // to David Molony as the original author must be noted.
+
   // Flux linkage observer    
   float now = _micros();
   float Ts = ( now - angle_prev_ts) * 1e-6f; 
@@ -73,13 +83,15 @@ void FluxObserverSensor::update() {
   }
   angle_track += d_electrical_angle;
 
-  // Mechanical angles
-  if(angle_track > _2PI * _motor.pole_pairs){
-    full_rotations += 1;
-    angle_track -= _2PI * _motor.pole_pairs;
-  }else if (angle_track < 0){
-    full_rotations -= 1;
-    angle_track += _2PI * _motor.pole_pairs;
+  // Mechanical angle and full_rotations
+  if(abs(angle_track) > _2PI * _motor.pole_pairs){
+    if (angle_track>0){
+      full_rotations += 1;
+      angle_track -= _2PI * _motor.pole_pairs;
+    }else{
+      full_rotations -= 1;
+      angle_track += _2PI * _motor.pole_pairs;
+    }
   }
   angle_prev = angle_track /_motor.pole_pairs;
   
