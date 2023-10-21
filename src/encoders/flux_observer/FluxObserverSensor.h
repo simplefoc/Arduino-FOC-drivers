@@ -29,12 +29,12 @@ class FluxObserverSensor : public Sensor
     // For sensors with slow communication, use these to poll less often
     unsigned int sensor_downsample = 0; // parameter defining the ratio of downsampling for sensor update
     unsigned int sensor_cnt = 0; // counting variable for downsampling
-    float flux_a = 0;
-    float flux_b = 0;
-    float i_alpha_prev = 0;
-    float i_beta_prev = 0;
-    float electrical_angle_prev = 0;
-    float full_electrical_rotations = 0;
+    float flux_alpha = 0; // Flux Alpha 
+    float flux_beta = 0; // Flux Beta
+    float flux_linkage = 0; // Flux linkage, calculated based on KV and pole number
+    float i_alpha_prev = 0; // Previous Alpha current
+    float i_beta_prev = 0; // Previous Beta current
+    float electrical_angle_prev = 0; // Previous electrical angle
     float angle_track = 0;
     int8_t first = 1;
 

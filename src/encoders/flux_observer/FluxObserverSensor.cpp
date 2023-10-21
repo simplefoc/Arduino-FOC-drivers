@@ -5,6 +5,10 @@
 
 FluxObserverSensor::FluxObserverSensor(const FOCMotor& m) : _motor(m)
 {
+  // Derive Flux linkage from KV_rating and pole_pairs
+  if (_isset(_motor.pole_pairs) && _isset(_motor.KV_rating)){
+    flux_linkage = 60 / ( _sqrt(3) * _PI * (_motor.KV_rating/_SQRT2) * (_motor.pole_pairs * 2));
+  }
 }
 
 
@@ -12,6 +16,11 @@ void FluxObserverSensor::update() {
   // Current sense is required for the observer
   if (!_motor.current_sense) return;
   
+  // Exit if one of the parameter needed for the flux observer is 0
+  if ((_motor.phase_inductance == 0) ||
+      (_motor.phase_resistance == 0) ||
+      (flux_linkage == 0)) return;
+
   // Update sensor, with optional downsampling of update rate
   if(sensor_cnt++ < sensor_downsample) return;
   
@@ -58,13 +67,13 @@ void FluxObserverSensor::update() {
   // Flux linkage observer    
   float now = _micros();
   float Ts = ( now - angle_prev_ts) * 1e-6f; 
-  flux_a = _constrain( flux_a + (_motor.ABVoltage.alpha - _motor.phase_resistance * i_alpha) * Ts -
-        _motor.phase_inductance * (i_alpha - i_alpha_prev),-_motor.flux_linkage, _motor.flux_linkage);
-  flux_b = _constrain( flux_b + (_motor.ABVoltage.beta  - _motor.phase_resistance * i_beta)  * Ts -
-        _motor.phase_inductance * (i_beta  - i_beta_prev) ,-_motor.flux_linkage, _motor.flux_linkage);
+  flux_alpha = _constrain( flux_alpha + (_motor.ABVoltage.alpha - _motor.phase_resistance * i_alpha) * Ts -
+        _motor.phase_inductance * (i_alpha - i_alpha_prev),-flux_linkage, flux_linkage);
+  flux_beta  = _constrain( flux_beta  + (_motor.ABVoltage.beta  - _motor.phase_resistance * i_beta)  * Ts -
+        _motor.phase_inductance * (i_beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
   
   // Calculate angle
-  float electrical_angle = _normalizeAngle(_atan2(flux_b,flux_a));
+  float electrical_angle = _normalizeAngle(atan2(flux_beta,flux_alpha));
 
   // Electrical angle difference
   float d_electrical_angle = 0;
@@ -111,5 +120,5 @@ void FluxObserverSensor::init(){
 	Shaft angle calculation
 */
 float FluxObserverSensor::getSensorAngle(){
-  return 0;//return this->Sensor::getSensorAngle(); // call base class 
+  return 0;
 }
