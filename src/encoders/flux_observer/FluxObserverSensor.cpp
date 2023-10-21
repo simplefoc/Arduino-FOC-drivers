@@ -67,9 +67,9 @@ void FluxObserverSensor::update() {
   // Flux linkage observer    
   float now = _micros();
   float Ts = ( now - angle_prev_ts) * 1e-6f; 
-  flux_alpha = _constrain( flux_alpha + (_motor.ABVoltage.alpha - _motor.phase_resistance * i_alpha) * Ts -
+  flux_alpha = _constrain( flux_alpha + (_motor.Ualpha - _motor.phase_resistance * i_alpha) * Ts -
         _motor.phase_inductance * (i_alpha - i_alpha_prev),-flux_linkage, flux_linkage);
-  flux_beta  = _constrain( flux_beta  + (_motor.ABVoltage.beta  - _motor.phase_resistance * i_beta)  * Ts -
+  flux_beta  = _constrain( flux_beta  + (_motor.Ubeta  - _motor.phase_resistance * i_beta)  * Ts -
         _motor.phase_inductance * (i_beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
   
   // Calculate angle
