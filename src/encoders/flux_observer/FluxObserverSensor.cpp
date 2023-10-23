@@ -22,8 +22,13 @@ void FluxObserverSensor::update() {
       (flux_linkage == 0)) return;
 
   // Update sensor, with optional downsampling of update rate
-  if(sensor_cnt++ < sensor_downsample) return;
-  
+  if (sensor_cnt++ < sensor_downsample) return;
+
+  // Close to zero speed the flux observer can resonate
+  // Estimate the BEMF and exit if it's below the threshold 
+  float bemf = _motor.voltage.q - _motor.phase_resistance * _motor.current.q; 
+  if (abs(bemf < bemf_threshold)) return;
+
   sensor_cnt = 0;
 
   // read current phase currents
@@ -54,7 +59,6 @@ void FluxObserverSensor::update() {
       i_beta = _1_SQRT3 * a + _2_SQRT3 * b;
   }
 
-
   // This work deviates slightly from the BSD 3 clause licence.
   // The work here is entirely original to the MESC FOC project, and not based
   // on any appnotes, or borrowed from another project. This work is free to
@@ -73,11 +77,12 @@ void FluxObserverSensor::update() {
         _motor.phase_inductance * (i_beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
   
   // Calculate angle
-  float electrical_angle = _normalizeAngle(atan2(flux_beta,flux_alpha));
+  float electrical_angle = _normalizeAngle(_atan2(flux_beta,flux_alpha));
 
   // Electrical angle difference
   float d_electrical_angle = 0;
   if (first){
+    // Skip angle difference calculation the first time
     first = 0;
     d_electrical_angle = electrical_angle;
   }else{

@@ -35,8 +35,9 @@ class FluxObserverSensor : public Sensor
     float i_alpha_prev = 0; // Previous Alpha current
     float i_beta_prev = 0; // Previous Beta current
     float electrical_angle_prev = 0; // Previous electrical angle
-    float angle_track = 0;
-    int8_t first = 1;
+    float angle_track = 0; // Total Electrical angle
+    float bemf_threshold = 0.5; // Bemf voltage amplitude when the flux observer should start tracking
+    int8_t first = 1; // To skip angle difference calculation the first time
 
   protected:    
     const FOCMotor& _motor;
