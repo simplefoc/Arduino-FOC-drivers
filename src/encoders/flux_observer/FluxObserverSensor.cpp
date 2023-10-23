@@ -77,7 +77,7 @@ void FluxObserverSensor::update() {
         _motor.phase_inductance * (i_beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
   
   // Calculate angle
-  float electrical_angle = _normalizeAngle(_atan2(flux_beta,flux_alpha));
+  float electrical_angle = _normalizeAngle(atan2(flux_beta,flux_alpha));
 
   // Electrical angle difference
   float d_electrical_angle = 0;
