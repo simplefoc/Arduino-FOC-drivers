@@ -39,13 +39,13 @@ uint32_t MT6835::readRawAngle21(){
     data[3] = 0;
     data[4] = 0;
     data[5] = 0;
+    spi->beginTransaction(settings);
     if (nCS >= 0)
         digitalWrite(nCS, LOW);
-    spi->beginTransaction(settings);
     spi->transfer(data, 6);
-    spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
+    spi->endTransaction();
     laststatus = data[4]&0x07;
     return (data[2] << 13) | (data[3] << 5) | (data[4] >> 3);
 };
@@ -252,13 +252,13 @@ uint32_t swap_bytes(uint32_t net)
 
 void MT6835::transfer24(MT6835Command* outValue) {
     uint32_t buff = swap_bytes(outValue->val);
+    spi->beginTransaction(settings);
     if (nCS >= 0)
         digitalWrite(nCS, LOW);
-    spi->beginTransaction(settings);
     spi->transfer(&buff, 3);
-    spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
+    spi->endTransaction();
     outValue->val = swap_bytes(buff);
 };
 uint8_t MT6835::readRegister(uint16_t reg) {
