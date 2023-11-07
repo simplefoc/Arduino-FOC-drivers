@@ -26,7 +26,39 @@ void MT6835::init(SPIClass* _spi) {
 
 
 float MT6835::getCurrentAngle(){
-    return readRawAngle21() / (float)MT6835_CPR * _2PI;
+    uint32_t rawangle = readRawAngle21();
+    if (checkcrc) {
+        if (lastcrc != calcCrc(rawangle, laststatus)) {
+            laststatus |= MT6835_CRC_ERROR;
+            return -1; // return -1 to signal CRC error - the current angle has to be non-negative otherwise
+        }
+    }
+    return rawangle / (float)MT6835_CPR * _2PI;
+};
+
+
+// calculate crc8 of 21 angle bits and 3 status bits
+// polynomial: x^8 + x^2 + x + 1 = 0x07, (0xE0 reflected) init is 0x00, no final xor
+// TOOD table-based version
+uint8_t MT6835::calcCrc(uint32_t angle, uint8_t status) {
+    uint8_t crc = 0x00;
+
+    uint8_t input = angle>>13;
+    crc ^= input;
+    for (int k = 8; k > 0; k--)
+        crc = (crc & (0x01<<7))?(crc<<1)^0x07:crc<<1;
+
+    input = (angle>>5) & 0xFF;
+    crc ^= input;
+    for (int k = 8; k > 0; k--)
+        crc = (crc & (0x01<<7))?(crc<<1)^0x07:crc<<1;
+
+    input = ((angle<<3) & 0xFF) | (status & 0x07);
+    crc ^= input;
+    for (int k = 8; k > 0; k--)
+        crc = (crc & (0x01<<7))?(crc<<1)^0x07:crc<<1;
+
+    return crc;
 };
 
 
@@ -47,6 +79,7 @@ uint32_t MT6835::readRawAngle21(){
         digitalWrite(nCS, HIGH);
     spi->endTransaction();
     laststatus = data[4]&0x07;
+    lastcrc = data[5];
     return (data[2] << 13) | (data[3] << 5) | (data[4] >> 3);
 };
 
