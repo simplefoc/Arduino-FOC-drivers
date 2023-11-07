@@ -29,6 +29,10 @@ int STM32HWEncoder::hasIndex() { return 0; }
 void STM32HWEncoder::init() {
     // GPIO configuration
     TIM_TypeDef *InstanceA = (TIM_TypeDef *)pinmap_peripheral(_pinA, PinMap_TIM);
+    if (!IS_TIM_ENCODER_INTERFACE_INSTANCE(InstanceA)) {
+        initialized = false;
+        return;
+    }
     TIM_TypeDef *InstanceB = (TIM_TypeDef *)pinmap_peripheral(_pinB, PinMap_TIM);
     if (InstanceA != InstanceB) {
         initialized = false;
@@ -36,6 +40,9 @@ void STM32HWEncoder::init() {
     }
     pinmap_pinout(_pinA, PinMap_TIM);
     pinmap_pinout(_pinB, PinMap_TIM);
+
+    // TODO check width:
+    //IS_TIM_32B_COUNTER_INSTANCE(InstanceA);
 
     // set up timer for encoder
     encoder_handle.Init.Period = cpr - 1;
