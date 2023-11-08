@@ -68,7 +68,7 @@ uint8_t MT6835::getCalibrationStatus(){
         digitalWrite(nCS, HIGH);
     spi->endTransaction();
 
-    return data[3] >> 6;
+    return data[2] >> 6;
 }
 
 bool MT6835::setZeroFromCurrentPosition(){
