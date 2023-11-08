@@ -10,10 +10,13 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.6 - Released July 2023, for Simple FOC 2.3.1 or later
+v1.0.6 - Released July 2023, for Simple FOC 2.3.2 or later
 
 What's changed since 1.0.5?
-- Added AS5600 Sensor Driver
+- Added AS5600 sensor driver
+- Added STM32FlashSettingsStorage driver, supporting STM32G4 MCUs
+- Added STSPIN32G4 driver
+- Improvements in the MT6835 sensor driver
 - Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=is%3Aissue+milestone%3A1.0.6+)
 
 ## What is included
@@ -24,6 +27,7 @@ What is here? See the sections below. Each driver or function should come with i
 
  - [TMC6200 driver](src/drivers/tmc6200/) - SPI driver for Trinamics TMC6200 motor driver IC.
  - [DRV8316 driver](src/drivers/drv8316/) - SPI driver for TI's DRV8316 motor driver IC.
+ - [STSPIN32G4 driver](src/drivers/stspin32g4/) - I2C and BLDCDriver for the STSPIN32G4 integrated gate driver MCU.
 
 ### Encoders
 
@@ -58,11 +62,19 @@ Load and store SimpleFOC motor settings, based on register abstraction.
 
  - [SAMD NVM storage driver](src/settings/samd/) - Store settings to the NVM flash memory in your SAMD MCU
  - [CAT24 I2C EEPROM storage driver](src/settings/i2c/) - Store settings to CAT24 I2C EEPROMs
+ - [STM32 flash storage driver](src/settings/stm32/) - Store settings directly to STM32 on-board flash, currently supporting STM32G4 MCUs.
+
+### Motor classes
+
+Drive different kinds of motors, or use alternate algorithms to SimpleFOC's default BLDCMotor and StepperMotor classes.
+
+ - [HybridStepperMotor](motors/HybridStepperMotor/) - Drive stepper motors with 3 phases.
+
 
 ### Utilities
 
  - [STM32 PWM Input driver](src/utilities/stm32pwm/) - PWM Input driver for STM32 MCUs. Accurately measure PWM inputs with zero MCU overhead.
-
+ - [STM32 CORDIC trig driver](src/utilities/stm32math/) - CORDIC driver to accellerate sine and cosine calculations in SimpleFOC, on STM32 MCUs which have a CORDIC unit.
 
 ## How to use
 
