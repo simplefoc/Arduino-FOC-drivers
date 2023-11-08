@@ -19,7 +19,9 @@ class STM32HWEncoder : public Sensor {
     explicit STM32HWEncoder(unsigned int ppr, int8_t pinA, int8_t pinB, int8_t pinI=-1);
 
     void init() override;
+    void initIndex();
     int needsSearch() override;
+    int hasHardwareIndex(TIM_TypeDef tim);
     int hasIndex();  // !< function returning 1 if encoder has index pin and 0 if not.
 
     bool initialized = false;
