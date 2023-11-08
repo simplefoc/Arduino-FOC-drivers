@@ -200,6 +200,8 @@ public:
 
 	uint8_t getStatus();
 
+	uint8_t getCalibrationStatus();
+
 	bool setZeroFromCurrentPosition();
 	bool writeEEPROM(); // wait 6s after calling this method
 

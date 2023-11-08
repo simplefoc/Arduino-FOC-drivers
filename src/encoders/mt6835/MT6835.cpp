@@ -88,6 +88,21 @@ uint8_t MT6835::getStatus(){
     return laststatus;
 };
 
+uint8_t MT6835::getCalibrationStatus(){
+    uint8_t data[3] = {0};
+    data[0] = MT6835_OP_READ << 4 | MT6835_REG_CAL_STATUS >> 8;
+    data[1] = MT6835_REG_CAL_STATUS;
+
+    spi->beginTransaction(settings);
+    if(nCS >= 0)
+        digitalWrite(nCS, LOW);
+    spi->transfer(data, 3);
+    if(nCS >= 0)
+        digitalWrite(nCS, HIGH);
+    spi->endTransaction();
+
+    return data[2] >> 6;
+}
 
 bool MT6835::setZeroFromCurrentPosition(){
     MT6835Command cmd;
