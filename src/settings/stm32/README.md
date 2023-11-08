@@ -12,6 +12,14 @@ of space, maximum. If you need more space than this, you can provide the start a
 
 Needless to say, you can only store settings to flash if that memory is not also needed by your program. So you have to have some reserve space in the flash of the MCU you're using. If memory is too tight, use a STM32 model with more flash.
 
+## Compatibility
+
+Currently only **STM32G4** MCUs are supported.
+
+G4s are nice MCUs for using the flash because the page size is 2kB and you can erase the flash page by page. For this reason the default settings use the last page of flash as the storage location, leaving all the rest of the flash for your code and data. Pages are 2kB in size, which should be more than enough for most setups.
+
+Note: systems with dual bank flash have not been tested, and will probably not work.
+
 ## Board setup
 
 When storing settings to the Flash of your STM32 MCU, you have to consider what happens when you reprogram the MCU. Unless you have taken steps in the board setup files to reserve the pages of flash used by the settings, they will generally be erased and/or overwritten when programming the MCU.

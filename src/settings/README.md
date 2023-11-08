@@ -19,8 +19,8 @@ Supported hardware:
 Some SAMD chips have a built-in NVRAM flash, which can be written from user code.
 - [CAT24 I2C Flash EEPROMs](i2c/) :warning: UNFINISHED \
 Simple programmable memories with I2C interface. Memory space is quite limited, but enough for storing settings.
-- [STM32 Flash](stm32/) :warning: UNFINISHED \
-Store settings directly to STM32 on-board flash
+- [STM32G4 Flash](stm32/) \
+Store settings directly to STM32G4 MCU's on-board flash.
 
 See Roadmap, below, for systems we may support in the future.
 
