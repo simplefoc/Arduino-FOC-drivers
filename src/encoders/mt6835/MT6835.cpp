@@ -60,7 +60,7 @@ uint8_t MT6835::getCalibrationStatus(){
     data[0] = MT6835_OP_READ << 4 | MT6835_REG_CAL_STATUS >> 8;
     data[1] = MT6835_REG_CAL_STATUS;
 
-    spi->startTransaction(settings);
+    spi->beginTransaction(settings);
     if(nCS >= 0)
         digitalWrite(nCS, LOW);
     spi->transfer(data, 3);
