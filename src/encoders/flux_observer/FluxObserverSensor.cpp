@@ -40,12 +40,12 @@ void FluxObserverSensor::update() {
       // if only two measured currents
       i_alpha = current.a;  
       i_beta = _1_SQRT3 * current.a + _2_SQRT3 * current.b;
-  }if(!current.a){
+  }else if(!current.a){
       // if only two measured currents
       float a = -current.c - current.b;
       i_alpha = a;  
       i_beta = _1_SQRT3 * a + _2_SQRT3 * current.b;
-  }if(!current.b){
+  }else if(!current.b){
       // if only two measured currents
       float b = -current.a - current.c;
       i_alpha = current.a;  
@@ -77,7 +77,7 @@ void FluxObserverSensor::update() {
         _motor.phase_inductance * (i_beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
   
   // Calculate angle
-  float electrical_angle = _normalizeAngle(atan2(flux_beta,flux_alpha));
+  float electrical_angle = _normalizeAngle(_atan2(flux_beta,flux_alpha));
 
   // Electrical angle difference
   float d_electrical_angle = 0;
