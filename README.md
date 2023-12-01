@@ -10,7 +10,7 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.6 - Released July 2023, for Simple FOC 2.3.2 or later
+v1.0.6 - Released December 2023, for Simple FOC 2.3.2 or later
 
 What's changed since 1.0.5?
 - Added STSPIN32G4 driver
