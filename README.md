@@ -13,9 +13,9 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 v1.0.6 - Released July 2023, for Simple FOC 2.3.2 or later
 
 What's changed since 1.0.5?
-- Added AS5600 sensor driver
-- Added STM32FlashSettingsStorage driver, supporting STM32G4 MCUs
 - Added STSPIN32G4 driver
+- Added STM32G4 CORDIC code, for greatly accellerated trig functions on supported MCUs
+- Added STM32FlashSettingsStorage driver, supporting STM32G4 MCUs
 - Improvements in the MT6835 sensor driver
 - Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=is%3Aissue+milestone%3A1.0.6+)
 
