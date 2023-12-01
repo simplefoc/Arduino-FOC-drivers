@@ -1,0 +1,38 @@
+#include "Arduino.h"
+
+#ifdef HAL_LPTIM_MODULE_ENABLED
+
+
+// TODO which models does this apply to? the entire series, or the line?
+#if defined(STM32G431KB) || defined(STM32G431CB)
+WEAK const PinMap PinMap_LPTIM[] = {
+  {PB_5,       LPTIM1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF11_LPTIM1, 0, 0)}, // LPTIM1_CH1
+  {PB_7,       LPTIM1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF11_LPTIM1, 1, 0)}, // LPTIM1_CH2
+  {NC,         NP,    0}
+};
+WEAK const PinMap PinMap_LPTIMETR[] = {
+  {PB_6,       LPTIM1,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF11_LPTIM1)}, // LPTIM1_ETR
+  {NC,         NP,    0}
+};
+#endif
+
+
+#if defined(STM32G473QE) || defined(STM32G431VB)
+WEAK const PinMap PinMap_LPTIM[] = {
+  {PB_5,       LPTIM1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF11_LPTIM1, 0, 0)}, // LPTIM1_CH1
+  {PB_7,       LPTIM1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF11_LPTIM1, 1, 0)}, // LPTIM1_CH2
+  {PC_0,       LPTIM1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF1_LPTIM1, 0, 0)}, // LPTIM1_CH1
+  {PC_2,       LPTIM1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF1_LPTIM1, 1, 0)}, // LPTIM1_CH2
+  {NC,         NP,    0}
+};
+WEAK const PinMap PinMap_LPTIMETR[] = {
+  {PB_6,       LPTIM1,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF11_LPTIM1)}, // LPTIM1_ETR
+  {PC_3,       LPTIM1,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF1_LPTIM1)}, // LPTIM1_ETR
+  {NC,         NP,    0}
+};
+#endif
+
+
+
+
+#endif // HAL_LPTIM_MODULE_ENABLED
