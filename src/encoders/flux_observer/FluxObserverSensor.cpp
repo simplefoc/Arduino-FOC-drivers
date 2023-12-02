@@ -7,7 +7,7 @@ FluxObserverSensor::FluxObserverSensor(const FOCMotor& m) : _motor(m)
 {
   // Derive Flux linkage from KV_rating and pole_pairs
   if (_isset(_motor.pole_pairs) && _isset(_motor.KV_rating)){
-    flux_linkage = 60 / ( _sqrt(3) * _PI * (_motor.KV_rating/_SQRT2) * (_motor.pole_pairs * 2));
+    flux_linkage = 60 / ( _SQRT3 * _PI * _motor.KV_rating * _motor.pole_pairs * 2);
   }
 }
 
@@ -35,29 +35,7 @@ void FluxObserverSensor::update() {
   PhaseCurrent_s current = _motor.current_sense->getPhaseCurrents();
 
   // calculate clarke transform
-  float i_alpha, i_beta;
-  if(!current.c){
-      // if only two measured currents
-      i_alpha = current.a;  
-      i_beta = _1_SQRT3 * current.a + _2_SQRT3 * current.b;
-  }else if(!current.a){
-      // if only two measured currents
-      float a = -current.c - current.b;
-      i_alpha = a;  
-      i_beta = _1_SQRT3 * a + _2_SQRT3 * current.b;
-  }else if(!current.b){
-      // if only two measured currents
-      float b = -current.a - current.c;
-      i_alpha = current.a;  
-      i_beta = _1_SQRT3 * current.a + _2_SQRT3 * b;
-  } else {
-      // signal filtering using identity a + b + c = 0. Assumes measurement error is normally distributed.
-      float mid = (1.f/3) * (current.a + current.b + current.c);
-      float a = current.a - mid;
-      float b = current.b - mid;
-      i_alpha = a;
-      i_beta = _1_SQRT3 * a + _2_SQRT3 * b;
-  }
+  ABCurrent_s ABcurrent = _motor.current_sense->getABCurrents(current);
 
   // This work deviates slightly from the BSD 3 clause licence.
   // The work here is entirely original to the MESC FOC project, and not based
@@ -71,10 +49,10 @@ void FluxObserverSensor::update() {
   // Flux linkage observer    
   float now = _micros();
   float Ts = ( now - angle_prev_ts) * 1e-6f; 
-  flux_alpha = _constrain( flux_alpha + (_motor.Ualpha - _motor.phase_resistance * i_alpha) * Ts -
-        _motor.phase_inductance * (i_alpha - i_alpha_prev),-flux_linkage, flux_linkage);
-  flux_beta  = _constrain( flux_beta  + (_motor.Ubeta  - _motor.phase_resistance * i_beta)  * Ts -
-        _motor.phase_inductance * (i_beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
+  flux_alpha = _constrain( flux_alpha + (_motor.Ualpha - _motor.phase_resistance * ABcurrent.alpha) * Ts -
+        _motor.phase_inductance * (ABcurrent.alpha - i_alpha_prev),-flux_linkage, flux_linkage);
+  flux_beta  = _constrain( flux_beta  + (_motor.Ubeta  - _motor.phase_resistance * ABcurrent.beta)  * Ts -
+        _motor.phase_inductance * (ABcurrent.beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
   
   // Calculate angle
   float electrical_angle = _normalizeAngle(_atan2(flux_beta,flux_alpha));
@@ -110,8 +88,8 @@ void FluxObserverSensor::update() {
   angle_prev = angle_track /_motor.pole_pairs;
   
   // Store Previous values
-  i_alpha_prev = i_alpha;
-  i_beta_prev = i_beta;
+  i_alpha_prev = ABcurrent.alpha;
+  i_beta_prev = ABcurrent.beta;
   angle_prev_ts = now;
   electrical_angle_prev = electrical_angle;
 
