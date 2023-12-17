@@ -421,7 +421,7 @@ void HybridStepperMotor::setPhaseVoltage(float Uq, float Ud, float angle_el)
 
   case FOCModulationType::SpaceVectorPWM:
     // C phase moves in order to increase max bias on coils
-    uint8_t sector = floor(4.0 * angle_el / _PI) + 1;
+    uint8_t sector = floor(4.0f * angle_el / _PI) + 1;
     Ua = (_ca * Ud) - (_sa * Uq);
     Ub = (_sa * Ud) + (_ca * Uq);
 
