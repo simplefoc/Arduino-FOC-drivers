@@ -1,6 +1,5 @@
 
-#ifndef SIMPLEFOC_I2CCOMMANDER_H
-#define SIMPLEFOC_I2CCOMMANDER_H
+#pragma once
 
 #include "Arduino.h"
 #include "Wire.h"
@@ -15,7 +14,7 @@
 #define I2CCOMMANDER_MAX_REPORT_REGISTERS 8
 
 
-class I2CCommander {
+class I2CCommander : public RegisterIO {
     public:    
         I2CCommander(TwoWire* wire = &Wire);
         ~I2CCommander();
@@ -27,10 +26,16 @@ class I2CCommander {
         void onRequest();
 
     protected:
-        void writeFloat(float value);
-        bool readBytes(void* valueToSet, uint8_t numBytes);
         virtual bool sendRegister(uint8_t motorNum, uint8_t registerNum);
         virtual bool receiveRegister(uint8_t motorNum, uint8_t registerNum, int numBytes);
+
+        uint8_t readBytes(void* valueToSet, uint8_t numBytes);
+        RegisterIO& operator<<(float value) override;
+        RegisterIO& operator<<(uint32_t value) override;
+        RegisterIO& operator<<(uint8_t value) override;
+        RegisterIO& operator>>(float& value) override;
+        RegisterIO& operator>>(uint32_t& value) override;
+        RegisterIO& operator>>(uint8_t& value) override;
 
         uint8_t _address;
         TwoWire* _wire;
@@ -46,4 +51,3 @@ class I2CCommander {
         uint8_t reportRegisters[I2CCOMMANDER_MAX_REPORT_REGISTERS];        
 };
 
-#endif

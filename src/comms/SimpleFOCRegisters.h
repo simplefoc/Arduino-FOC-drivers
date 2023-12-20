@@ -2,6 +2,8 @@
 #pragma once
 
 #include <inttypes.h>
+#include "common/base_classes/FOCMotor.h"
+#include "./RegisterIO.h"
 
 
 // this constant is changed each time the registers definition are changed *in an incompatible way*. This means that just adding new registers 
@@ -25,6 +27,14 @@ typedef enum : uint8_t  {
     REG_POSITION = 0x10,        // RO - int32_t full rotations + float position (0-2PI, in radians) (4 bytes + 4 bytes)
     REG_VELOCITY = 0x11,        // RO - float
     REG_SENSOR_ANGLE = 0x12,    // RO - float
+
+    REG_PHASE_VOLTAGE = 0x16,  // R/W - 3xfloat = 12 bytes
+    REG_PHASE_STATE = 0x17,     // R/W - 3 bytes (1 byte per phase)
+    REG_DRIVER_ENABLE = 0x18,   // R/W - 1 byte
+
+    REG_TELEMETRY_REG = 0x1A,           // R/W - 1 + n*2 bytes, number of registers (n) = 1 byte + n * (motor number + register number, 1 byte each)
+    REG_TELEMETRY_CTRL = 0x1B,          // R/W - 1 byte 
+    REG_TELEMETRY_DOWNSAMPLE = 0x1C,    // R/W - uint32_t
 
     REG_VOLTAGE_Q = 0x20,       // RO - float
     REG_VOLTAGE_D = 0x21,       // RO - float
@@ -70,3 +80,15 @@ typedef enum : uint8_t  {
     REG_NUM_MOTORS = 0x70,          // RO - 1 byte
     REG_SYS_TIME = 0x71,            // RO - uint32_t
 } SimpleFOCRegister;
+
+
+class SimpleFOCRegisters {
+public:
+    SimpleFOCRegisters();
+    virtual ~SimpleFOCRegisters();
+    virtual uint8_t sizeOfRegister(uint8_t reg);
+    virtual bool registerToComms(RegisterIO& comms, uint8_t reg, FOCMotor* motor);
+    virtual bool commsToRegister(RegisterIO& comms, uint8_t reg, FOCMotor* motor);
+
+    static SimpleFOCRegisters* regs;
+};

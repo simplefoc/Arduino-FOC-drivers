@@ -1,49 +1,26 @@
 
-# Serial communications classes
+# Serial communications
 
-Serial communications classes for register-based control and telemetry from SimpleFOC.
+There are different options for serial communications with SimpleFOC.
 
-## SerialASCIITelemetry
+## Commander
 
-:warning: unfinished, untested
+Commander is part of the main SimpleFOC library, and enables a simple ASCII command interface to SimpleFOC. It also allows control over the standard motor "monitoring" functionality which can be used for basic telemetry.
 
-Telemetry class that sends telemetry as ASCII on a serial port. Similar to the classic "monitoring" functionality of SimpleFOC, but allows you to configure telemetry based on most of the defined registers.
+Please see our docs on [Commander]() and [Monitoring]()
 
-Usage:
+## Telemetry
 
-```c++
+A more complex abstraction which allows you to monitor most of SimpleFOCs parameters and state - anything that can be accessed via one of our [Registers](../). Telemetry data can be output to the serial port, in either ASCII or binary formats.
 
-SerialASCIITelemetry telemetry = SerialASCIITelemetry(); // number of float digits to display
+See [Telemetry](../telemetry/) and [Streams Comms](../streams/) for more documentation.
 
-void setup() {
-    ...
-    telemetry.addMotor(&motor);
-    telemetry.setTelemetryRegisters(2, [REG_VELOCITY, REG_VOLTAGE_Q]);
-    telemetry.init();
-    ...
-}
+## PacketCommander
 
-void loop() {
-    motor.move();
-    motor.loopFOC();
-    telemetry.run();
-}
-```
+PacketCommander is a serial communications class for register-based control of SimpleFOC. It works with our [Registers](../) and can operate in ASCII or binary mode. It can be used in combination with the Telemetry class.
 
-Some options are supported:
+See [PacketCommander](../streams/)
 
-```c++
-    telemetry.floatPrecision = 4;       // send floats with 4 decimal places
-    telemetry.min_elapsed_time = 0;     // microseconds between sending telemetry
-    telemetry.downsample = 100;         // send every this many loop iterations
-```
+## Python API
 
-
-
-## SerialBinaryCommander
-
-:warning: unfinished, untested!
-
-Control SimpleFOC via a binary protocol over the serial port. The standard SimpleFOC registers are used.
-
-TODO document the protocol
+Our Python API can work via serial port on your PC with any of the above options. See [pysimplefoc](https://github.com/simplefoc/pysimplefoc)
