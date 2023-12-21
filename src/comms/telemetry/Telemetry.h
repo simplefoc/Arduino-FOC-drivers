@@ -27,9 +27,9 @@ typedef enum : uint8_t {
 
 class Telemetry {
 public:
-    Telemetry(PacketIO& _comms);
+    Telemetry();
     virtual ~Telemetry();
-    virtual void init();
+    virtual void init(PacketIO& _comms);
     void addMotor(FOCMotor* motor);
     void setTelemetryRegisters(uint8_t numRegisters, uint8_t* registers, uint8_t* motors = NULL);
     void run();
@@ -53,7 +53,7 @@ protected:
     unsigned long last_run_time = 0;
     uint16_t downsampleCnt = 0;
 
-    PacketIO& comms;
+    PacketIO* comms;
     
     static uint8_t id_seed; // TODO how to initialize this?
 };

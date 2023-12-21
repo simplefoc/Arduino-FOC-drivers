@@ -4,7 +4,7 @@
 
 
 
-Telemetry::Telemetry(PacketIO& _comms) : comms(_comms) {
+Telemetry::Telemetry() {
     this->numRegisters = 0;
 };
 
@@ -34,7 +34,8 @@ void Telemetry::setTelemetryRegisters(uint8_t numRegisters, uint8_t* registers, 
 
 
 
-void Telemetry::init() {
+void Telemetry::init(PacketIO& _comms) {
+    comms = &_comms;
     this->id = Telemetry::id_seed++;
     headerSent = false;
     if (SimpleFOCRegisters::regs == NULL) {
@@ -74,11 +75,11 @@ void Telemetry::addMotor(FOCMotor* motor) {
 
 void Telemetry::sendHeader() {
     if (numRegisters > 0) {
-        comms << START_PACKET(PacketType::TELEMETRY_HEADER, 2*numRegisters + 1) << id << Separator('=');
+        *comms << START_PACKET(PacketType::TELEMETRY_HEADER, 2*numRegisters + 1) << id << Separator('=');
         for (uint8_t i = 0; i < numRegisters; i++) {
-            comms << registers_motor[i] << Separator(':') << registers[i];
+            *comms << registers_motor[i] << Separator(':') << registers[i];
         }
-        comms << END_PACKET;
+        *comms << END_PACKET;
     };
 };
 
@@ -90,10 +91,10 @@ void Telemetry::sendTelemetry(){
         for (uint8_t i = 0; i < numRegisters; i++) {
             size += SimpleFOCRegisters::regs->sizeOfRegister(registers[i]);
         }
-        comms << START_PACKET(PacketType::TELEMETRY, size) << id << Separator('=');
+        *comms << START_PACKET(PacketType::TELEMETRY, size) << id << Separator('=');
         for (uint8_t i = 0; i < numRegisters; i++) {
-            SimpleFOCRegisters::regs->registerToComms(comms, registers[i], motors[registers_motor[i]]);
+            SimpleFOCRegisters::regs->registerToComms(*comms, registers[i], motors[registers_motor[i]]);
         };
-        comms << END_PACKET;
+        *comms << END_PACKET;
     }
 };

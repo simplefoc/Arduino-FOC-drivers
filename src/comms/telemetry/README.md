@@ -19,14 +19,14 @@ Using telemetry is simple:
 
 ```c++
 TextIO io = TextIO(Serial);
-Telemetry telemetry = Telemetry(io);
+Telemetry telemetry = Telemetry();
 ...
 
 void setup() {
     ...
     telemetry.addMotor(&motor);
     telemetry.setTelemetryRegisters(3, { REG_TARGET, REG_ANGLE, REG_VELOCITY });
-    telemetry.init();
+    telemetry.init(io);
     ...
 }
 
