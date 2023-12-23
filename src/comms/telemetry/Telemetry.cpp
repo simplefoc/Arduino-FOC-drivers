@@ -15,8 +15,9 @@ Telemetry::~Telemetry(){
 };
 
 
-uint8_t Telemetry::id_seed = 0;
-
+uint8_t Telemetry::num_telemetry = 0;
+uint8_t Telemetry::telemetry_ctrl = 0;
+Telemetry* Telemetry::telemetries[TELEMETRY_MAX_TELEMETRIES];
 
 void Telemetry::setTelemetryRegisters(uint8_t numRegisters, uint8_t* registers, uint8_t* motors){
     if (numRegisters<=TELEMETRY_MAX_REGISTERS) {
@@ -36,7 +37,10 @@ void Telemetry::setTelemetryRegisters(uint8_t numRegisters, uint8_t* registers, 
 
 void Telemetry::init(PacketIO& _comms) {
     comms = &_comms;
-    this->id = Telemetry::id_seed++;
+    if (Telemetry::num_telemetry < TELEMETRY_MAX_TELEMETRIES) {
+        Telemetry::telemetries[Telemetry::num_telemetry] = this;
+    }
+    this->id = Telemetry::num_telemetry++;
     headerSent = false;
     if (SimpleFOCRegisters::regs == NULL) {
         SimpleFOCRegisters::regs = new SimpleFOCRegisters();
@@ -48,16 +52,28 @@ void Telemetry::init(PacketIO& _comms) {
 void Telemetry::run() {
     if (numRegisters<1)
         return;
-    if (!headerSent) {
-        sendHeader();
-        headerSent = true;
+    unsigned long now = 0;
+    if (id==0) {
+        now = _micros(); 
+        iterations++;
+        if (now - last_iter_time >= 1000000) { // TODO add overflow protection
+            last_iter_time = now;
+            last_iterations = iterations;
+            iterations = 0;
+        }
     }
+    if (downsample==0)
+        return;
     if (downsample==0 || downsampleCnt++ < downsample) return;
     downsampleCnt = 0;
     if (min_elapsed_time > 0) {
-        unsigned long now = _micros();
-        if (now - last_run_time < min_elapsed_time) return;
+        if (id!=0) now = _micros();
+        if (now - last_run_time < min_elapsed_time) return; // TODO add overflow protection
         last_run_time = now;
+    }
+    if (!headerSent) {
+        sendHeader();
+        headerSent = true;
     }
     sendTelemetry();
 }

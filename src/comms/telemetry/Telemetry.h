@@ -5,6 +5,10 @@
 #include "../SimpleFOCRegisters.h"
 #include "../RegisterIO.h"
 
+#ifndef TELEMETRY_MAX_TELEMETRIES
+#define TELEMETRY_MAX_TELEMETRIES 4
+#endif
+
 #ifndef TELEMETRY_MAX_REGISTERS
 #define TELEMETRY_MAX_REGISTERS 8
 #endif
@@ -26,6 +30,7 @@ typedef enum : uint8_t {
 
 
 class Telemetry {
+    friend class SimpleFOCRegisters;
 public:
     Telemetry();
     virtual ~Telemetry();
@@ -36,6 +41,12 @@ public:
 
     uint16_t downsample = DEF_TELEMETRY_DOWNSAMPLE;
     uint32_t min_elapsed_time = 0;
+
+    uint32_t last_iterations = 0;
+
+    static uint8_t num_telemetry;
+    static uint8_t telemetry_ctrl;
+    static Telemetry* telemetries[];
 protected:
     virtual void sendTelemetry();
     virtual void sendHeader();
@@ -51,9 +62,10 @@ protected:
     uint8_t packetSize;
     bool headerSent;
     unsigned long last_run_time = 0;
+    unsigned long last_iter_time = 0;
     uint16_t downsampleCnt = 0;
+    uint32_t iterations = 0;
 
     PacketIO* comms;
     
-    static uint8_t id_seed; // TODO how to initialize this?
 };

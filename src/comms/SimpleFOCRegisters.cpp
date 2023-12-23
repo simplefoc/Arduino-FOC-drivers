@@ -1,6 +1,7 @@
 
 #include "./SimpleFOCRegisters.h"
 #include "BLDCMotor.h"
+#include "./telemetry/Telemetry.h"
 
 
 SimpleFOCRegisters::SimpleFOCRegisters(){};
@@ -50,6 +51,37 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
             else
                 comms << motor->shaft_angle;
             break;
+
+        case SimpleFOCRegister::REG_TELEMETRY_REG:
+            if (Telemetry::num_telemetry > 0){
+                Telemetry* telemetry = Telemetry::telemetries[Telemetry::telemetry_ctrl];
+                comms << telemetry->numRegisters;
+                for (uint8_t i=0; i<telemetry->numRegisters; i++) {
+                    comms << telemetry->registers[i];
+                    comms << telemetry->registers_motor[i];
+                }
+                telemetry->headerSent = false;
+            }
+            else {
+                comms << (uint32_t)0;
+            }
+            break;
+        case SimpleFOCRegister::REG_TELEMETRY_CTRL:
+            comms << (Telemetry::telemetry_ctrl);
+            break;
+        case SimpleFOCRegister::REG_TELEMETRY_DOWNSAMPLE:
+            if (Telemetry::num_telemetry > 0)
+                comms << (uint32_t)(Telemetry::telemetries[Telemetry::telemetry_ctrl]->downsample);
+            else
+                comms << (uint32_t)0;
+            break;
+        case SimpleFOCRegister::REG_ITERATIONS_SEC:
+            if (Telemetry::num_telemetry > 0)
+                comms << (Telemetry::telemetries[0]->last_iterations);
+            else
+                comms << (uint32_t)0;
+            break;
+
 
         case SimpleFOCRegister::REG_PHASE_VOLTAGE:
             comms << ((BLDCMotor*)motor)->Ua;
@@ -233,14 +265,27 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
 
         case SimpleFOCRegister::REG_TELEMETRY_DOWNSAMPLE:
             comms >> val32;
-            // TODO implement
+            if (Telemetry::telemetry_ctrl < Telemetry::num_telemetry)
+                Telemetry::telemetries[Telemetry::telemetry_ctrl]->downsample = (uint16_t)val32;
             return true;
         case SimpleFOCRegister::REG_TELEMETRY_CTRL:
             comms >> val8;
-            // TODO implement - do we actually need it?
+            if (val8 < Telemetry::num_telemetry)
+                Telemetry::telemetry_ctrl = val8;
             return true;
         case SimpleFOCRegister::REG_TELEMETRY_REG:
-            // TODO implement - difficult to implement it here
+            if (Telemetry::telemetry_ctrl < Telemetry::num_telemetry){
+                Telemetry* telemetry = Telemetry::telemetries[Telemetry::telemetry_ctrl];
+                uint8_t numRegisters;
+                comms >> numRegisters;
+                uint8_t registers[numRegisters];
+                uint8_t motors[numRegisters];
+                for (uint8_t i=0; i<numRegisters; i++) {
+                    comms >> registers[i];
+                    comms >> motors[i];
+                }
+                telemetry->setTelemetryRegisters(numRegisters, registers, motors);
+            }
             return true;
 
         case SimpleFOCRegister::REG_PHASE_VOLTAGE:
@@ -354,6 +399,7 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
             motor->pole_pairs = val8;
             return true;
         // unknown register or read-only register (no write) or can't handle in superclass
+        case SimpleFOCRegister::REG_ITERATIONS_SEC:
         case SimpleFOCRegister::REG_STATUS:
         case SimpleFOCRegister::REG_ANGLE:
         case SimpleFOCRegister::REG_POSITION:
@@ -419,6 +465,7 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_KV:
         case SimpleFOCRegister::REG_INDUCTANCE:
         case SimpleFOCRegister::REG_TELEMETRY_DOWNSAMPLE:
+        case SimpleFOCRegister::REG_ITERATIONS_SEC:
             return 4;
         case SimpleFOCRegister::REG_SYS_TIME:
             return 4; // TODO how big is millis()? Same on all platforms?
@@ -441,8 +488,14 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
             return 12;
         case SimpleFOCRegister::REG_PHASE_STATE:
             return 3;
+        case SimpleFOCRegister::REG_TELEMETRY_REG:
+            if (Telemetry::num_telemetry > 0) {
+                Telemetry* telemetry = Telemetry::telemetries[Telemetry::telemetry_ctrl];
+                return 2*telemetry->numRegisters + 1;
+            }
+            else
+                return 0;
         case SimpleFOCRegister::REG_DRIVER_ENABLE:
-        case SimpleFOCRegister::REG_TELEMETRY_REG: // TODO depends on telemetry id
         case SimpleFOCRegister::REG_REPORT: // size can vary, handled in Commander if used - may discontinue this feature
         case SimpleFOCRegister::REG_ENABLE_ALL: // write-only
         default: // unknown register or write only register (no output) or can't handle in superclass

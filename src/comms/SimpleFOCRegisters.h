@@ -35,6 +35,7 @@ typedef enum : uint8_t  {
     REG_TELEMETRY_REG = 0x1A,           // R/W - 1 + n*2 bytes, number of registers (n) = 1 byte + n * (motor number + register number, 1 byte each)
     REG_TELEMETRY_CTRL = 0x1B,          // R/W - 1 byte 
     REG_TELEMETRY_DOWNSAMPLE = 0x1C,    // R/W - uint32_t
+    REG_ITERATIONS_SEC = 0x1D,          // RO - uint32_t
 
     REG_VOLTAGE_Q = 0x20,       // RO - float
     REG_VOLTAGE_D = 0x21,       // RO - float

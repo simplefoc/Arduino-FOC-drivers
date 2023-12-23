@@ -44,6 +44,7 @@ void PacketCommander::run() {
             *_io << START_PACKET(PacketType::SYNC, 1);
             *_io << (uint8_t)0x01;
             *_io << END_PACKET;
+            // TODO flush packet
         }
         else
             _io->in_sync = false; // TODO flag in another way?
@@ -66,6 +67,7 @@ void PacketCommander::handleRegisterPacket(bool write, uint8_t reg) {
             // TODO status?
             registerToComms(reg);
             *_io << END_PACKET;
+            // TODO flush packet
         }
     }
 }
