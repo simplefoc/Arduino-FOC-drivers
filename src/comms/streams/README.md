@@ -1,35 +1,6 @@
 
-# Streams IO
+# PacketCommander & Streams IO
 
-IO objects which work with Arduino Streams. Used for the Telemetry abstraction, or packet based control of SimpleFOC via PacketCommander.
-
-This can be used in conjunction with Serial, probably the way most people will use it, but also with other Streams like TCP network connections.
-
-There are Binary and Text versions of the Streams implementation. Binary will be a bit more compact, but isn't easily readable.
-
-## Usage
-
-Use of the IO classes is shown in conjunction with their use in PacketCommander or Telemetry. Please see the docs for those classes.
-
-### TextIO
-
-In TextIO, you can set the float precision:
-
-```c++
-TextIO comms = TextIO(Serial);
-
-void setup(){
-    comms.precision = 6; // print floats with 6 digits after the decimal place
-}
-```
-
-### BinaryIO
-
-BinaryIO has no options:
-
-```c++
-BinaryIO comms = BinaryIO(Serial);
-```
 
 ### PacketCommander
 
@@ -72,4 +43,36 @@ r8=10.0000  # target is 10
 r4=1        # motor is enabled
 
 r0=4        # motor status is FOCMotorStatus::motor_ready
+```
+
+## Streams IO
+
+IO objects which work with Arduino Streams. Used for the Telemetry abstraction, or packet based control of SimpleFOC via PacketCommander.
+
+This can be used in conjunction with Serial, probably the way most people will use it, but also with other Streams like TCP network connections.
+
+There are Binary and Text versions of the Streams implementation. Binary will be a bit more compact, but isn't easily readable.
+
+## Usage
+
+Use of the IO classes is shown in conjunction with their use in PacketCommander or Telemetry. Please see the docs for those classes.
+
+### TextIO
+
+In TextIO, you can set the float precision:
+
+```c++
+TextIO comms = TextIO(Serial);
+
+void setup(){
+    comms.precision = 6; // print floats with 6 digits after the decimal place
+}
+```
+
+### BinaryIO
+
+BinaryIO has no options:
+
+```c++
+BinaryIO comms = BinaryIO(Serial);
 ```
