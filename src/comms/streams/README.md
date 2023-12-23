@@ -1,6 +1,9 @@
 
-# PacketCommander & Streams IO
+# PacketCommander & Packet IO
 
+Our packet based IO classes based on the SimpleFOC registers are a more flexible and powerful way to interact with your SimpleFOC code from the outside.
+
+They are supported by our Python API [PySimpleFOC](https://github.com/simplefoc/pysimplefoc).
 
 ### PacketCommander
 
