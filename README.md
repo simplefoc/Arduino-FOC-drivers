@@ -30,11 +30,15 @@ What is here? See the sections below. Each driver or function should come with i
 
 ### Motor/Gate driver ICs
 
+Software to control gate driver ICs or integrated driver ICs which have advanced configuration and status interfaces, e.g. via I2C or SPI.
+
  - [TMC6200 driver](src/drivers/tmc6200/) - SPI driver for Trinamics TMC6200 motor driver IC.
  - [DRV8316 driver](src/drivers/drv8316/) - SPI driver for TI's DRV8316 motor driver IC.
  - [STSPIN32G4 driver](src/drivers/stspin32g4/) - I2C and BLDCDriver for the STSPIN32G4 integrated gate driver MCU.
 
 ### Encoders
+
+Drivers for various position sensor ICs. In many cases these hardware-specific drivers often support more functionality than the generic SimpleFOC sensor drivers, including reading status registers, setting configurations and more.
 
  - [AS5048A SPI driver](src/encoders/as5048a/) - SPI driver for the AMS AS5048A absolute position magnetic rotary encoder IC.
  - [AS5047 SPI driver](src/encoders/as5047/) - SPI driver for the AMS AS5047P and AS5047D absolute position magnetic rotary encoder ICs.
@@ -51,21 +55,25 @@ What is here? See the sections below. Each driver or function should come with i
  - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
  - [MT6835 SPI driver](src/encoders/mt6835/) - SPI driver for the MagnTek MT6835 21 bit magnetic rotary encoder IC.
  - [STM32 PWM sensor driver](src/encoders/stm32pwmsensor/) - STM32 native timer-based driver for PWM angle sensors.
+ - [CalibratedSensor](src/encoders/calibrated/) - A sensor which can calibrate for eccentricity on the magnet placement.
  - [SmoothingSensor](src/encoders/smoothing/) - A SimpleFOC Sensor wrapper implementation which adds angle extrapolation.
 
 ### Communications
 
- - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications protocol and drivers for both controller and target devices, based on register abstraction
- - [STM32 SpeedDir Input](src/comms/stm32speeddir/) - Control target velocity with PWM speed and direction inputs
- - [SerialBinaryCommander](src/comms/serial/) - Serial communications with binary protocol, based on register abstraction
- - [Telemetry](src/comms/telemetry/) - Telemetry abstraction, based on registers
- - [SerialASCIITelemetry](src/comms/serial/) - Serial communications with ascii protocol, based on register abstraction
+Extended communications classes for SimpleFOC. In particular the Telemetry and PacketCommander classes, which implement ASCII or Binary communications and allow monitoring and control of multiple motors, via an easy to use "Registers" abstraction. The Binary and ASCII packet based protocols are directly supported in [PySimpleFOC](https://github.com/simplefoc/pysimplefoc).
 
+ - [PacketCommander](src/comms/streams/) - Serial communications with binary protocol, based on register abstraction - get or set any value in SimpleFOC
+ - [Telemetry](src/comms/telemetry/) - Telemetry based on registers - monitor any value in SimpleFOC, and log in either ASCII or Binary, compatible with PacketCommander
+ - [SimpleTelemetry](src/comms/telemetry/) - Register telemetry for use with Arduino Serial Plotter tool
+ - [TeleplotTelemetry](src/comms/telemetry/) - Register telemetry for use with VSCode Teleplot extension
+ - [I2CCommander I2C driver](src/comms/i2c/) - I2C communications based on register abstraction
+ - [STM32 SpeedDir Input](src/comms/stm32speeddir/) - Control target velocity with PWM speed and direction inputs
+ 
 ### Settings
 
-Load and store SimpleFOC motor settings, based on register abstraction.
+Load and store SimpleFOC motor settings, based on register abstraction. Storing the motor calibration allows you to skip the calibration phase during setup.
 
- - [SAMD NVM storage driver](src/settings/samd/) - Store settings to the NVM flash memory in your SAMD MCU
+ - [SAMD NVM storage driver](src/settings/samd/) - Store settings to either the main flash memory or the RWWEE memory (if available) in your SAMD MCU
  - [CAT24 I2C EEPROM storage driver](src/settings/i2c/) - Store settings to CAT24 I2C EEPROMs
  - [STM32 flash storage driver](src/settings/stm32/) - Store settings directly to STM32 on-board flash, currently supporting STM32G4 MCUs.
 
@@ -77,6 +85,8 @@ Drive different kinds of motors, or use alternate algorithms to SimpleFOC's defa
 
 
 ### Utilities
+
+Other support code not fitting in the above categories.
 
  - [STM32 PWM Input driver](src/utilities/stm32pwm/) - PWM Input driver for STM32 MCUs. Accurately measure PWM inputs with zero MCU overhead.
  - [STM32 CORDIC trig driver](src/utilities/stm32math/) - CORDIC driver to accellerate sine and cosine calculations in SimpleFOC, on STM32 MCUs which have a CORDIC unit.
