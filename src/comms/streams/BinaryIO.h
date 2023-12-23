@@ -13,7 +13,7 @@
 // improve the performance compared to the ASCII version, which will do a lot of
 // converting data to ASCII, and then write in many small writes.
 #ifndef BINARYIO_BUFFER_SIZE
-#define BINARYIO_BUFFER_SIZE 64
+#define BINARYIO_BUFFER_SIZE 58
 #endif
 
 class BinaryIO : public PacketIO {

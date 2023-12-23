@@ -57,8 +57,8 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
                 Telemetry* telemetry = Telemetry::telemetries[Telemetry::telemetry_ctrl];
                 comms << telemetry->numRegisters;
                 for (uint8_t i=0; i<telemetry->numRegisters; i++) {
-                    comms << telemetry->registers[i];
                     comms << telemetry->registers_motor[i];
+                    comms << telemetry->registers[i];
                 }
                 telemetry->headerSent = false;
             }
@@ -281,8 +281,8 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
                 uint8_t registers[numRegisters];
                 uint8_t motors[numRegisters];
                 for (uint8_t i=0; i<numRegisters; i++) {
-                    comms >> registers[i];
                     comms >> motors[i];
+                    comms >> registers[i];
                 }
                 telemetry->setTelemetryRegisters(numRegisters, registers, motors);
             }
