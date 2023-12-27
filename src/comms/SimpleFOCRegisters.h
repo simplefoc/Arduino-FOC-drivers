@@ -27,6 +27,9 @@ typedef enum : uint8_t  {
     REG_POSITION = 0x10,        // RO - int32_t full rotations + float position (0-2PI, in radians) (4 bytes + 4 bytes)
     REG_VELOCITY = 0x11,        // RO - float
     REG_SENSOR_ANGLE = 0x12,    // RO - float
+    REG_SENSOR_MECHANICAL_ANGLE = 0x13,    // RO - float
+    REG_SENSOR_VELOCITY = 0x14, // RO - float
+    REG_SENSOR_TIMESTAMP = 0x15,// RO - uint32_t
 
     REG_PHASE_VOLTAGE = 0x16,  // R/W - 3xfloat = 12 bytes
     REG_PHASE_STATE = 0x17,     // R/W - 3 bytes (1 byte per phase)

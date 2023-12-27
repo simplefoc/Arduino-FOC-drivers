@@ -114,11 +114,13 @@ BinaryIO& BinaryIO::operator>>(uint8_t &value) {
 
 PacketIO& BinaryIO::operator>>(Packet& value) {
     while (!in_sync && _io.available() > 0) {
-        if (_io.read() == MARKER_BYTE)
+        if (_io.peek() == MARKER_BYTE)
             in_sync = true;
+        else
+            _io.read();
     }
     if (_io.peek() == MARKER_BYTE) {
-        _io.read(); // discard the \n
+        _io.read(); // discard the marker
     }
     if (!in_sync || _io.available() < 3) {  // size, frame type, payload = 3 bytes minimum frame size
         value.type = 0x00;

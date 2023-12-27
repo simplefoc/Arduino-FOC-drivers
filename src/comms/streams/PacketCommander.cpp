@@ -76,7 +76,7 @@ void PacketCommander::handleRegisterPacket(bool write, uint8_t reg) {
 
 bool PacketCommander::commsToRegister(uint8_t reg){
     switch (reg) {
-        case REG_MOTOR_ADDRESS:
+        case SimpleFOCRegister::REG_MOTOR_ADDRESS:
             uint8_t val;
             *_io >> val;
             if (val >= numMotors)

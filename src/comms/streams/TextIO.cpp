@@ -79,7 +79,7 @@ TextIO& TextIO::operator>>(float &value) {
     if (in_sep) {
         _io.read(); // discard the separator
     }
-    value = _io.parseFloat(LookaheadMode::SKIP_NONE);
+    value = _io.parseFloat(LookaheadMode::SKIP_NONE);  // TODO LookaheadMode is not defined on ESP32
     in_sep = true;
     return *this;
 };

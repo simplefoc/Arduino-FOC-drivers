@@ -34,7 +34,7 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
             break;
         case SimpleFOCRegister::REG_POSITION:
             if (motor->sensor) {
-                comms << (uint32_t)motor->sensor->getFullRotations();
+                comms << (uint32_t)motor->sensor->getFullRotations(); // TODO fix me!
                 comms << motor->sensor->getMechanicalAngle();
             }
             else {
@@ -50,6 +50,24 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
                 comms << motor->sensor->getAngle(); // stored angle
             else
                 comms << motor->shaft_angle;
+            break;
+        case SimpleFOCRegister::REG_SENSOR_MECHANICAL_ANGLE:
+            if (motor->sensor)
+                comms << motor->sensor->getMechanicalAngle(); // stored angle
+            else
+                comms << motor->shaft_angle;
+            break;
+        case SimpleFOCRegister::REG_SENSOR_VELOCITY:
+            if (motor->sensor)
+                comms << motor->sensor->getVelocity(); // stored angle
+            else
+                comms << motor->shaft_velocity;
+            break;
+        case SimpleFOCRegister::REG_SENSOR_TIMESTAMP:
+            if (motor->sensor)
+                comms << (uint32_t)motor->sensor->angle_prev_ts; // stored angle
+            else
+                comms << (uint32_t)0;
             break;
 
         case SimpleFOCRegister::REG_TELEMETRY_REG:
@@ -405,6 +423,9 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_POSITION:
         case SimpleFOCRegister::REG_VELOCITY:
         case SimpleFOCRegister::REG_SENSOR_ANGLE:
+        case SimpleFOCRegister::REG_SENSOR_MECHANICAL_ANGLE:
+        case SimpleFOCRegister::REG_SENSOR_VELOCITY:
+        case SimpleFOCRegister::REG_SENSOR_TIMESTAMP:
         case SimpleFOCRegister::REG_VOLTAGE_Q:
         case SimpleFOCRegister::REG_VOLTAGE_D:
         case SimpleFOCRegister::REG_CURRENT_Q:
@@ -433,6 +454,9 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_ANGLE:
         case SimpleFOCRegister::REG_VELOCITY:
         case SimpleFOCRegister::REG_SENSOR_ANGLE:
+        case SimpleFOCRegister::REG_SENSOR_MECHANICAL_ANGLE:
+        case SimpleFOCRegister::REG_SENSOR_VELOCITY:
+        case SimpleFOCRegister::REG_SENSOR_TIMESTAMP:        
         case SimpleFOCRegister::REG_VOLTAGE_Q:
         case SimpleFOCRegister::REG_VOLTAGE_D:
         case SimpleFOCRegister::REG_CURRENT_Q:
@@ -494,7 +518,7 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
                 return 2*telemetry->numRegisters + 1;
             }
             else
-                return 0;
+                return 1;
         case SimpleFOCRegister::REG_DRIVER_ENABLE:
         case SimpleFOCRegister::REG_REPORT: // size can vary, handled in Commander if used - may discontinue this feature
         case SimpleFOCRegister::REG_ENABLE_ALL: // write-only
