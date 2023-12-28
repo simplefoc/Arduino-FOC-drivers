@@ -70,7 +70,11 @@ TextIO& TextIO::operator<<(Separator value) {
     return *this;
 };
 
-
+#ifndef ESP32
+#define LOOKAHEADARGS LookaheadMode::SKIP_NONE
+#else
+#define LOOKAHEADARGS
+#endif
 
 TextIO& TextIO::operator>>(float &value) {
     if (_io.peek() == '\n') {
@@ -79,7 +83,7 @@ TextIO& TextIO::operator>>(float &value) {
     if (in_sep) {
         _io.read(); // discard the separator
     }
-    value = _io.parseFloat(LookaheadMode::SKIP_NONE);  // TODO LookaheadMode is not defined on ESP32
+    value = _io.parseFloat(LOOKAHEADARGS);  // TODO LookaheadMode is not defined on ESP32
     in_sep = true;
     return *this;
 };
@@ -91,7 +95,7 @@ TextIO& TextIO::operator>>(uint32_t &value) {
     if (in_sep) {
         _io.read(); // discard the separator
     }
-    value = (uint32_t)_io.parseInt(LookaheadMode::SKIP_NONE);
+    value = (uint32_t)_io.parseInt(LOOKAHEADARGS);
     in_sep = true;
     return *this;
 };
@@ -105,7 +109,7 @@ TextIO& TextIO::operator>>(uint8_t &value) {
     if (in_sep) {
         _io.read(); // discard the separator
     }
-    value = (uint8_t)_io.parseInt(LookaheadMode::SKIP_NONE);
+    value = (uint8_t)_io.parseInt(LOOKAHEADARGS);
     in_sep = true;
     return *this;
 };
