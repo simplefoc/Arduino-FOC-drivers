@@ -65,7 +65,8 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
             break;
         case SimpleFOCRegister::REG_SENSOR_TIMESTAMP:
             if (motor->sensor)
-                comms << (uint32_t)motor->sensor->angle_prev_ts; // stored angle
+                //comms << (uint32_t)motor->sensor->angle_prev_ts; // TODO stored angle, make it a public or make this friend class
+                comms << (uint32_t)0;
             else
                 comms << (uint32_t)0;
             break;
