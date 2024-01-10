@@ -1,6 +1,8 @@
 
 #include "./SimpleFOCNanoDriver.h"
 
+#if defined(ARDUINO_NANO_ESP32) || defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_ARDUINO_NANO33BLE) || defined(ARDUINO_AVR_NANO)
+
 SimpleFOCNanoDriver::SimpleFOCNanoDriver() : BLDCDriver3PWM(PIN_INU, PIN_INV, PIN_INW, PIN_ENU, PIN_ENV, PIN_ENW) {
     // nothing to do here
 };
@@ -66,3 +68,4 @@ float SimpleFOCNanoDriver::getBusVoltage(float vdd_voltage, int adc_resolution) 
     return sum / 500.0 * VBUS_CONV_FACTOR * (vdd_voltage / adc_resolution);
 };
 
+#endif
