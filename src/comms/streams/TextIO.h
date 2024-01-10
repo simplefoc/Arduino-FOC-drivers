@@ -6,6 +6,12 @@
 #include <Stream.h>
 
 
+#ifndef SIMPLEFOC_TEXTIO_BUFFER_SIZE
+#define SIMPLEFOC_TEXTIO_BUFFER_SIZE 64
+#endif
+
+
+
 class TextIO : public PacketIO {
     public:
         TextIO(Stream& io);
@@ -24,9 +30,14 @@ class TextIO : public PacketIO {
         
         uint8_t precision = 4;
     protected:
+        uint32_t intFromBuffer();
+
         Stream& _io;
         bool sep = false;
         bool in_sep = false;
+        uint8_t buffer_index = 0;
+        uint8_t buffer_len = 0;
+        char buffer[SIMPLEFOC_TEXTIO_BUFFER_SIZE];
 };
 
 

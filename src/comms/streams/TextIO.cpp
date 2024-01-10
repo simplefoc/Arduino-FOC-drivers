@@ -70,32 +70,70 @@ TextIO& TextIO::operator<<(Separator value) {
     return *this;
 };
 
-#ifndef ESP32
-#define LOOKAHEADARGS LookaheadMode::SKIP_NONE
-#else
-#define LOOKAHEADARGS
-#endif
+
+
+uint32_t TextIO::intFromBuffer() {
+    if (in_sep) {
+        buffer_index++; // discard the separator
+    }
+    if (buffer_index >= buffer_len)
+        in_sync = false;
+    uint32_t value = 0;
+    while (buffer_index < buffer_len) {
+        char c = buffer[buffer_index];
+        if (c >= '0' && c <= '9') {
+            value = value * 10 + (c - '0');
+            buffer_index++;
+        }
+        else {
+            break;
+        }
+    }
+    return value;
+}
+
 
 TextIO& TextIO::operator>>(float &value) {
-    if (_io.peek() == '\n') {
-        return *this; // TODO flag this error
-    }
     if (in_sep) {
-        _io.read(); // discard the separator
+        buffer_index++; // discard the separator
+        in_sep = false;
     }
-    value = _io.parseFloat(LOOKAHEADARGS);  // TODO LookaheadMode is not defined on ESP32
+    if (buffer_index >= buffer_len) {
+        in_sync = false;
+        return *this;
+    }
+    char c = buffer[buffer_index];
+    int8_t sign = 1;
+    if (c == '-') {
+        buffer_index++;
+        sign = -1;
+    }
+    uint32_t val = 0;
+    if (c != '.')
+        val = intFromBuffer();
+    if (buffer_index < buffer_len) {
+        c = buffer[buffer_index];
+        if (c == '.') {
+            uint8_t pos = ++buffer_index;
+            uint32_t frac = intFromBuffer();
+            if (pos < buffer_index) {
+                value = ((float)val + (float)frac / pow(10, buffer_index - pos)) * sign;
+                in_sep = true;
+            }
+            else
+                in_sync = false;
+            return *this;
+        }
+    }
+    value = (float)val * sign;
     in_sep = true;
     return *this;
 };
 
+
+
 TextIO& TextIO::operator>>(uint32_t &value) {
-    if (_io.peek() == '\n') {
-        return *this; // TODO flag this error
-    }
-    if (in_sep) {
-        _io.read(); // discard the separator
-    }
-    value = (uint32_t)_io.parseInt(LOOKAHEADARGS);
+    value = intFromBuffer();
     in_sep = true;
     return *this;
 };
@@ -103,13 +141,7 @@ TextIO& TextIO::operator>>(uint32_t &value) {
 
 
 TextIO& TextIO::operator>>(uint8_t &value) {
-    if (_io.peek() == '\n') {
-        return *this; // TODO flag this error
-    }
-    if (in_sep) {
-        _io.read(); // discard the separator
-    }
-    value = (uint8_t)_io.parseInt(LOOKAHEADARGS);
+    value = (uint8_t)intFromBuffer();
     in_sep = true;
     return *this;
 };
@@ -118,25 +150,48 @@ TextIO& TextIO::operator>>(uint8_t &value) {
 
 TextIO& TextIO::operator>>(Packet &value) {
     while (!in_sync && _io.available() > 0) {
-        if (_io.read() == '\n')
+        if (_io.read() == '\n') {
             in_sync = true;
+            buffer_len = 0;
+        }
     }
-    if (_io.peek() == '\n') {
-        _io.read(); // discard the \n
+    if (buffer_index >= buffer_len) {
+        buffer_len = 0;
+        buffer_index = 0;
     }
-    if (!in_sync || _io.available() < 3) {  // frame type, register id, \n to end frame = 3 bytes minimum frame size
-        value.type = 0x00;
-        value.payload_size = 0;
-        return *this;
+    while (in_sync && _io.available()>0) {
+        uint8_t peek = _io.peek();
+        if (peek == '\n' || peek == '\r') {            
+            // skip newlines and carriage returns
+            while (_io.available()>0 && (peek == '\n' || peek == '\r')) {
+                _io.read(); // discard the \n
+                peek = _io.peek();
+            }
+            if (buffer_len>1) {
+                value.type = buffer[0];
+                value.payload_size = 0;
+                in_sep = false;
+                buffer_index = 1;
+                return *this;
+            }
+        }
+        else {
+            if (buffer_len < SIMPLEFOC_TEXTIO_BUFFER_SIZE)
+                buffer[buffer_len++] = _io.read();
+            else {
+                buffer_len = 0;
+                in_sync = false;
+            }
+        }
     }
-    value.type = _io.read();
+
+    value.type = 0x00;
     value.payload_size = 0;
-    in_sep = false;
     return *this;
 };
 
 
 
 bool TextIO::is_complete() {
-    return _io.peek() == '\n';
+    return  buffer_index >= buffer_len;
 };
