@@ -39,6 +39,10 @@ void PacketCommander::run() {
             handleRegisterPacket(!_io->is_complete(), curRegister);
             lastcommanderror = commanderror;
             lastcommandregister = curRegister;
+            if (commanderror) {
+                _io->in_sync = false;
+                //*_io << START_PACKET(PacketType::ALERT, 1) << '?' << END_PACKET;
+            }
         }
         else if (curr_packet.type == PacketType::SYNC) {            
             *_io << START_PACKET(PacketType::SYNC, 1);
@@ -46,8 +50,9 @@ void PacketCommander::run() {
             *_io << END_PACKET;
             // TODO flush packet
         }
-        else
-            _io->in_sync = false; // TODO flag in another way?
+        else {
+            _io->in_sync = false; // TODO it would be better just to reset the buffer, since we just saw a newline
+        }
 
         if (! _io->is_complete())
             _io->in_sync = false;
@@ -55,10 +60,11 @@ void PacketCommander::run() {
 };
 
 
+
 void PacketCommander::handleRegisterPacket(bool write, uint8_t reg) {
     if (write) {
         bool ok = commsToRegister(reg);
-        commanderror = commanderror && !ok;
+        commanderror = commanderror || !ok;
     }
     if (!write || echo) {
         uint8_t size = SimpleFOCRegisters::regs->sizeOfRegister(reg);
@@ -70,7 +76,7 @@ void PacketCommander::handleRegisterPacket(bool write, uint8_t reg) {
             // TODO flush packet
         }
     }
-}
+};
 
 
 
@@ -87,23 +93,22 @@ bool PacketCommander::commsToRegister(uint8_t reg){
         default:
             return SimpleFOCRegisters::regs->commsToRegister(*_io, reg, motors[curMotor]);
     }
-}
+};
 
 
 
 bool PacketCommander::registerToComms(uint8_t reg){
     switch (reg) {
-        case REG_STATUS:
+        case SimpleFOCRegister::REG_STATUS:
             // TODO implement status register
             return true;
-        case REG_MOTOR_ADDRESS:
+        case SimpleFOCRegister::REG_MOTOR_ADDRESS:
             *_io << curMotor;
             return true;
-        case REG_NUM_MOTORS:
+        case SimpleFOCRegister::REG_NUM_MOTORS:
             *_io << numMotors;
             return true;
         default:
             return SimpleFOCRegisters::regs->registerToComms(*_io, reg, motors[curMotor]);
     }
-}
-
+};

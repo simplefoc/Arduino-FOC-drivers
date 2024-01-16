@@ -90,7 +90,7 @@ uint32_t TextIO::intFromBuffer() {
         }
     }
     return value;
-}
+};
 
 
 TextIO& TextIO::operator>>(float &value) {
@@ -150,7 +150,8 @@ TextIO& TextIO::operator>>(uint8_t &value) {
 
 TextIO& TextIO::operator>>(Packet &value) {
     while (!in_sync && _io.available() > 0) {
-        if (_io.read() == '\n') {
+        char skip = _io.read();
+        if (skip == '\n' || skip == '\r') {
             in_sync = true;
             buffer_len = 0;
         }
@@ -159,13 +160,16 @@ TextIO& TextIO::operator>>(Packet &value) {
         buffer_len = 0;
         buffer_index = 0;
     }
-    while (in_sync && _io.available()>0) {
+    int avail = _io.available();
+    while (in_sync && avail>0) {
         uint8_t peek = _io.peek();
         if (peek == '\n' || peek == '\r') {            
             // skip newlines and carriage returns
-            while (_io.available()>0 && (peek == '\n' || peek == '\r')) {
+            while (avail>0 && (peek == '\n' || peek == '\r')) {
                 _io.read(); // discard the \n
-                peek = _io.peek();
+                avail = _io.available();
+                if (avail>0)
+                    peek = _io.peek();
             }
             if (buffer_len>1) {
                 value.type = buffer[0];
@@ -174,10 +178,14 @@ TextIO& TextIO::operator>>(Packet &value) {
                 buffer_index = 1;
                 return *this;
             }
+            else
+                buffer_len = 0;
         }
         else {
-            if (buffer_len < SIMPLEFOC_TEXTIO_BUFFER_SIZE)
+            if (buffer_len < SIMPLEFOC_TEXTIO_BUFFER_SIZE) {
                 buffer[buffer_len++] = _io.read();
+                avail = _io.available();
+            }
             else {
                 buffer_len = 0;
                 in_sync = false;
