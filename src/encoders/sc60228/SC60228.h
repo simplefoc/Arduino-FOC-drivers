@@ -21,7 +21,7 @@ typedef union {
 #define SC60228_CPR 4096
 #define SC60228_BITORDER MSBFIRST
 
-static SPISettings SC60228SPISettings(8000000, SC60228_BITORDER, SPI_MODE0); // @suppress("Invalid arguments")
+static SPISettings SC60228SPISettings(8000000, SC60228_BITORDER, SPI_MODE1); // @suppress("Invalid arguments")
 
 
 
