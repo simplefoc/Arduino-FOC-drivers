@@ -27,6 +27,7 @@ protected:
     int readBytes(void* valueToSet, int numBytes);
     void reset();
 
+    uint32_t _offset;
     uint8_t* _currptr;
 };
 

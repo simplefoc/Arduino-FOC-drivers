@@ -6,7 +6,7 @@
 #include "communication/SimpleFOCDebug.h"
 
 
-RP2040FlashSettingsStorage::RP2040FlashSettingsStorage(uint32_t offset = 0x0) {
+RP2040FlashSettingsStorage::RP2040FlashSettingsStorage(uint32_t offset) {
     _offset = offset;
 };
 
@@ -60,7 +60,7 @@ RegisterIO& RP2040FlashSettingsStorage::operator>>(uint8_t& value) {
     uint8_t num = readBytes(&val, 1);
     if (num==1)
         value = val;
-    return num;
+    return *this;
 };
 
 RegisterIO& RP2040FlashSettingsStorage::operator>>(float& value) {
@@ -68,7 +68,7 @@ RegisterIO& RP2040FlashSettingsStorage::operator>>(float& value) {
     uint8_t num = readBytes(&val, 4);
     if (num==4)
         value = val;
-    return num;
+    return *this;
 };
 
 RegisterIO& RP2040FlashSettingsStorage::operator>>(uint32_t& value) {
@@ -76,7 +76,7 @@ RegisterIO& RP2040FlashSettingsStorage::operator>>(uint32_t& value) {
     uint8_t num = readBytes(&val, 4);
     if (num==4)
         value = val;
-    return num;
+    return *this;
 };
 
 
