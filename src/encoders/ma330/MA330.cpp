@@ -121,13 +121,13 @@ void MA330::setFieldStrengthThresholds(uint8_t high, uint8_t low) {
 
 
 uint16_t MA330::transfer16(uint16_t outValue) {
+    spi->beginTransaction(settings);
     if (nCS >= 0)
         digitalWrite(nCS, LOW);
-    spi->beginTransaction(settings);
     uint16_t value = spi->transfer16(outValue);
-    spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
+    spi->endTransaction();
     return value;
 };
 uint8_t MA330::readRegister(uint8_t reg) {
