@@ -27,7 +27,7 @@ void FluxObserverSensor::update() {
   // Close to zero speed the flux observer can resonate
   // Estimate the BEMF and exit if it's below the threshold 
   float bemf = _motor.voltage.q - _motor.phase_resistance * _motor.current.q; 
-  if (abs(bemf < bemf_threshold)) return;
+  if (abs(bemf) < bemf_threshold) return;
 
   sensor_cnt = 0;
 
