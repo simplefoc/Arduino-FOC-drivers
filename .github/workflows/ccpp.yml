@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         arduino-boards-fqbn:
-          - arduino:avr:uno                          # arudino uno
+          - arduino:avr:nano                         # arudino nano
           - arduino:sam:arduino_due_x                # arduino due
           - arduino:samd:nano_33_iot                 # samd21
           - adafruit:samd:adafruit_metro_m4          # samd51
@@ -25,22 +25,22 @@ jobs:
           - STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F411RE # stm32 nucleo
           - arduino:mbed_rp2040:pico                 # rpi pico          
         include:
-          - arduino-boards-fqbn: arduino:avr:uno
+          - arduino-boards-fqbn: arduino:avr:nano
             sketches-exclude: calibrated mt6816_spi smoothing
             required-libraries: Simple FOC
           - arduino-boards-fqbn: arduino:sam:arduino_due_x
             required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing
+            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage
           - arduino-boards-fqbn: arduino:samd:nano_33_iot
             required-libraries: Simple FOC 
             sketches-exclude: calibrated smoothing
           - arduino-boards-fqbn: arduino:mbed_rp2040:pico
             required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing
+            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage
           - arduino-boards-fqbn: adafruit:samd:adafruit_metro_m4
             platform-url: https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
             required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing
+            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage
           # - arduino-boards-fqbn: esp32:esp32:esp32doit-devkit-v1
           #   platform-url: https://dl.espressif.com/dl/package_esp32_index.json
           #   required-libraries: Simple FOC
@@ -48,19 +48,19 @@ jobs:
           - arduino-boards-fqbn: esp32:esp32:esp32 # esp32 
             platform-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
             required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing
+            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage
           - arduino-boards-fqbn: esp32:esp32:esp32s2 # esp32s2
             platform-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
             required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing
+            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage
           - arduino-boards-fqbn: STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
             platform-url:  https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json 
             required-libraries: Simple FOC
-            sketches-exclude: calibrated mt6816_spi smoothing
+            sketches-exclude: calibrated mt6816_spi smoothing simplefocnano_torque_voltage
           - arduino-boards-fqbn: STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F411RE
             platform-url:  https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
             required-libraries: Simple FOC
-            sketches-exclude: smoothing
+            sketches-exclude: smoothing simplefocnano_torque_voltage
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
     steps:

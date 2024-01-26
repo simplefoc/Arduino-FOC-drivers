@@ -1,7 +1,7 @@
 
 # SimpleFOCNano Driver Class
 
-The `SimpleFOCNanoDriver` is a wrapper class around BLDCDriver3PWM to make using the [SimpleFOCNano shield](link) super-simple.
+The `SimpleFOCNanoDriver` is a wrapper class around BLDCDriver3PWM to make using the [SimpleFOCNano shield](https://github.com/simplefoc/SimpleFOCNano) super-simple.
 
 If you use this driver you don't need to bother with any pin-numbers, they are all set correctly for you based on the SimpleFOCNano's pinout. Of course, this only works if you actually plug the shield into the Nano. If you use jumper wires, either make exactly the same connections as plugging in the shield would, or don't use this driver.
 
