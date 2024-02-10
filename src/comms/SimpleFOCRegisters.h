@@ -14,15 +14,13 @@
 
 typedef enum : uint8_t  {
     REG_STATUS = 0x00,          // RO - 1 byte (motor status)
-    REG_MOTOR_ADDRESS = 0x01,   // R/W - 1 byte
-    REG_REPORT = 0x02,          // R/W - Write: variable, Read: variable, up to 32 bytes
+    REG_TARGET = 0x01,          // R/W - float
     REG_ENABLE_ALL = 0x03,      // WO  - 1 byte
     REG_ENABLE = 0x04,          // R/W - 1 byte
     REG_CONTROL_MODE = 0x05,    // R/W - 1 byte
     REG_TORQUE_MODE = 0x06,     // R/W - 1 byte
     REG_MODULATION_MODE = 0x07, // R/W - 1 byte
 
-    REG_TARGET = 0x08,          // R/W - float
     REG_ANGLE = 0x09,           // RO - float
     REG_POSITION = 0x10,        // RO - int32_t full rotations + float position (0-2PI, in radians) (4 bytes + 4 bytes)
     REG_VELOCITY = 0x11,        // RO - float
@@ -53,25 +51,36 @@ typedef enum : uint8_t  {
     REG_VEL_PID_P = 0x30,         // R/W - float
     REG_VEL_PID_I = 0x31,         // R/W - float
     REG_VEL_PID_D = 0x32,         // R/W - float
-    REG_VEL_LPF_T = 0x33,         // R/W - float
-    REG_ANG_PID_P = 0x34,         // R/W - float
-    REG_VEL_LIMIT = 0x35,         // R/W - float
-    REG_VEL_MAX_RAMP = 0x36,        // R/W - float
+    REG_VEL_PID_LIM = 0x33,       // R/W - float
+    REG_VEL_PID_RAMP = 0x34,      // R/W - float
+    REG_VEL_LPF_T = 0x35,         // R/W - float
+    REG_ANG_PID_P = 0x36,         // R/W - float
+    REG_ANG_PID_I = 0x37,         // R/W - float
+    REG_ANG_PID_D = 0x38,         // R/W - float
+    REG_ANG_PID_LIM = 0x39,       // R/W - float
+    REG_ANG_PID_RAMP = 0x3A,      // R/W - float
+    REG_ANG_LPF_T = 0x3B,         // R/W - float
 
     REG_CURQ_PID_P = 0x40,         // R/W - float
     REG_CURQ_PID_I = 0x41,         // R/W - float
     REG_CURQ_PID_D = 0x42,         // R/W - float
-    REG_CURQ_LPF_T = 0x43,         // R/W - float
-    REG_CURD_PID_P = 0x44,         // R/W - float
-    REG_CURD_PID_I = 0x45,         // R/W - float
-    REG_CURD_PID_D = 0x46,         // R/W - float
-    REG_CURD_LPF_T = 0x47,         // R/W - float
+    REG_CURQ_PID_LIM = 0x43,       // R/W - float
+    REG_CURQ_PID_RAMP = 0x44,      // R/W - float
+    REG_CURQ_LPF_T = 0x45,         // R/W - float
+    REG_CURD_PID_P = 0x46,         // R/W - float
+    REG_CURD_PID_I = 0x47,         // R/W - float
+    REG_CURD_PID_D = 0x48,         // R/W - float
+    REG_CURD_PID_LIM = 0x49,         // R/W - float
+    REG_CURD_PID_RAMP = 0x4A,         // R/W - float
+    REG_CURD_LPF_T = 0x4B,         // R/W - float
 
     REG_VOLTAGE_LIMIT = 0x50,       // R/W - float
     REG_CURRENT_LIMIT = 0x51,       // R/W - float
-    REG_MOTION_DOWNSAMPLE = 0x52,   // R/W - uint32_t
+    REG_VELOCITY_LIMIT = 0x52,      // R/W - float
     REG_DRIVER_VOLTAGE_LIMIT = 0x53,// R/W - float
     REG_PWM_FREQUENCY = 0x54,       // R/W - uint32_t
+    REG_DRIVER_VOLTAGE_PSU = 0x55,  // R/W - float
+    REG_MOTION_DOWNSAMPLE = 0x5F,   // R/W - uint32_t
 
     REG_ZERO_ELECTRIC_ANGLE = 0x60, // RO - float
     REG_SENSOR_DIRECTION = 0x61,    // RO - 1 byte
@@ -80,9 +89,17 @@ typedef enum : uint8_t  {
     REG_PHASE_RESISTANCE = 0x64,    // R/W - float
     REG_KV = 0x65,                  // R/W - float
     REG_INDUCTANCE = 0x66,          // R/W - float
+    REG_CURA_GAIN = 0x67,           // R/W - float
+    REG_CURB_GAIN = 0x68,           // R/W - float
+    REG_CURC_GAIN = 0x69,           // R/W - float
+    REG_CURA_OFFSET = 0x6A,         // R/W - float
+    REG_CURB_OFFSET = 0x6B,         // R/W - float
+    REG_CURC_OFFSET = 0x6C,         // R/W - float
 
     REG_NUM_MOTORS = 0x70,          // RO - 1 byte
     REG_SYS_TIME = 0x71,            // RO - uint32_t
+    REG_MOTOR_ADDRESS = 0x7F,       // R/W - float
+
 } SimpleFOCRegister;
 
 

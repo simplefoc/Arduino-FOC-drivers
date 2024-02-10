@@ -32,31 +32,38 @@ void PacketCommander::run() {
     // is a packet available?
     *_io >> curr_packet;
     if (curr_packet.type != 0x00) {
-        // new packet arrived - the only types of packets we expect to receive are REGISTER packets
-        if (curr_packet.type == PacketType::REGISTER) {
-            commanderror = false;
-            *_io >> curRegister;
-            handleRegisterPacket(!_io->is_complete(), curRegister);
-            lastcommanderror = commanderror;
-            lastcommandregister = curRegister;
-            if (commanderror) {
-                _io->in_sync = false;
-                //*_io << START_PACKET(PacketType::ALERT, 1) << '?' << END_PACKET;
-            }
-        }
-        else if (curr_packet.type == PacketType::SYNC) {            
-            *_io << START_PACKET(PacketType::SYNC, 1);
-            *_io << (uint8_t)0x01;
-            *_io << END_PACKET;
-            // TODO flush packet
-        }
-        else {
-            _io->in_sync = false; // TODO it would be better just to reset the buffer, since we just saw a newline
-        }
-
+        // new packet arrived - handke ut
+        commanderror = false;
+        if (!handlePacket(curr_packet)) {
+            // TODO error handling
+        };
+        lastcommanderror = commanderror;
+        lastcommandregister = curRegister;
+        if (commanderror) {
+            _io->in_sync = false; // TODO flush input buffer, don't set out of sync
+            //*_io << START_PACKET(PacketType::ALERT, 1) << '?' << END_PACKET;
+        }        
         if (! _io->is_complete())
-            _io->in_sync = false;
+            _io->in_sync = false; // TODO flush input buffer
     }
+};
+
+
+
+bool PacketCommander::handlePacket(Packet& packet) {
+    if (packet.type == PacketType::REGISTER) {
+        *_io >> curRegister;
+        handleRegisterPacket(!_io->is_complete(), curRegister);
+        return true;
+    }
+    else if (packet.type == PacketType::SYNC) {            
+        *_io << START_PACKET(PacketType::SYNC, 1);
+        *_io << (uint8_t)0x01;
+        *_io << END_PACKET;
+        // TODO flush output packet
+        return true;
+    }
+    return false;
 };
 
 

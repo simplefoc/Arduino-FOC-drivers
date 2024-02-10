@@ -19,15 +19,16 @@ public:
 
     void addMotor(FOCMotor* motor);
 
-    void init(PacketIO& io);
-    void run();
+    virtual void init(PacketIO& io);
+    virtual void run();
 
     bool echo = true;
 protected:
 
-    bool commsToRegister(uint8_t reg);
-    bool registerToComms(uint8_t reg);
-    void handleRegisterPacket(bool write, uint8_t reg);
+    virtual bool commsToRegister(uint8_t reg);
+    virtual bool registerToComms(uint8_t reg);
+    virtual void handleRegisterPacket(bool write, uint8_t reg);
+    virtual bool handlePacket(Packet& packet);
 
     FOCMotor* motors[PACKETCOMMANDER_MAX_MOTORS];
     uint8_t numMotors = 0;

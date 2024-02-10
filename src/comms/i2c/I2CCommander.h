@@ -14,6 +14,9 @@
 #define I2CCOMMANDER_MAX_REPORT_REGISTERS 8
 
 
+#define I2CCOMMANDER_REG_REPORT 0x80
+
+
 class I2CCommander : public RegisterIO {
     public:    
         I2CCommander(TwoWire* wire = &Wire);

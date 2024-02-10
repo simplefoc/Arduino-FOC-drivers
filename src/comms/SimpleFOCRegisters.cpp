@@ -165,17 +165,32 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_VEL_PID_D:
             comms << motor->PID_velocity.D;
             break;
+        case SimpleFOCRegister::REG_VEL_PID_LIM:
+            comms << motor->PID_velocity.limit;
+            break;
+        case SimpleFOCRegister::REG_VEL_PID_RAMP:
+            comms << motor->PID_velocity.output_ramp;
+            break;
         case SimpleFOCRegister::REG_VEL_LPF_T:
             comms << motor->LPF_velocity.Tf;
             break;
         case SimpleFOCRegister::REG_ANG_PID_P:
             comms << motor->P_angle.P;
             break;
-        case SimpleFOCRegister::REG_VEL_LIMIT:
-            comms << motor->velocity_limit;
+        case SimpleFOCRegister::REG_ANG_PID_I:
+            comms << motor->P_angle.I;
             break;
-        case SimpleFOCRegister::REG_VEL_MAX_RAMP:
-            comms << motor->PID_velocity.output_ramp;
+        case SimpleFOCRegister::REG_ANG_PID_D:
+            comms << motor->P_angle.D;
+            break;
+        case SimpleFOCRegister::REG_ANG_PID_LIM:
+            comms << motor->P_angle.limit;
+            break;
+        case SimpleFOCRegister::REG_ANG_PID_RAMP:
+            comms << motor->P_angle.output_ramp;
+            break;
+        case SimpleFOCRegister::REG_ANG_LPF_T:
+            comms << motor->LPF_angle.Tf;
             break;
 
         case SimpleFOCRegister::REG_CURQ_PID_P:
@@ -186,6 +201,12 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
             break;
         case SimpleFOCRegister::REG_CURQ_PID_D:
             comms << motor->PID_current_q.D;
+            break;
+        case SimpleFOCRegister::REG_CURQ_PID_LIM:
+            comms << motor->PID_current_q.limit;
+            break;
+        case SimpleFOCRegister::REG_CURQ_PID_RAMP:
+            comms << motor->PID_current_q.output_ramp;
             break;
         case SimpleFOCRegister::REG_CURQ_LPF_T:
             comms << motor->LPF_current_q.Tf;
@@ -199,6 +220,12 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_CURD_PID_D:
             comms << motor->PID_current_d.D;
             break;
+        case SimpleFOCRegister::REG_CURD_PID_LIM:
+            comms << motor->PID_current_d.limit;
+            break;
+        case SimpleFOCRegister::REG_CURD_PID_RAMP:
+            comms << motor->PID_current_d.output_ramp;
+            break;
         case SimpleFOCRegister::REG_CURD_LPF_T:
             comms << motor->LPF_current_d.Tf;
             break;
@@ -208,6 +235,9 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
             break;
         case SimpleFOCRegister::REG_CURRENT_LIMIT:
             comms << motor->current_limit;
+            break;
+        case SimpleFOCRegister::REG_VELOCITY_LIMIT:
+            comms << motor->velocity_limit;
             break;
         case SimpleFOCRegister::REG_MOTION_DOWNSAMPLE:
             comms << (uint8_t)motor->motion_downsample;
@@ -241,13 +271,49 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
             comms << (uint8_t)motor->pole_pairs;
             break;
 
+        // case SimpleFOCRegister::REG_CURA_GAIN:
+        //     if (motor->current_sense)
+        //         comms << motor->current_sense->gain_a;
+        //     else
+        //         comms << 0.0f;
+        //     break;
+        // case SimpleFOCRegister::REG_CURB_GAIN:
+        //     if (motor->current_sense)
+        //         comms << motor->current_sense->gain_b;
+        //     else
+        //         comms << 0.0f;
+        //     break;
+        // case SimpleFOCRegister::REG_CURC_GAIN:
+        //     if (motor->current_sense)
+        //         comms << motor->current_sense->gain_c;
+        //     else
+        //         comms << 0.0f;
+        //     break;
+        // case SimpleFOCRegister::REG_CURA_OFFSET:
+        //     if (motor->current_sense)
+        //         comms << motor->current_sense->offset_a;
+        //     else
+        //         comms << 0.0f;
+        //     break;
+        // case SimpleFOCRegister::REG_CURB_OFFSET:
+        //     if (motor->current_sense)
+        //         comms << motor->current_sense->offset_b;
+        //     else
+        //         comms << 0.0f;
+        //     break;
+        // case SimpleFOCRegister::REG_CURC_OFFSET:
+        //     if (motor->current_sense)
+        //         comms << motor->current_sense->offset_c;
+        //     else
+        //         comms << 0.0f;
+        //     break;
+
         case SimpleFOCRegister::REG_SYS_TIME:
             // TODO how big is millis()? Same on all platforms?
             comms << (uint32_t)(int)millis();
             break;
         // unknown register or write only register (no read) or can't handle in superclass
         case SimpleFOCRegister::REG_NUM_MOTORS:
-        case SimpleFOCRegister::REG_REPORT:
         case SimpleFOCRegister::REG_MOTOR_ADDRESS:
         case SimpleFOCRegister::REG_ENABLE_ALL:
         default:
@@ -338,17 +404,32 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_VEL_PID_D:
             comms >> (motor->PID_velocity.D);
             return true;
+        case SimpleFOCRegister::REG_VEL_PID_LIM:
+            comms >> (motor->PID_velocity.limit);
+            return true;
+        case SimpleFOCRegister::REG_VEL_PID_RAMP:
+            comms >> (motor->PID_velocity.output_ramp);
+            return true;
         case SimpleFOCRegister::REG_VEL_LPF_T:
             comms >> (motor->LPF_velocity.Tf);
             return true;
         case SimpleFOCRegister::REG_ANG_PID_P:
             comms >> (motor->P_angle.P);
             return true;
-        case SimpleFOCRegister::REG_VEL_LIMIT:
-            comms >> (motor->velocity_limit);
+        case SimpleFOCRegister::REG_ANG_PID_I:
+            comms >> (motor->P_angle.I);
             return true;
-        case SimpleFOCRegister::REG_VEL_MAX_RAMP:
-            comms >> (motor->PID_velocity.output_ramp);
+        case SimpleFOCRegister::REG_ANG_PID_D:
+            comms >> (motor->P_angle.D);
+            return true;
+        case SimpleFOCRegister::REG_ANG_PID_LIM:
+            comms >> (motor->P_angle.limit);
+            return true;
+        case SimpleFOCRegister::REG_ANG_PID_RAMP:
+            comms >> (motor->P_angle.output_ramp);
+            return true;
+        case SimpleFOCRegister::REG_ANG_LPF_T:
+            comms >> (motor->LPF_angle.Tf);
             return true;
 
         case SimpleFOCRegister::REG_CURQ_PID_P:
@@ -359,6 +440,12 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
             return true;
         case SimpleFOCRegister::REG_CURQ_PID_D:
             comms >> (motor->PID_current_q.D);
+            return true;
+        case SimpleFOCRegister::REG_CURQ_PID_LIM:
+            comms >> (motor->PID_current_q.limit);
+            return true;
+        case SimpleFOCRegister::REG_CURQ_PID_RAMP:
+            comms >> (motor->PID_current_q.output_ramp);
             return true;
         case SimpleFOCRegister::REG_CURQ_LPF_T:
             comms >> (motor->LPF_current_q.Tf);
@@ -372,15 +459,36 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_CURD_PID_D:
             comms >> (motor->PID_current_d.D);
             return true;
+        case SimpleFOCRegister::REG_CURD_PID_LIM:
+            comms >> (motor->PID_current_d.limit);
+            return true;
+        case SimpleFOCRegister::REG_CURD_PID_RAMP:
+            comms >> (motor->PID_current_d.output_ramp);
+            return true;
         case SimpleFOCRegister::REG_CURD_LPF_T:
             comms >> (motor->LPF_current_d.Tf);
             return true;
 
         case SimpleFOCRegister::REG_VOLTAGE_LIMIT:
             comms >> (motor->voltage_limit);
+            if (motor->phase_resistance==NOT_SET){
+                motor->PID_velocity.limit = motor->voltage_limit;
+                if (motor->controller==MotionControlType::angle_nocascade)
+                    motor->P_angle.limit = motor->voltage_limit;
+            }
             return true;
         case SimpleFOCRegister::REG_CURRENT_LIMIT:
             comms >> (motor->current_limit);
+            if (motor->phase_resistance!=NOT_SET) {
+                motor->PID_velocity.limit = motor->current_limit;
+                if (motor->controller==MotionControlType::angle_nocascade)
+                    motor->P_angle.limit = motor->current_limit;
+            }
+            return true;
+        case SimpleFOCRegister::REG_VELOCITY_LIMIT:
+            comms >> (motor->velocity_limit);
+            if (motor->controller!=MotionControlType::angle_nocascade)
+                motor->P_angle.limit = motor->velocity_limit;
             return true;
         case SimpleFOCRegister::REG_MOTION_DOWNSAMPLE:
             comms >> val8;
@@ -417,6 +525,38 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
             comms >> val8;
             motor->pole_pairs = val8;
             return true;
+
+        // case SimpleFOCRegister::REG_CURA_GAIN:
+        //     comms >> va;
+        //     if (motor->current_sense)
+        //         motor->current_sense->gain_a = va;
+        //     return true;
+        // case SimpleFOCRegister::REG_CURB_GAIN:
+        //     comms >> vb;
+        //     if (motor->current_sense)
+        //         motor->current_sense->gain_b = vb;
+        //     return true;
+        // case SimpleFOCRegister::REG_CURC_GAIN:
+        //     comms >> vc;
+        //     if (motor->current_sense)
+        //         motor->current_sense->gain_c = vc;
+        //     return true;
+        // case SimpleFOCRegister::REG_CURA_OFFSET:
+        //     comms >> va;
+        //     if (motor->current_sense)
+        //         motor->current_sense->offset_a = va;
+        //     return true;
+        // case SimpleFOCRegister::REG_CURB_OFFSET:
+        //     comms >> vb;
+        //     if (motor->current_sense)
+        //         motor->current_sense->offset_b = vb;
+        //     return true;
+        // case SimpleFOCRegister::REG_CURC_OFFSET:
+        //     comms >> vc;
+        //     if (motor->current_sense)
+        //         motor->current_sense->offset_c = vc;
+        //     return true;
+
         // unknown register or read-only register (no write) or can't handle in superclass
         case SimpleFOCRegister::REG_ITERATIONS_SEC:
         case SimpleFOCRegister::REG_STATUS:
@@ -439,7 +579,6 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_NUM_MOTORS:
         case SimpleFOCRegister::REG_MOTOR_ADDRESS:
         case SimpleFOCRegister::REG_ENABLE_ALL:
-        case SimpleFOCRegister::REG_REPORT:
         default:
             return false;
     }
@@ -468,17 +607,26 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_VEL_PID_P:
         case SimpleFOCRegister::REG_VEL_PID_I:
         case SimpleFOCRegister::REG_VEL_PID_D:
+        case SimpleFOCRegister::REG_VEL_PID_LIM:
+        case SimpleFOCRegister::REG_VEL_PID_RAMP:
         case SimpleFOCRegister::REG_VEL_LPF_T:
         case SimpleFOCRegister::REG_ANG_PID_P:
-        case SimpleFOCRegister::REG_VEL_LIMIT:
-        case SimpleFOCRegister::REG_VEL_MAX_RAMP:
+        case SimpleFOCRegister::REG_ANG_PID_I:
+        case SimpleFOCRegister::REG_ANG_PID_D:
+        case SimpleFOCRegister::REG_ANG_PID_LIM:
+        case SimpleFOCRegister::REG_ANG_PID_RAMP:
+        case SimpleFOCRegister::REG_ANG_LPF_T:
         case SimpleFOCRegister::REG_CURQ_PID_P:
         case SimpleFOCRegister::REG_CURQ_PID_I:
         case SimpleFOCRegister::REG_CURQ_PID_D:
+        case SimpleFOCRegister::REG_CURQ_PID_LIM:
+        case SimpleFOCRegister::REG_CURQ_PID_RAMP:
         case SimpleFOCRegister::REG_CURQ_LPF_T:
         case SimpleFOCRegister::REG_CURD_PID_P:
         case SimpleFOCRegister::REG_CURD_PID_I:
         case SimpleFOCRegister::REG_CURD_PID_D:
+        case SimpleFOCRegister::REG_CURD_PID_LIM:
+        case SimpleFOCRegister::REG_CURD_PID_RAMP:
         case SimpleFOCRegister::REG_CURD_LPF_T:
         case SimpleFOCRegister::REG_VOLTAGE_LIMIT:
         case SimpleFOCRegister::REG_CURRENT_LIMIT:
@@ -491,6 +639,12 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_INDUCTANCE:
         case SimpleFOCRegister::REG_TELEMETRY_DOWNSAMPLE:
         case SimpleFOCRegister::REG_ITERATIONS_SEC:
+        case SimpleFOCRegister::REG_CURA_GAIN:
+        case SimpleFOCRegister::REG_CURB_GAIN:
+        case SimpleFOCRegister::REG_CURC_GAIN:
+        case SimpleFOCRegister::REG_CURA_OFFSET:
+        case SimpleFOCRegister::REG_CURB_OFFSET:
+        case SimpleFOCRegister::REG_CURC_OFFSET:     
             return 4;
         case SimpleFOCRegister::REG_SYS_TIME:
             return 4; // TODO how big is millis()? Same on all platforms?
@@ -521,7 +675,6 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
             else
                 return 1;
         case SimpleFOCRegister::REG_DRIVER_ENABLE:
-        case SimpleFOCRegister::REG_REPORT: // size can vary, handled in Commander if used - may discontinue this feature
         case SimpleFOCRegister::REG_ENABLE_ALL: // write-only
         default: // unknown register or write only register (no output) or can't handle in superclass
             return 0;

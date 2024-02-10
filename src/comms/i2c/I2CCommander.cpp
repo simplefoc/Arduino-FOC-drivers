@@ -110,7 +110,7 @@ bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int nu
             else
                 commanderror = true;
             break;
-        case REG_REPORT:
+        case I2CCOMMANDER_REG_REPORT:
             if (numBytes>=3 && (numBytes&0x01)==1) { // numBytes must be odd, since we have register and n pairs of motor/register numbers
                 val = (numBytes-1)/2;
                 if (val>I2CCOMMANDER_MAX_REPORT_REGISTERS)
@@ -169,7 +169,7 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
         case REG_MOTOR_ADDRESS:
             _wire->write(curMotor);
             break;
-        case REG_REPORT:
+        case I2CCOMMANDER_REG_REPORT:
             for (int i=0;i<numReportRegisters;i++)
                 SimpleFOCRegisters::regs->registerToComms(*this, reportRegisters[i], motors[reportMotors[i]]); // send any normal register
             break;
