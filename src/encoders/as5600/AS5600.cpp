@@ -27,7 +27,7 @@ void AS5600::setAngleRegister() {
 
 uint16_t AS5600::angle() {
     uint16_t result = 0;
-    if (!closeTransactions) {
+    if (closeTransactions) {
         setAngleRegister();
     }
     _wire->requestFrom(_address, (uint8_t)2, (uint8_t)closeTransactions);
@@ -146,13 +146,13 @@ uint16_t AS5600::readRegister(uint8_t reg, uint8_t len){
     _wire->write(reg);
     _wire->endTransmission(false);
     _wire->requestFrom(_address, len, (uint8_t)closeTransactions);
-    if (!closeTransactions) {
-        setAngleRegister();
-    }
     result = _wire->read();
     if (len == 2) {
         result <<= 8;
         result |= _wire->read();
+    }
+    if (!closeTransactions) {
+        setAngleRegister();
     }
     return result;
 };
