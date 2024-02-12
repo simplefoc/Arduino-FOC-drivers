@@ -31,12 +31,12 @@ float MagneticSensorMT6701SSI::getSensorAngle() {
 
 
 uint16_t MagneticSensorMT6701SSI::readRawAngleSSI() {
+    spi->beginTransaction(settings);
     if (nCS >= 0)
         digitalWrite(nCS, LOW);
-    spi->beginTransaction(settings);
     uint16_t value = spi->transfer16(0x0000);
-    spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
+    spi->endTransaction();
     return (value>>MT6701_DATA_POS)&0x3FFF;
 };
