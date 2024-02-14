@@ -7,6 +7,7 @@
  * 3) Set the target velocity (in radians per second) from serial terminal
  */
 #include <SimpleFOC.h>
+#include <SimpleFOCDrivers.h>
 #include <encoders/linearhall/LinearHall.h>
 
 // BLDC motor & driver instance
