@@ -80,6 +80,7 @@ typedef enum : uint8_t  {
     REG_DRIVER_VOLTAGE_LIMIT = 0x53,// R/W - float
     REG_PWM_FREQUENCY = 0x54,       // R/W - uint32_t
     REG_DRIVER_VOLTAGE_PSU = 0x55,  // R/W - float
+    REG_VOLTAGE_SENSOR_ALIGN = 0x56,// R/W - float
     REG_MOTION_DOWNSAMPLE = 0x5F,   // R/W - uint32_t
 
     REG_ZERO_ELECTRIC_ANGLE = 0x60, // RO - float

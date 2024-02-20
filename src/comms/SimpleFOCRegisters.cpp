@@ -245,6 +245,12 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_DRIVER_VOLTAGE_LIMIT:
             comms << ((BLDCMotor*)motor)->driver->voltage_limit;  // TODO handle stepper motors
             break;
+        case SimpleFOCRegister::REG_DRIVER_VOLTAGE_PSU:
+            comms << (((BLDCMotor*)motor)->driver->voltage_power_supply);
+            return true;
+        case SimpleFOCRegister::REG_VOLTAGE_SENSOR_ALIGN:
+            comms << (((BLDCMotor*)motor)->voltage_sensor_align);
+            return true;            
         case SimpleFOCRegister::REG_PWM_FREQUENCY:
             comms << (uint32_t)((BLDCMotor*)motor)->driver->pwm_frequency; // TODO handle stepper motors
             break;
@@ -497,6 +503,12 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_DRIVER_VOLTAGE_LIMIT:
             comms >> (((BLDCMotor*)motor)->driver->voltage_limit);
             return true;
+        case SimpleFOCRegister::REG_DRIVER_VOLTAGE_PSU:
+            comms >> (((BLDCMotor*)motor)->driver->voltage_power_supply);
+            return true;
+        case SimpleFOCRegister::REG_VOLTAGE_SENSOR_ALIGN:
+            comms >> (((BLDCMotor*)motor)->voltage_sensor_align);
+            return true;
         case SimpleFOCRegister::REG_PWM_FREQUENCY:
             comms >> val32;
             ((BLDCMotor*)motor)->driver->pwm_frequency = val32;
@@ -631,6 +643,8 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_VOLTAGE_LIMIT:
         case SimpleFOCRegister::REG_CURRENT_LIMIT:
         case SimpleFOCRegister::REG_DRIVER_VOLTAGE_LIMIT:
+        case SimpleFOCRegister::REG_DRIVER_VOLTAGE_PSU:
+        case SimpleFOCRegister::REG_VOLTAGE_SENSOR_ALIGN:
         case SimpleFOCRegister::REG_PWM_FREQUENCY:
         case SimpleFOCRegister::REG_ZERO_ELECTRIC_ANGLE:
         case SimpleFOCRegister::REG_ZERO_OFFSET:
