@@ -473,22 +473,22 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
             comms >> (motor->voltage_limit);
             if (motor->phase_resistance==NOT_SET){
                 motor->PID_velocity.limit = motor->voltage_limit;
-                if (motor->controller==MotionControlType::angle_nocascade)
-                    motor->P_angle.limit = motor->voltage_limit;
+                //if (motor->controller==MotionControlType::angle_nocascade)
+                //    motor->P_angle.limit = motor->voltage_limit;
             }
             return true;
         case SimpleFOCRegister::REG_CURRENT_LIMIT:
             comms >> (motor->current_limit);
             if (motor->phase_resistance!=NOT_SET) {
                 motor->PID_velocity.limit = motor->current_limit;
-                if (motor->controller==MotionControlType::angle_nocascade)
-                    motor->P_angle.limit = motor->current_limit;
+                //if (motor->controller==MotionControlType::angle_nocascade)
+                //    motor->P_angle.limit = motor->current_limit;
             }
             return true;
         case SimpleFOCRegister::REG_VELOCITY_LIMIT:
             comms >> (motor->velocity_limit);
-            if (motor->controller!=MotionControlType::angle_nocascade)
-                motor->P_angle.limit = motor->velocity_limit;
+            //if (motor->controller!=MotionControlType::angle_nocascade)
+            //    motor->P_angle.limit = motor->velocity_limit;
             return true;
         case SimpleFOCRegister::REG_MOTION_DOWNSAMPLE:
             comms >> val8;
