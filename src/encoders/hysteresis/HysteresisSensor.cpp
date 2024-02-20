@@ -2,7 +2,7 @@
 #include "./HysteresisSensor.h"
 
 
-HysteresisSensor::HysteresisSensor(Sensor& wrapped, float amount) : _wrapped(wrapped), _amount(amount) {
+HysteresisSensor::HysteresisSensor(Sensor& wrapped, float amount) : _amount(amount), _wrapped(wrapped) {
     // empty
 };
 
