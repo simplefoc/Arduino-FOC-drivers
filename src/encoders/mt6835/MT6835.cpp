@@ -91,7 +91,7 @@ uint8_t MT6835::getStatus(){
 uint8_t MT6835::getCalibrationStatus(){
     uint8_t data[3] = {0};
     data[0] = MT6835_OP_READ << 4 | MT6835_REG_CAL_STATUS >> 8;
-    data[1] = MT6835_REG_CAL_STATUS;
+    data[1] = MT6835_REG_CAL_STATUS & 0xFF;
 
     spi->beginTransaction(settings);
     if(nCS >= 0)
