@@ -8,23 +8,22 @@
 #define PAGE_OF(x) (((uint32_t)x - FLASH_BASE) / FLASH_PAGE_SIZE)
 
 
-class STM32FlashSettingsStorage : public SettingsStorage {
+class STM32FlashSettingsStorage : public SettingsStorage, public RegisterIO {
 public:
     STM32FlashSettingsStorage(uint32_t address = FLASH_BASE + FLASH_SIZE - FLASH_PAGE_SIZE);
     ~STM32FlashSettingsStorage();
 
-    void init() override;
+    void init();
 
     uint32_t _bank = FLASH_BANK_1; // TODO also support bank 2
 
 protected:
-    uint8_t readByte(uint8_t* valueToSet) override;
-    uint8_t readFloat(float* valueToSet) override;
-    uint8_t readInt(uint32_t* valueToSet) override;
-
-    uint8_t writeByte(uint8_t value) override;
-    uint8_t writeFloat(float value) override;
-    uint8_t writeInt(uint32_t value) override;
+    RegisterIO& operator<<(float value) override;
+    RegisterIO& operator<<(uint32_t value) override;
+    RegisterIO& operator<<(uint8_t value) override;
+    RegisterIO& operator>>(float& value) override;
+    RegisterIO& operator>>(uint32_t& value) override;
+    RegisterIO& operator>>(uint8_t& value) override;
 
     void beforeLoad() override;
     void beforeSave() override;

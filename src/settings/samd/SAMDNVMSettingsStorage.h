@@ -30,8 +30,6 @@
  * 
  * Don't save to NVM unnecessarily. It has a limited number of write cycles, and writing takes time.
  * 
- * 
- * 
  */
 
 
@@ -48,21 +46,20 @@
 #endif
 
 
-class SAMDNVMSettingsStorage : public SettingsStorage {
+class SAMDNVMSettingsStorage : public SettingsStorage, public RegisterIO {
 public:
     SAMDNVMSettingsStorage(uint32_t offset = 0x0);
     ~SAMDNVMSettingsStorage();
 
-    void init() override;
+    void init();
 
 protected:
-    uint8_t readByte(uint8_t* valueToSet) override;
-    uint8_t readFloat(float* valueToSet) override;
-    uint8_t readInt(uint32_t* valueToSet) override;
-
-    uint8_t writeByte(uint8_t value) override;
-    uint8_t writeFloat(float value) override;
-    uint8_t writeInt(uint32_t value) override;
+    RegisterIO& operator<<(float value) override;
+    RegisterIO& operator<<(uint32_t value) override;
+    RegisterIO& operator<<(uint8_t value) override;
+    RegisterIO& operator>>(float& value) override;
+    RegisterIO& operator>>(uint32_t& value) override;
+    RegisterIO& operator>>(uint8_t& value) override;
 
     void beforeSave() override;
     void afterSave() override;

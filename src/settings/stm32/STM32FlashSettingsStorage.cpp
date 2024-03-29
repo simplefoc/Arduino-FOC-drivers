@@ -17,7 +17,7 @@ STM32FlashSettingsStorage::~STM32FlashSettingsStorage(){};
 void STM32FlashSettingsStorage::init(){
     if (!IS_FLASH_PROGRAM_ADDRESS(_address))
         SimpleFOCDebug::println("SS: Invalid address");
-    SettingsStorage::init();
+    SettingsStorage::init(this);
     reset();
 };
 
@@ -111,44 +111,47 @@ int STM32FlashSettingsStorage::readBytes(void* valueToSet, int numBytes) {
 }
 
 
-uint8_t STM32FlashSettingsStorage::readByte(uint8_t* valueToSet) {
+RegisterIO& STM32FlashSettingsStorage::operator>>(uint8_t& value) {
     uint8_t val;
     uint8_t num = readBytes(&val, 1);
     if (num==1)
-        *valueToSet = val;
-    return num;
+        value = val;
+    return *this;
 };
 
-uint8_t STM32FlashSettingsStorage::readFloat(float* valueToSet) {
+RegisterIO& STM32FlashSettingsStorage::operator>>(float& value) {
     float val;
     uint8_t num = readBytes(&val, 4);
     if (num==4)
-        *valueToSet = val;
-    return num;
+        value = val;
+    return *this;
 };
 
-uint8_t STM32FlashSettingsStorage::readInt(uint32_t* valueToSet) {
+RegisterIO& STM32FlashSettingsStorage::operator>>(uint32_t& value) {
     uint32_t val;
     uint8_t num = readBytes(&val, 4);
     if (num==4)
-        *valueToSet = val;
-    return num;
+        value = val;
+    return *this;
 };
 
 
 
-uint8_t STM32FlashSettingsStorage::writeByte(uint8_t value) {
-    return writeBytes(&value, 1);
+RegisterIO& STM32FlashSettingsStorage::operator<<(uint8_t value) {
+    writeBytes(&value, 1);
+    return *this;
 };
 
 
-uint8_t STM32FlashSettingsStorage::writeFloat(float value) {
-    return writeBytes(&value, 4);
+RegisterIO& STM32FlashSettingsStorage::operator<<(float value) {
+    writeBytes(&value, 4);
+    return *this;
 };
 
 
-uint8_t STM32FlashSettingsStorage::writeInt(uint32_t value) {
-    return writeBytes(&value, 4);
+RegisterIO& STM32FlashSettingsStorage::operator<<(uint32_t value) {
+    writeBytes(&value, 4);
+    return *this;
 };
 
 #endif

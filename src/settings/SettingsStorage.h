@@ -3,8 +3,6 @@
 
 
 #include "../comms/SimpleFOCRegisters.h"
-#include "../comms/RegisterReceiver.h"
-#include "../comms/RegisterSender.h"
 #include "BLDCMotor.h"
 
 #define SIMPLEFOC_SETTINGS_MAGIC_BYTE 0x42
@@ -28,7 +26,7 @@ typedef enum : uint8_t  {
 
 
 
-class SettingsStorage : public RegisterReceiver, public RegisterSender {
+class SettingsStorage {
 public:
     SettingsStorage();
     ~SettingsStorage();
@@ -36,7 +34,7 @@ public:
     void addMotor(BLDCMotor* motor);
     void setRegisters(SimpleFOCRegister* registers, int numRegisters);
 
-    virtual void init();
+    virtual void init(RegisterIO* comms);
 
     SettingsStatus loadSettings();
     SettingsStatus saveSettings();
@@ -57,7 +55,6 @@ protected:
     virtual void startLoadRegister(SimpleFOCRegister reg);
     virtual void endLoadRegister();
 
-
     virtual void beforeLoad();
     virtual void afterLoad();
     virtual void beforeSave();
@@ -66,5 +63,6 @@ protected:
     FOCMotor* motors[SIMPLEFOC_SETTINGS_MAX_MOTORS];
     int numMotors = 0;
     SimpleFOCRegister* registers = NULL;
-    int numRegisters = 0;    
+    int numRegisters = 0;
+    RegisterIO* _io;
 };
