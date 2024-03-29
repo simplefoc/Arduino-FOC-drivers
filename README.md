@@ -23,7 +23,7 @@ What's changed since 1.0.6?
 - Refactored settings storage code
 - Refactored I2CCommander
 - New utility class for simple trapezoidal motion profiles
-- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=is%3Aissue+milestone%3A1.0.7+)
+- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=milestone%3A1.0.7+)
 
 
 ## What is included
