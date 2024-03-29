@@ -10,17 +10,19 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.7 - Released ??? 2023, for Simple FOC 2.3.3 or later
+v1.0.7 - Released 29 March 2024, for Simple FOC 2.3.2 or later
 
 
 What's changed since 1.0.6?
-- Added AS5600 sensor driver
+- Improvements to LinearHall driver, thanks to dekutree
+- Fix for ESP32 compiler warning, thanks to Yannik Stradmann
 - Added STM32 LPTIM encoder driver
 - Refactored communications code
 - Working telemetry abstraction
-- Working streams communications, ASCII or Binary based
+- Working streams communications, ASCII based
 - Refactored settings storage code
 - Refactored I2CCommander
+- New utility class for simple trapezoidal motion profiles
 - Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=is%3Aissue+milestone%3A1.0.7+)
 
 
@@ -90,6 +92,7 @@ Other support code not fitting in the above categories.
 
  - [STM32 PWM Input driver](src/utilities/stm32pwm/) - PWM Input driver for STM32 MCUs. Accurately measure PWM inputs with zero MCU overhead.
  - [STM32 CORDIC trig driver](src/utilities/stm32math/) - CORDIC driver to accellerate sine and cosine calculations in SimpleFOC, on STM32 MCUs which have a CORDIC unit.
+ - [TrapezoidalPlanner](src/utilities/trapezoids/) - Simple trapezoidal motion planner.
 
 ## How to use
 
