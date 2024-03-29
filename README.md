@@ -10,20 +10,11 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.7 - Released 29 March 2024, for Simple FOC 2.3.2 or later
+v1.0.8 - Released ??? 2024, for Simple FOC 2.3.3 or later
 
 
-What's changed since 1.0.6?
-- Improvements to LinearHall driver, thanks to dekutree
-- Fix for ESP32 compiler warning, thanks to Yannik Stradmann
-- Added STM32 LPTIM encoder driver
-- Refactored communications code
-- Working telemetry abstraction
-- Working streams communications, ASCII based
-- Refactored settings storage code
-- Refactored I2CCommander
-- New utility class for simple trapezoidal motion profiles
-- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=milestone%3A1.0.7+)
+What's changed since 1.0.7?
+- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=milestone%3A1.0.8+)
 
 
 ## What is included
@@ -119,6 +110,18 @@ If you do so, please be sure to adhere to and include the [LICENSE](https://gith
 Find out more information about the Arduino SimpleFOC project on the [docs website](https://docs.simplefoc.com/) 
 
 ## Release History
+
+What's changed since 1.0.6?
+- Improvements to LinearHall driver, thanks to dekutree
+- Fix for ESP32 compiler warning, thanks to Yannik Stradmann
+- Added STM32 LPTIM encoder driver
+- Refactored communications code
+- Working telemetry abstraction
+- Working streams communications, ASCII based
+- Refactored settings storage code
+- Refactored I2CCommander
+- New utility class for simple trapezoidal motion profiles
+- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=milestone%3A1.0.7+)
 
 What's changed since 1.0.5?
 - Added STSPIN32G4 driver
