@@ -17,9 +17,10 @@ AS5047::~AS5047() {
 
 void AS5047::init(SPIClass* _spi) {
 	spi = _spi;
-	if (nCS>=0)
+	if (nCS>=0) {
 		pinMode(nCS, OUTPUT);
-	digitalWrite(nCS, HIGH);
+		digitalWrite(nCS, HIGH);
+	}
 	//SPI has an internal SPI-device counter, it is possible to call "begin()" from different devices
 	spi->begin();
 	readRawAngle(); // read an angle
@@ -230,13 +231,13 @@ uint16_t AS5047::calcParity(uint16_t data){
 
 
 uint16_t AS5047::spi_transfer16(uint16_t outdata) {
+	spi->beginTransaction(settings);
 	if (nCS>=0)
 		digitalWrite(nCS, 0);
-	spi->beginTransaction(settings);
 	uint16_t result = spi->transfer16(outdata);
-	spi->endTransaction();
 	if (nCS>=0)
 		digitalWrite(nCS, 1);
+	spi->endTransaction();
 	// TODO check parity
 	errorflag = ((result&AS5047_ERRFLG)>0);
 	return result;
