@@ -642,6 +642,7 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_CURD_LPF_T:
         case SimpleFOCRegister::REG_VOLTAGE_LIMIT:
         case SimpleFOCRegister::REG_CURRENT_LIMIT:
+        case SimpleFOCRegister::REG_VELOCITY_LIMIT:
         case SimpleFOCRegister::REG_DRIVER_VOLTAGE_LIMIT:
         case SimpleFOCRegister::REG_DRIVER_VOLTAGE_PSU:
         case SimpleFOCRegister::REG_VOLTAGE_SENSOR_ALIGN:
