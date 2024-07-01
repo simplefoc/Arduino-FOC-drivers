@@ -1,5 +1,5 @@
-#ifndef FLUX_OBSERVER_SENSOR_H
-#define FLUX_OBSERVER_SENSOR_H
+#ifndef MXLEMMING_OBSERVER_SENSOR_H
+#define MXLEMMING_OBSERVER_SENSOR_H
 
 #include "Arduino.h"
 #include "common/base_classes/FOCMotor.h"
@@ -9,14 +9,14 @@
   
 */
 
-class FluxObserverSensor : public Sensor
+class MXLEMMINGObserverSensor : public Sensor
 {
   public:
     /**
-    FluxObserverSensor class constructor
-    @param m  Motor that the FluxObserverSensor will be linked to
+    MXLEMMINGObserverSensor class constructor
+    @param m  Motor that the MXLEMMINGObserverSensor will be linked to
     */
-    FluxObserverSensor(const FOCMotor& m);
+    MXLEMMINGObserverSensor(const FOCMotor& m);
     void update() override;
  
     void init() override;

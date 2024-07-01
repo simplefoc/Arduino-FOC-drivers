@@ -1,12 +1,12 @@
-# Flux Observer Sensor
+# MXLEMMING Observer Sensor
 
-The MXLEMMING has been ported from the MESC Firmware, it's also the default Flux observer in Vesc.
-The [MESC book](https://davidmolony.github.io/MESC_Firmware/operation/CONTROL.html#the-sensorless-observer) explains the math behind the flux observer.
+The MXLEMMING Obserser has been ported from the MESC Firmware, it's also the default Flux observer in Vesc firmware.
+The [MESC book](https://davidmolony.github.io/MESC_Firmware/operation/CONTROL.html#the-sensorless-observer) explains the math behind this flux observer.
 
 It's a simple solution for sensorless motor control only using phase currents and motor parameters, if tracking the position at low speed and when not driving the motor is not relevant.
 
 ### Motor Parameters:
-The MXLEMMING Flux Observer needs the following motor parameters to be set:
+The MXLEMMING Observer needs the following motor parameters to be set:
 - phase resistance
 - KV rating
 - phase inductance

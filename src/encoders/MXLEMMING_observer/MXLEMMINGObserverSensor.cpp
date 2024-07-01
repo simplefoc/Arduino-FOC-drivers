@@ -1,9 +1,9 @@
-#include "FluxObserverSensor.h"
+#include "MXLEMMINGObserverSensor.h"
 #include "common/foc_utils.h"
 #include "common/time_utils.h"
 
 
-FluxObserverSensor::FluxObserverSensor(const FOCMotor& m) : _motor(m)
+MXLEMMINGObserverSensor::MXLEMMINGObserverSensor(const FOCMotor& m) : _motor(m)
 {
   // Derive Flux linkage from KV_rating and pole_pairs
   if (_isset(_motor.pole_pairs) && _isset(_motor.KV_rating)){
@@ -12,7 +12,7 @@ FluxObserverSensor::FluxObserverSensor(const FOCMotor& m) : _motor(m)
 }
 
 
-void FluxObserverSensor::update() {
+void MXLEMMINGObserverSensor::update() {
   // Current sense is required for the observer
   if (!_motor.current_sense) return;
   
@@ -24,7 +24,6 @@ void FluxObserverSensor::update() {
   // Update sensor, with optional downsampling of update rate
   if (sensor_cnt++ < sensor_downsample) return;
 
-  // Close to zero speed the flux observer can resonate
   // Estimate the BEMF and exit if it's below the threshold 
   float bemf = _motor.voltage.q - _motor.phase_resistance * _motor.current.q; 
   if (abs(bemf) < bemf_threshold) return;
@@ -95,13 +94,13 @@ void FluxObserverSensor::update() {
 
 }
 
-void FluxObserverSensor::init(){
+void MXLEMMINGObserverSensor::init(){
   this->Sensor::init(); // call base class
 }
 
 /*
 	Shaft angle calculation
 */
-float FluxObserverSensor::getSensorAngle(){
+float MXLEMMINGObserverSensor::getSensorAngle(){
   return 0;
 }
