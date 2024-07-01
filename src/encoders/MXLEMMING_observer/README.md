@@ -14,9 +14,10 @@ The MXLEMMING Observer needs the following motor parameters to be set:
 
 It will not track the position if any of those parameters are missing.
 
-The KV rating and pole pairs parameters are used to derive the motor flux linkage ([code](https://github.com/Candas1/Arduino-FOC-drivers/blob/202ba0c4ae11558f6391c4bdff1e130a8735e178/src/encoders/flux_observer/FluxObserverSensor.cpp#L10)) which is key for the flux observer to run well.
+The KV rating and pole pairs parameters are used to derive the motor flux linkage which is key for the flux observer to run well.
 ```
 BLDCMotor motor = BLDCMotor(15, 0.1664, 17.0, 0.00036858); // Hoverboard Motor
+MXLEMMINGObserverSensor sensor = MXLEMMINGObserverSensor(motor);
 ```
 flux_linkage parameter can be adjusted from the code.
 
