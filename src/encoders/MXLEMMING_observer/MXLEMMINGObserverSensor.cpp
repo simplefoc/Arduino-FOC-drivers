@@ -46,7 +46,7 @@ void MXLEMMINGObserverSensor::update() {
   // to David Molony as the original author must be noted.
 
   // Flux linkage observer    
-  float now = _micros();
+  int32_t now = _micros();
   float Ts = ( now - angle_prev_ts) * 1e-6f; 
   flux_alpha = _constrain( flux_alpha + (_motor.Ualpha - _motor.phase_resistance * ABcurrent.alpha) * Ts -
         _motor.phase_inductance * (ABcurrent.alpha - i_alpha_prev),-flux_linkage, flux_linkage);
