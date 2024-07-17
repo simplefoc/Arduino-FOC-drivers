@@ -36,6 +36,13 @@ void MXLEMMINGObserverSensor::update() {
   // calculate clarke transform
   ABCurrent_s ABcurrent = _motor.current_sense->getABCurrents(current);
 
+  // get current timestamp
+  long now_us = _micros();
+  // calculate the sample time from last call
+  float Ts = (now_us - angle_prev_ts) * 1e-6f;
+  // quick fix for strange cases (micros overflow + timestamp not defined)
+  if(Ts <= 0 || Ts > 0.5f) Ts = 1e-3f;
+
   // This work deviates slightly from the BSD 3 clause licence.
   // The work here is entirely original to the MESC FOC project, and not based
   // on any appnotes, or borrowed from another project. This work is free to
@@ -44,10 +51,8 @@ void MXLEMMINGObserverSensor::update() {
   // variable names, structures containing variables or other minor
   // rearrangements in place of the original names I have chosen, and credit
   // to David Molony as the original author must be noted.
-
-  // Flux linkage observer    
-  int32_t now = _micros();
-  float Ts = ( now - angle_prev_ts) * 1e-6f; 
+  
+  // MXLEMMING Flux Observer
   flux_alpha = _constrain( flux_alpha + (_motor.Ualpha - _motor.phase_resistance * ABcurrent.alpha) * Ts -
         _motor.phase_inductance * (ABcurrent.alpha - i_alpha_prev),-flux_linkage, flux_linkage);
   flux_beta  = _constrain( flux_beta  + (_motor.Ubeta  - _motor.phase_resistance * ABcurrent.beta)  * Ts -
@@ -89,7 +94,7 @@ void MXLEMMINGObserverSensor::update() {
   // Store Previous values
   i_alpha_prev = ABcurrent.alpha;
   i_beta_prev = ABcurrent.beta;
-  angle_prev_ts = now;
+  angle_prev_ts = now_us;
   electrical_angle_prev = electrical_angle;
 
 }
