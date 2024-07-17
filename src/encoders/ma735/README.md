@@ -1,6 +1,6 @@
 # MA735 SimpleFOC driver
 
-This is based on the [MA730](https://github.com/simplefoc/Arduino-FOC-drivers/tree/master/src/encoders/ma730) driver in SimpleFOC, with some tweaks to support the unique registers and options of the MA735. It is a inferior, but less expensive chip after all.
+This is based on the [MA730](https://github.com/simplefoc/Arduino-FOC-drivers/tree/master/src/encoders/ma730) driver in SimpleFOC, with some tweaks to support the unique registers and options of the MA735. It is a little bit inferior, but less expensive chip after all. The advantage however of this chip (besides cost) is that resolution is inversely proportional to reading speed, ranging from 9-13 bit resolution and 64us to 16ms read times.
 
 
 ## Hardware setup
@@ -42,6 +42,16 @@ void setup() {
 }
 ```
 
+Set some registers before start
+```c++
+void setup() {
+    sensor1.init();
+    
+    // Note that with this driver there is a write check so registers are not written to if the value is the exact same. Other drivers do not have a write check, and you can easily wear out the NVM every time the code is run. 1,000 cycles max.
+    sensor1.setResolution(10.0);
+}
+```
+
 Here's how you can use it:
 
 ```c++
@@ -57,14 +67,18 @@ Here's how you can use it:
     // get the angle, in radians, no full rotations
     float a2 = sensor1.getCurrentAngle();
 
-    // get the raw 14 bit value
-    uint16_t raw = sensor1.readRawAngle();
-
     // get the field strength
     FieldStrength fs = sensor1.getFieldStrength();
     Serial.print("Field strength: ");
     Serial.println(fs);
 
-    // set pulses per turn for encoder mode
-    sensor1.setPulsesPerTurn(999); // set to 999 if we want 1000 PPR == 4000 CPR
+	//get the calculated resolution from FilterWindow register
+    float res = sensor.getResolution();
+  	Serial1.print("Resolution: ");
+  	Serial1.println(res);
+
+	//get the calculated update time in micro seconds from the FilterWindow register
+  	int Time = sensor.getUpdateTime();
+  	Serial1.print("Update Time (microsecs): ");
+  	Serial1.println(Time);
 ```
