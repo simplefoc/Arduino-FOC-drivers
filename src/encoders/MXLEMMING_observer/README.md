@@ -32,7 +32,7 @@ motor.zero_electric_angle = 0;
 ```
 
 ### Bemf Threshold
-The sensor also has a bemf_threshold parameter (0 by default) that prevents the flux observer from tracking if the estimated bemf is not high enough ([code](https://github.com/Candas1/Arduino-FOC-drivers/blob/202ba0c4ae11558f6391c4bdff1e130a8735e178/src/encoders/flux_observer/FluxObserverSensor.cpp#L29)).
+The sensor also has a bemf_threshold parameter (0 by default) that prevents the flux observer from tracking if the estimated bemf is not high enough.
 This can help when starting the motor as the flux observer is not good at tracking the position at low speed.
 
 ### To do:
