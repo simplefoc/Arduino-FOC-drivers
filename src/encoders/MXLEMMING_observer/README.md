@@ -36,5 +36,6 @@ The sensor also has a bemf_threshold parameter (0 by default) that prevents the 
 This can help when starting the motor as the flux observer is not good at tracking the position at low speed.
 
 ### To do:
-The Clarke transform is running both in the loopFOC and in the sensor update now, it can be remove from the sensor when the Alpha and Beta currents will be persisted as a BLDCMotor member.
+- The Clarke transform is running both in the loopFOC and in the sensor update now, it can be remove from the sensor when the Alpha and Beta currents will be persisted as a BLDCMotor member
+- The flux observer is calculating the electrical angle directly, but SimpleFOC needs to derive the electrical angle from the sensor angle for the FOC calculation
 

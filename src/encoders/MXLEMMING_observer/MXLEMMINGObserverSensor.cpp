@@ -58,35 +58,29 @@ void MXLEMMINGObserverSensor::update() {
   flux_beta  = _constrain( flux_beta  + (_motor.Ubeta  - _motor.phase_resistance * ABcurrent.beta)  * Ts -
         _motor.phase_inductance * (ABcurrent.beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
   
-  // Calculate angle
-  float electrical_angle = _normalizeAngle(_atan2(flux_beta,flux_alpha));
+  // Calculate electrical angle
+  electrical_angle = _normalizeAngle(_atan2(flux_beta,flux_alpha));
 
   // Electrical angle difference
-  float d_electrical_angle = 0;
-  if (first){
-    // Skip angle difference calculation the first time
-    first = 0;
-    d_electrical_angle = electrical_angle;
-  }else{
-    d_electrical_angle = electrical_angle - electrical_angle_prev;
-    if(abs(d_electrical_angle) > _2PI * 0.8 ){ //change the  factor based on sample rate can also just use _PI for simplicity 
-      if (d_electrical_angle > 0){
-        d_electrical_angle -= _2PI;
-      }else{
-        d_electrical_angle += _2PI;
-      }
+  float d_electrical_angle = electrical_angle - electrical_angle_prev;
+  if(abs(d_electrical_angle) > _2PI * 0.8 ){ //change the  factor based on sample rate can also just use _PI for simplicity 
+    if (d_electrical_angle > 0){
+      d_electrical_angle -= _2PI;
+    }else{
+      d_electrical_angle += _2PI;
     }
   }
   angle_track += d_electrical_angle;
 
   // Mechanical angle and full_rotations
-  if(abs(angle_track) > _2PI * _motor.pole_pairs){
+  float full_rotation = _2PI * _motor.pole_pairs;
+  if(abs(angle_track) > full_rotation){
     if (angle_track>0){
       full_rotations += 1;
-      angle_track -= _2PI * _motor.pole_pairs;
+      angle_track -= full_rotation;
     }else{
       full_rotations -= 1;
-      angle_track += _2PI * _motor.pole_pairs;
+      angle_track += full_rotation;
     }
   }
   angle_prev = angle_track /_motor.pole_pairs;
