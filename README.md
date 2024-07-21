@@ -10,10 +10,12 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.8 - Released ??? 2024, for Simple FOC 2.3.3 or later
+v1.0.8 - Released July 2024, for Simple FOC 2.3.4 or later
 
 
 What's changed since 1.0.7?
+- MA735 driver thanks to [@techyrobot](https://github.com/techy-robot)
+- ESP32HWEncoder driver thanks to [@mcells](https://github.com/mcells)
 - Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=milestone%3A1.0.8+)
 
 
@@ -39,9 +41,12 @@ Drivers for various position sensor ICs. In many cases these hardware-specific d
  - [AS5600 I2C driver](src/encoders/as5600/) - I2C driver for the AMS AS5600 and AS5600L absolute position magnetic rotary encoder ICs.
  - [MA730 SPI driver](src/encoders/ma730/) - SPI driver for the MPS MagAlpha MA730 absolute position magnetic rotary encoder IC.
  - [MA730 SSI driver](src/encoders/ma730/) - SSI driver for the MPS MagAlpha MA730 absolute position magnetic rotary encoder IC.
+ - [MA735 SPI driver](src/encoders/ma735/) - SPI driver for the MPS MagAlpha MA735 absolute position magnetic rotary encoder IC.
+ - [MA735 SSI driver](src/encoders/ma735/) - SSI driver for the MPS MagAlpha MA735 absolute position magnetic rotary encoder IC. 
  - [AS5145 SSI driver](src/encoders/as5145/) - SSI driver for the AMS AS5145 and AS5045 absolute position magnetic rotary encoder ICs.
  - [TLE5012B SPI driver](src/encoders/tle5012b/) - SPI (half duplex) driver for TLE5012B absolute position magnetic rotary encoder IC.
- - [STM32 Hardware Encoder](src/encoders/stm32hwencoder/) - Hardware timer based encoder driver for ABI type quadrature encoders.
+ - [STM32 Hardware Encoder](src/encoders/stm32hwencoder/) - STM32 Hardware timer based encoder driver for ABI type quadrature encoders.
+ - [ESP32 Hardware Encoder](src/encoders/esp32hwencoder/) - ESP32 Hardware timer based encoder driver for ABI type quadrature encoders.
  - [SC60228 SPI driver](src/encoders/sc60228/) - SPI driver for SemiMent SC60288 magnetic encoder IC.
  - [MA330 SPI driver](src/encoders/ma330/) - SPI driver for the MPS MagAlpha MA330 absolute position magnetic rotary encoder IC.
  - [MT6816 SPI driver](src/encoders/mt6816/) - SPI driver for the MagnTek MT6816 absolute position magnetic rotary encoder IC.
