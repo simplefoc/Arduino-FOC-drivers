@@ -31,25 +31,25 @@ uint16_t AS5600::angle() {
         setAngleRegister();
     }
     _wire->requestFrom(_address, (uint8_t)2, (uint8_t)closeTransactions);
-    result = _wire->read()<<8;
+    result = (_wire->read()&0x0F)<<8;
     result |= _wire->read();
     return result;
 };
 
 
 uint16_t AS5600::readRawAngle() {
-    return readRegister(AS5600_REG_ANGLE_RAW, 2);
+    return readRegister(AS5600_REG_ANGLE_RAW, 2) & 0x0FFF;
 };
 
 
 uint16_t AS5600::readAngle() {
-    return readRegister(AS5600_REG_ANGLE, 2);
+    return readRegister(AS5600_REG_ANGLE, 2) & 0x0FFF;
 };
 
 
 
 uint16_t AS5600::readMagnitude() {
-    return readRegister(AS5600_REG_MAGNITUDE, 2);
+    return readRegister(AS5600_REG_MAGNITUDE, 2) & 0x0FFF;
 };
 
 
@@ -74,17 +74,17 @@ AS5600Conf AS5600::readConf() {
 
 
 uint16_t AS5600::readMang() {
-    return readRegister(AS5600_REG_MANG, 2);
+    return readRegister(AS5600_REG_MANG, 2) & 0x0FFF;
 };
 
 
 uint16_t AS5600::readMPos() {
-    return readRegister(AS5600_REG_MPOS, 2);
+    return readRegister(AS5600_REG_MPOS, 2) & 0x0FFF;
 };
 
 
 uint16_t AS5600::readZPos() {
-    return readRegister(AS5600_REG_ZPOS, 2);
+    return readRegister(AS5600_REG_ZPOS, 2) & 0x0FFF;
 };
 
 

@@ -78,14 +78,14 @@ void AEAT8800Q24::setConf2(AEAT8800Q24_CONF2_t value){
 uint16_t AEAT8800Q24::transfer16SPI(uint16_t outValue) {
     // delay 1us between switching the CS line to SPI
     delayMicroseconds(1);
-    if (nCS >= 0)
-        digitalWrite(nCS, LOW);    
     spi->endTransaction();
     spi->beginTransaction(spiSettings);
+    if (nCS >= 0)
+        digitalWrite(nCS, LOW);    
     uint16_t value = spi->transfer16(outValue);
-    spi->endTransaction();
     if (nCS >= 0)
         digitalWrite(nCS, HIGH);
+    spi->endTransaction();
     // delay 1us between switching the CS line to SSI
     delayMicroseconds(1);
     spi->beginTransaction(ssiSettings);

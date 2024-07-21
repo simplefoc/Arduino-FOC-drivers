@@ -81,15 +81,18 @@ RegisterIO& RP2040FlashSettingsStorage::operator>>(uint32_t& value) {
 
 
 RegisterIO& RP2040FlashSettingsStorage::operator<<(uint8_t value) {
-
+    // TODO implement me!
+    return *this;
 };
 
 RegisterIO& RP2040FlashSettingsStorage::operator<<(float value) {
-
+    // TODO implement me!
+    return *this;
 };
 
 RegisterIO& RP2040FlashSettingsStorage::operator<<(uint32_t value) {
-
+    // TODO implement me!
+    return *this;
 };
 
 #endif

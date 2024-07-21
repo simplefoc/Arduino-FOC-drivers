@@ -31,6 +31,8 @@ void loop(){
 }
 ```
 
+### Additional functions
+
 There are some extra features, you can check for faults, and clear the fault state:
 
 ```c++
@@ -50,6 +52,8 @@ if (driver.isSleeping())
     driver.wake();
 ```
 
+### Bus Voltage Sense
+
 As shown in the example you can read the bus voltage:
 
 :warning: *this is a slow function. Do not call it while motor is running!*
@@ -58,8 +62,17 @@ As shown in the example you can read the bus voltage:
 float val = driver.getBusVoltage(); // get the bus voltage, in Volts
 ```
 
+### SPI port
+
 The driver's nCS pin is 10, and the constant PIN_nCS can be used:
 
 ```c++
 MagneticSensorAS5048A sensor = MagneticSensorAS5048A(PIN_nCS);
 ```
+
+## Examples
+
+The following examples for SimpleFOCNanoDriver can be found in our examples directory:
+
+- [SimpleFOC Nano on AVR](https://github.com/simplefoc/Arduino-FOC-drivers/blob/master/examples/drivers/simplefocnano/simplefocnano_atmega/simplefocnano_atmega.ino) (5V, 10bit ADC range, like original Nano, using AS5048A sensor on SPI)
+- [SimpleFOCNanoDriver torque-voltage mode](https://github.com/simplefoc/Arduino-FOC-drivers/blob/master/examples/drivers/simplefocnano/simplefocnano_torque_voltage/simplefocnano_torque_voltage.ino) (3.3V, 12bit ADC range, using AS5048A sensor on SPI)

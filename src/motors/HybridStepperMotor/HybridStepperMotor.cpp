@@ -33,13 +33,13 @@ void HybridStepperMotor::linkDriver(BLDCDriver *_driver)
 }
 
 // init hardware pins
-void HybridStepperMotor::init()
+int HybridStepperMotor::init()
 {
   if (!driver || !driver->initialized)
   {
     motor_status = FOCMotorStatus::motor_init_failed;
     SIMPLEFOC_DEBUG("MOT: Init not possible, driver not initialized");
-    return;
+    return 0;
   }
   motor_status = FOCMotorStatus::motor_initializing;
   SIMPLEFOC_DEBUG("MOT: Init");
@@ -70,6 +70,7 @@ void HybridStepperMotor::init()
   _delay(500);
 
   motor_status = FOCMotorStatus::motor_uncalibrated;
+  return 1;
 }
 
 // disable motor driver
@@ -295,6 +296,10 @@ void HybridStepperMotor::loopFOC()
 void HybridStepperMotor::move(float new_target)
 {
 
+  // set internal target variable
+  if (_isset(new_target))
+    target = new_target;
+    
   // downsampling (optional)
   if (motion_cnt++ < motion_downsample)
     return;
@@ -315,9 +320,6 @@ void HybridStepperMotor::move(float new_target)
   if (!enabled)
     return;
 
-  // set internal target variable
-  if (_isset(new_target))
-    target = new_target;
 
   // calculate the back-emf voltage if KV_rating available U_bemf = vel*(1/KV)
   if (_isset(KV_rating))

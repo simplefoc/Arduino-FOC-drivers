@@ -44,13 +44,13 @@ bool MT6816::parityCheck(uint16_t data) {
 }
 
 uint16_t MT6816::spi_transfer16(uint16_t outdata) {
+    spi->beginTransaction(settings);
     if (nCS>=0)
         digitalWrite(nCS, 0);
-    spi->beginTransaction(settings);
     uint16_t result = spi->transfer16(outdata);
-    spi->endTransaction();
     if (nCS>=0)
         digitalWrite(nCS, 1);
+    spi->endTransaction();
 
     return result;
 }
