@@ -70,6 +70,7 @@ int HybridStepperMotor::init()
   _delay(500);
 
   motor_status = FOCMotorStatus::motor_uncalibrated;
+  return 1;
 }
 
 // disable motor driver
