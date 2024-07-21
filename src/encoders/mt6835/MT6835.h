@@ -22,6 +22,7 @@
 #define MT6835_STATUS_OVERSPEED 0x01
 #define MT6835_STATUS_WEAKFIELD 0x02
 #define MT6835_STATUS_UNDERVOLT 0x04
+#define MT6835_CRC_ERROR 0x08
 
 #define MT6835_WRITE_ACK 0x55
 
@@ -199,17 +200,23 @@ public:
 
 	uint8_t getStatus();
 
+	uint8_t getCalibrationStatus();
+
 	bool setZeroFromCurrentPosition();
 	bool writeEEPROM(); // wait 6s after calling this method
 
+	bool checkcrc = false;
+	
 private:
 	SPIClass* spi;
 	SPISettings settings;
 	int nCS = -1;
 	uint8_t laststatus = 0;
+	uint8_t lastcrc = 0;
 
     void transfer24(MT6835Command* outValue);
     uint8_t readRegister(uint16_t reg);
     bool writeRegister(uint16_t reg, uint8_t value);
+	uint8_t calcCrc(uint32_t angle, uint8_t status);
 
 };

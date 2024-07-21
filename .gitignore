@@ -1,2 +1,3 @@
 .project
 .DS_Store
+src/encoders/esp32hwencoder.bak/

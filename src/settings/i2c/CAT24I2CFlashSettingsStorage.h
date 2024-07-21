@@ -4,7 +4,7 @@
 #include "../SettingsStorage.h"
 #include "Wire.h"
 
-class CAT24I2CFlashSettingsStorage : public SettingsStorage {
+class CAT24I2CFlashSettingsStorage : public SettingsStorage, public RegisterIO {
 public:
     CAT24I2CFlashSettingsStorage(uint8_t address = 0xA0, uint16_t offset = 0x0);
     ~CAT24I2CFlashSettingsStorage();
@@ -12,13 +12,12 @@ public:
     void init(TwoWire* wire = &Wire);
 
 protected:
-    uint8_t readByte(uint8_t* valueToSet) override;
-    uint8_t readFloat(float* valueToSet) override;
-    uint8_t readInt(uint32_t* valueToSet) override;
-
-    uint8_t writeByte(uint8_t value) override;
-    uint8_t writeFloat(float value) override;
-    uint8_t writeInt(uint32_t value) override;
+    RegisterIO& operator<<(float value) override;
+    RegisterIO& operator<<(uint32_t value) override;
+    RegisterIO& operator<<(uint8_t value) override;
+    RegisterIO& operator>>(float& value) override;
+    RegisterIO& operator>>(uint32_t& value) override;
+    RegisterIO& operator>>(uint8_t& value) override;
 
     void beforeSave() override;
     void beforeLoad() override;
