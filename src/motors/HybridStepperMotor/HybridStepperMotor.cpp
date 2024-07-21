@@ -33,13 +33,13 @@ void HybridStepperMotor::linkDriver(BLDCDriver *_driver)
 }
 
 // init hardware pins
-void HybridStepperMotor::init()
+int HybridStepperMotor::init()
 {
   if (!driver || !driver->initialized)
   {
     motor_status = FOCMotorStatus::motor_init_failed;
     SIMPLEFOC_DEBUG("MOT: Init not possible, driver not initialized");
-    return;
+    return 0;
   }
   motor_status = FOCMotorStatus::motor_initializing;
   SIMPLEFOC_DEBUG("MOT: Init");
