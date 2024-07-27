@@ -37,7 +37,6 @@ class MXLEMMINGObserverSensor : public Sensor
     float electrical_angle = 0; // Electrical angle
     float electrical_angle_prev = 0; // Previous electrical angle
     float angle_track = 0; // Total Electrical angle
-    float bemf_threshold = 0; // Bemf voltage amplitude when the flux observer should start tracking
     
   protected:    
     const FOCMotor& _motor;

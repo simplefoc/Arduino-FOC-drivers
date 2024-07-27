@@ -24,10 +24,6 @@ void MXLEMMINGObserverSensor::update() {
   // Update sensor, with optional downsampling of update rate
   if (sensor_cnt++ < sensor_downsample) return;
 
-  // Estimate the BEMF and exit if it's below the threshold 
-  float bemf = _motor.voltage.q - _motor.phase_resistance * _motor.current.q; 
-  if (abs(bemf) < bemf_threshold) return;
-
   sensor_cnt = 0;
 
   // read current phase currents
@@ -39,9 +35,9 @@ void MXLEMMINGObserverSensor::update() {
   // get current timestamp
   long now_us = _micros();
   // calculate the sample time from last call
-  float Ts = (now_us - angle_prev_ts) * 1e-6f;
+  float dt = (now_us - angle_prev_ts) * 1e-6f;
   // quick fix for strange cases (micros overflow + timestamp not defined)
-  if(Ts <= 0 || Ts > 0.5f) Ts = 1e-3f;
+  if(dt <= 0 || dt > 0.5f) dt = 1e-3f;
 
   // This work deviates slightly from the BSD 3 clause licence.
   // The work here is entirely original to the MESC FOC project, and not based
@@ -53,10 +49,13 @@ void MXLEMMINGObserverSensor::update() {
   // to David Molony as the original author must be noted.
   
   // MXLEMMING Flux Observer
-  flux_alpha = _constrain( flux_alpha + (_motor.Ualpha - _motor.phase_resistance * ABcurrent.alpha) * Ts -
-        _motor.phase_inductance * (ABcurrent.alpha - i_alpha_prev),-flux_linkage, flux_linkage);
-  flux_beta  = _constrain( flux_beta  + (_motor.Ubeta  - _motor.phase_resistance * ABcurrent.beta)  * Ts -
-        _motor.phase_inductance * (ABcurrent.beta  - i_beta_prev) ,-flux_linkage, flux_linkage);
+  float resistive_term_a =  _motor.phase_resistance * ABcurrent.alpha;
+  float resistive_term_b =  _motor.phase_resistance * ABcurrent.beta;
+  float inductive_term_a = _motor.phase_inductance * (ABcurrent.alpha - i_alpha_prev);
+  float inductive_term_b = _motor.phase_inductance * (ABcurrent.beta  - i_beta_prev);
+
+  flux_alpha = _constrain( flux_alpha + (_motor.Ualpha - resistive_term_a) * dt - inductive_term_a ,-flux_linkage, flux_linkage);
+  flux_beta  = _constrain( flux_beta  + (_motor.Ubeta  - resistive_term_b) * dt - inductive_term_b ,-flux_linkage, flux_linkage);
   
   // Calculate electrical angle
   electrical_angle = _normalizeAngle(_atan2(flux_beta,flux_alpha));
