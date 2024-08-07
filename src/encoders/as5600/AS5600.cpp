@@ -124,13 +124,13 @@ void AS5600::setZPos(uint16_t value) {
 void AS5600::setI2CAddr(uint8_t value) {
     uint8_t val = (uint8_t)readRegister(AS5600_REG_I2CADDR, 1);
     val = (value<<1) | (val&0x01);
-    writeRegister(AS5600_REG_I2CADDR, val);
+    writeRegister(AS5600_REG_I2CADDR, val, 1);
 };
 
 void AS5600::setI2CUpdt(uint8_t value) {
     uint8_t val = (uint8_t)readRegister(AS5600_REG_I2CUPDT, 1);
     val = (value<<1) | (val&0x01);
-    writeRegister(AS5600_REG_I2CUPDT, val);
+    writeRegister(AS5600_REG_I2CUPDT, val, 1);
 };
 
 
