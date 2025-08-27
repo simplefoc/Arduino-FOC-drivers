@@ -1,0 +1,30 @@
+.program bu79100g_parallel3
+; BU79100G-LA parallel read of 3 ADCs with a trigger GPIO
+; sideset pin: SCK (1 pin), CPOL=1 idle HIGH
+; set pin:     CSB (1 pin)
+; in_base:     D0..D2 (3 contiguous input pins)
+
+.side_set 1 opt            ; 1 sideset bit to drive SCK
+
+.wrap_target
+    set pins, 1   side 1   ; CSB=1, SCK=1
+    ; -------- wait external falling edge on absolute GPIO ----------
+    wait 1 gpio 11 ; TODO, we will need to have this pin setable from the C code. direcetly edit the program?
+    wait 0 gpio 11
+    set pins, 0   side 1          ; CS=0, SCK=1
+    set x, 15     side 1          ; prepare loop cpt
+    ; -------- 16 dummy clocks (no sampling) ----------------------- 
+dummy_loop:
+        nop           side 0          ; SCK=0
+        jmp x--, dummy_loop side 1    ; SCK=1
+    set pins, 1   side 1       ; CSB=0, keep SCK=HIGH at CSB falling (datasheet rec.)
+    set x, 15     side 1
+    set pins, 0
+    ; -------- 16 real clocks, sample on SCK rising edge -----------
+read_loop:    
+        nop           side 1  ;DEBUG so we don't have to wait for autopush.
+        ;in  pins, 3   side 1          ; SCK=1, sample D2..D0 on rising edge
+        jmp x--, read_loop side 0      ; SCK=0
+    ; -------- finish conversion -----------------------------------
+    set pins, 1   side 1               ; CSB=1, SCK=1
+.wrap
