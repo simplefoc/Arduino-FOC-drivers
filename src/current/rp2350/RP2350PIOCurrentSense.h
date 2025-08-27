@@ -6,7 +6,7 @@
 
 class RP2350PIOCurrentSense: public CurrentSense {
   public:
-    RP2350PIOCurrentSense(float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0);
+    RP2350PIOCurrentSense(float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0, int pinTRIG);
     ~RP2350PIOCurrentSense();
 
     int init() override;
@@ -19,6 +19,7 @@ class RP2350PIOCurrentSense: public CurrentSense {
     int pinD0;
     int pinD1;
     int pinD2;
+    int pinTRIG;
     int gain_a;
     int gain_b;
     int gain_c;

@@ -9,8 +9,8 @@
 .wrap_target
     set pins, 1   side 1   ; CSB=1, SCK=1
     ; -------- wait external falling edge on absolute GPIO ----------
-    wait 1 gpio 11 ; TODO, we will need to have this pin setable from the C code. direcetly edit the program?
-    wait 0 gpio 11
+    wait 1 gpio 11 ;THIS INSTRUCTION WILL BE PATCHED AT RUNTIME TO CHANGE GPIO. DO NOT MOVE IT WITHOUT CHANGING PIO INIT.
+    wait 0 gpio 11 ;THIS INSTRUCTION WILL BE PATCHED AT RUNTIME TO CHANGE GPIO. DO NOT MOVE IT WITHOUT CHANGING PIO INIT.
     set pins, 0   side 1          ; CS=0, SCK=1
     set x, 15     side 1          ; prepare loop cpt
     ; -------- 16 dummy clocks (no sampling) ----------------------- 

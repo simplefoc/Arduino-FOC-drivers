@@ -1,11 +1,12 @@
     #include "RP2350PIOCurrentSense.h"
 
-    RP2350PIOCurrentSense::RP2350PIOCurrentSense(float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0) : CurrentSense() {
+    RP2350PIOCurrentSense::RP2350PIOCurrentSense(float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0, int pinTRIG) : CurrentSense() {
         this->pinSCK = pinSCK;
         this->pinCSB = pinCSB;
         this->pinD0 = pinD0;
         this->pinD1 = pinD0+1;
         this->pinD2 = pinD0+2;
+        this->pinTRIG = pinTRIG;
         this->gain_a = gain;
         this->gain_b = gain;
         this->gain_c = gain;
@@ -35,7 +36,16 @@
         int sm = pio_claim_unused_sm(pio0, false);
         if (sm < 0) { pio = pio1; sm = pio_claim_unused_sm(pio1, true); }
 
-        uint off = pio_add_program(pio, &bu79100g_parallel3_program);
+        // --- patch program instructions with chosen trigger pin ---
+        size_t prog_len = bu79100g_parallel3_program.length;
+        uint16_t insns[prog_len];
+        memcpy(insns, bu79100g_parallel3_program_instructions, sizeof(insns));
+        insns[1] = (insns[1] & ~0x1Fu) | (this->pinTRIG & 0x1Fu);
+        insns[2] = (insns[2] & ~0x1Fu) | (this->pinTRIG & 0x1Fu);
+        struct pio_program prog = bu79100g_parallel3_program; // copy metadata
+        prog.instructions = insns;
+    
+        uint off = pio_add_program(pio, &prog);
         pio_sm_config c = bu79100g_parallel3_program_get_default_config(off);
 
         // Map pins to the SM
