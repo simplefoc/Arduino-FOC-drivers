@@ -5,7 +5,6 @@
 ; in_base:     D0..D2 (3 contiguous input pins)
 
 .side_set 1 opt            ; 1 sideset bit to drive SCK
-
 .wrap_target
     set pins, 1   side 1   ; CSB=1, SCK=1
     ; -------- wait external falling edge on absolute GPIO ----------
@@ -22,9 +21,15 @@ dummy_loop:
     set pins, 0
     ; -------- 16 real clocks, sample on SCK rising edge -----------
 read_loop:    
-        nop           side 1  ;DEBUG so we don't have to wait for autopush.
-        ;in  pins, 3   side 1          ; SCK=1, sample D2..D0 on rising edge
+        ;nop          side 1  ;DEBUG so we don't have to wait for autopush.
+        in  pins, 4   side 1          ; SCK=1, sample D2..D0 on rising edge  ;Note, Here I had to read 4 pins instead of 3. It seems that with 3, a bit is lost after the first push. Need to read the doc again
         jmp x--, read_loop side 0      ; SCK=0
     ; -------- finish conversion -----------------------------------
     set pins, 1   side 1               ; CSB=1, SCK=1
+    ; -------- Pad with 0 ------------------------------------------
+    ;set x, 0        ; Clear x
+    ;mov x, ~x 
+    ;in x, 16        ; Push 16 bits of 1 into ISR
+
+    ;push 
 .wrap
