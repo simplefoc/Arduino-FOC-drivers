@@ -15,7 +15,7 @@ class RP2350PIOCurrentSense: public CurrentSense {
 
     PhaseCurrent_s getPhaseCurrents() override;
   
-    static constexpr uint32_t RING_WORDS    = 16;   // ring span (needs to be a power of two)
+    static constexpr uint32_t RING_WORDS    = 64;   // ring span (needs to be a power of two)
     static constexpr uint32_t RING_BYTES = RING_WORDS * 4;
 
     // Buffer base must be aligned to ring span for write-ring:
@@ -24,10 +24,8 @@ class RP2350PIOCurrentSense: public CurrentSense {
     // Single word used by DMA B to rearm A:
     alignas(4) volatile uint32_t reload_count = RING_WORDS;
 
-
     int dma_a = -1; // PIO RX -> ring (streamer)
     int dma_b = -1; // reloader 
-
 
     uint32_t max_adc_value; //!< maximum ADC value (e.g. 4096 for 12 bit ADC)
     int pinCSB;
@@ -36,8 +34,8 @@ class RP2350PIOCurrentSense: public CurrentSense {
     int pinD1;
     int pinD2;
     int pinTRIG;
-    int gain_a;
-    int gain_b;
-    int gain_c;
+    float gain_a;
+    float gain_b;
+    float gain_c;
   protected: //For debug, all public
 };

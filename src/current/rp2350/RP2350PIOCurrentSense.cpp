@@ -112,14 +112,46 @@
         dma_channel_start(dma_a);
         pio_sm_set_enabled(pio, sm, true);
 
-
         return 0;
     };
 
+    void extract_bit_interleaved(const uint32_t w0, const uint32_t w1, uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d) {
+        *a = 0;
+        *b = 0;
+        *c = 0;
+        *d = 0;
+        for (int i = 0; i < 64; i += 4) {
+            uint32_t w = (i < 32) ? w1 : w0;
+            int shift = 28 - (i % 32);  // 28, 24, ..., 0 for each group of 4 bits
+
+            uint32_t group = (w >> shift) & 0xF;  // extract aN bN cN dN
+
+            *a = (*a << 1) | ((group >> 0) & 0x1);
+            *b = (*b << 1) | ((group >> 1) & 0x1);
+            *c = (*c << 1) | ((group >> 2) & 0x1);
+            *d = (*d << 1) | ((group >> 3) & 0x1);
+        }
+    }
+
     PhaseCurrent_s RP2350PIOCurrentSense::getPhaseCurrents() {
         PhaseCurrent_s current;
-        // TODO copy values from latest ADC reading
-        // TODO process raw values to get currents in mAmps
+
+        const uintptr_t base = (uintptr_t)buff;
+        //Get the index the DMA is about to write
+        const uint32_t i_dma = (dma_hw->ch[dma_a].write_addr - base)>>2;
+        //For a safe read, get the one that is an even number and at least <2.wi, manage looping
+        const uint32_t i_last = (i_dma <= 1) ? RING_WORDS -2 : ((i_dma / 2)*2 - 2);
+        //copy them quickly (before print!)
+        const uint32_t w0 = buff[i_last];
+        const uint32_t w1 = buff[i_last+1];
+        //Reconstruct the 3 current from interleaved data
+        uint32_t a,b,c,d = 0;
+        extract_bit_interleaved(w0,w1, &a, &b, &c, &d);    
+
+        current.a = (0x00000fff & a) * gain_a;
+        current.b = (0x00000fff & b) * gain_b;
+        current.c = (0x00000fff & c) * gain_c;
+        
         return current;
     };
 
