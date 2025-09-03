@@ -115,7 +115,7 @@
         return 0;
     };
 
-    void extract_bit_interleaved(const uint32_t w0, const uint32_t w1, uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d) {
+    static inline void extract_bit_interleaved(const uint32_t w0, const uint32_t w1, uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d) {
         *a = 0;
         *b = 0;
         *c = 0;
