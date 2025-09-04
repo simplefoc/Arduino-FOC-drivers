@@ -13,7 +13,7 @@
 // ------------------ //
 
 #define bu79100g_parallel3_wrap_target 0
-#define bu79100g_parallel3_wrap 14
+#define bu79100g_parallel3_wrap 12
 #define bu79100g_parallel3_pio_version 1
 
 static const uint16_t bu79100g_parallel3_program_instructions[] = {
@@ -28,18 +28,16 @@ static const uint16_t bu79100g_parallel3_program_instructions[] = {
     0xf801, //  7: set    pins, 1         side 1
     0xf82f, //  8: set    x, 15           side 1
     0xe000, //  9: set    pins, 0
-    0x5804, // 10: in     pins, 4         side 1
-    0x104a, // 11: jmp    x--, 10         side 0
+    0x5004, // 10: in     pins, 4         side 0
+    0x184a, // 11: jmp    x--, 10         side 1
     0xf801, // 12: set    pins, 1         side 1
-    0xe020, // 13: set    x, 0
-    0xa029, // 14: mov    x, ~x
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program bu79100g_parallel3_program = {
     .instructions = bu79100g_parallel3_program_instructions,
-    .length = 15,
+    .length = 13,
     .origin = -1,
     .pio_version = bu79100g_parallel3_pio_version,
 #if PICO_PIO_VERSION > 0

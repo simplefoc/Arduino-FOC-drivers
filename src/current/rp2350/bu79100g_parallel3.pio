@@ -17,13 +17,12 @@ dummy_loop:
         nop           side 0          ; SCK=0
         jmp x--, dummy_loop side 1    ; SCK=1
     set pins, 1   side 1       ; CSB=0, keep SCK=HIGH at CSB falling (datasheet rec.)
-    set x, 15     side 1
+    set x, 15     side 1  
     set pins, 0
-    ; -------- 16 real clocks, sample on SCK rising edge -----------
+    ; -------- 16 real clocks, sample on SCK falling edge -----------
 read_loop:    
-        ;nop          side 1  ;DEBUG so we don't have to wait for autopush.
-        in  pins, 4   side 1          ; SCK=1, sample D2..D0 on rising edge  ;Note, Here I had to read 4 pins instead of 3. It seems that with 3, a bit is lost after the first push. Need to read the doc again
-        jmp x--, read_loop side 0      ; SCK=0
+        in  pins, 4   side 0          ; SCK=0, sample D2..D0 on falling edge  ;Note, Here I had to read 4 pins instead of 3. It seems that with 3, a bit is lost after the first push. Need to read the doc again
+        jmp x--, read_loop side 1      ; SCK=1
     ; -------- finish conversion -----------------------------------
     set pins, 1   side 1               ; CSB=1, SCK=1
     ; -------- Pad with 0 ------------------------------------------

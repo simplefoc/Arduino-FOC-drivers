@@ -64,7 +64,7 @@
         pio_sm_set_consecutive_pindirs(pio, sm, this->pinD0,  3, false);  // D0..D2 in
 
         // Shift config: right, autopush every 32 bits (two pushes per conversion)
-        sm_config_set_in_shift(&c, true, true, 32);
+        sm_config_set_in_shift(&c, false, true, 32);
 
         // SCK ≈ clk_sys / (2 * clkdiv) because each SCK period = 2 instructions
         float div = (float)clock_get_hz(clk_sys) / (2.0f * sck_hz);
@@ -121,7 +121,7 @@
         *c = 0;
         *d = 0;
         for (int i = 0; i < 64; i += 4) {
-            uint32_t w = (i < 32) ? w1 : w0;
+            uint32_t w = (i < 32) ? w0 : w1;
             int shift = 28 - (i % 32);  // 28, 24, ..., 0 for each group of 4 bits
 
             uint32_t group = (w >> shift) & 0xF;  // extract aN bN cN dN
