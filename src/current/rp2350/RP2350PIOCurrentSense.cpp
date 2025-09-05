@@ -115,24 +115,6 @@
         return 0;
     };
 
-    static inline void extract_bit_interleaved(const uint32_t w0, const uint32_t w1, uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d) {
-        *a = 0;
-        *b = 0;
-        *c = 0;
-        *d = 0;
-        for (int i = 0; i < 64; i += 4) {
-            uint32_t w = (i < 32) ? w0 : w1;
-            int shift = 28 - (i % 32);  // 28, 24, ..., 0 for each group of 4 bits
-
-            uint32_t group = (w >> shift) & 0xF;  // extract aN bN cN dN
-
-            *a = (*a << 1) | ((group >> 0) & 0x1);
-            *b = (*b << 1) | ((group >> 1) & 0x1);
-            *c = (*c << 1) | ((group >> 2) & 0x1);
-            *d = (*d << 1) | ((group >> 3) & 0x1);
-        }
-    }
-
     PhaseCurrent_s RP2350PIOCurrentSense::getPhaseCurrents() {
         PhaseCurrent_s current;
 
@@ -141,16 +123,35 @@
         const uint32_t i_dma = (dma_hw->ch[dma_a].write_addr - base)>>2;
         //For a safe read, get the one that is an even number and at least <2.wi, manage looping
         const uint32_t i_last = (i_dma <= 1) ? RING_WORDS -2 : ((i_dma / 2)*2 - 2);
-        //copy them quickly (before print!)
+        //copy them quickly (before any print!)
         const uint32_t w0 = buff[i_last];
         const uint32_t w1 = buff[i_last+1];
-        //Reconstruct the 3 current from interleaved data
-        uint32_t a,b,c,d = 0;
-        extract_bit_interleaved(w0,w1, &a, &b, &c, &d);    
 
-        current.a = (0x00000fff & a) * gain_a;
-        current.b = (0x00000fff & b) * gain_b;
-        current.c = (0x00000fff & c) * gain_c;
+        //Reconstruct the 3 current from interleaved data
+        uint32_t a,b,c = 0;
+        uint32_t g;
+
+        //g = (w0 >> 28) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u); d = (d<<1)|((g>>3)&1u);
+        //g = (w0 >> 24) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u); d = (d<<1)|((g>>3)&1u);
+        //g = (w0 >> 20) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u); d = (d<<1)|((g>>3)&1u);
+        //g = (w0 >> 16) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u); d = (d<<1)|((g>>3)&1u);
+        g = (w0 >> 12) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w0 >>  8) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w0 >>  4) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w0 >>  0) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+
+        g = (w1 >> 28) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w1 >> 24) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w1 >> 20) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w1 >> 16) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w1 >> 12) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w1 >>  8) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w1 >>  4) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+        g = (w1 >>  0) & 0xFu; a = (a<<1)|((g>>0)&1u); b = (b<<1)|((g>>1)&1u); c = (c<<1)|((g>>2)&1u);// d = (d<<1)|((g>>3)&1u);
+
+        current.a = a * gain_a;
+        current.b = b * gain_b;
+        current.c = c * gain_c;
         
         return current;
     };
