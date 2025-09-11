@@ -8,7 +8,7 @@
 
 class RP2350PIOCurrentSense: public CurrentSense {
   public:
-    RP2350PIOCurrentSense(float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0, int pinTRIG);
+    RP2350PIOCurrentSense(PIO pio, float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0, int pinTRIG);
     ~RP2350PIOCurrentSense();
 
     int init() override;
@@ -27,6 +27,8 @@ class RP2350PIOCurrentSense: public CurrentSense {
     int dma_a = -1; // PIO RX -> ring (streamer)
     int dma_b = -1; // reloader 
 
+    PIO pio;
+
     uint32_t max_adc_value; //!< maximum ADC value (e.g. 4096 for 12 bit ADC)
     int pinCSB;
     int pinSCK;
@@ -34,8 +36,6 @@ class RP2350PIOCurrentSense: public CurrentSense {
     int pinD1;
     int pinD2;
     int pinTRIG;
-    float gain_a;
-    float gain_b;
-    float gain_c;
+
   protected: //For debug, all public
 };

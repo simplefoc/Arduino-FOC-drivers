@@ -1,6 +1,7 @@
     #include "RP2350PIOCurrentSense.h"
 
-    RP2350PIOCurrentSense::RP2350PIOCurrentSense(float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0, int pinTRIG) : CurrentSense() {
+    RP2350PIOCurrentSense::RP2350PIOCurrentSense(PIO pio, float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0, int pinTRIG) : CurrentSense() {
+        this->pio = pio;
         this->pinSCK = pinSCK;
         this->pinCSB = pinCSB;
         this->pinD0 = pinD0;
@@ -28,12 +29,11 @@
         // TODO init timer to trigger PIO conversions at required frequency (check driver settings)
         //      TDB: do we need config input to know which timer slice and channel to use? or can we pick automatically?
         // TODO start everything up
-
+        // TODO implement offset and calibration like other current sensor classes.
         float sck_hz = 20e6;
-        PIO pio = pio0; 
-        int sm = pio_claim_unused_sm(pio0, true);
+        int sm = pio_claim_unused_sm(this->pio, true);
         //if (sm < 0) { pio = pio1; sm = pio_claim_unused_sm(pio1, true); } //For now, let say we have to use PIO0, this is simpler for quick DMA setup
-
+        
         // --- patch program instructions with chosen trigger pin ---
         size_t prog_len = bu79100g_parallel3_program.length;
         uint16_t insns[prog_len];
@@ -43,7 +43,7 @@
         struct pio_program prog = bu79100g_parallel3_program; // copy metadata
         prog.instructions = insns;
     
-        uint off = pio_add_program(pio, &prog);
+        uint off = pio_add_program(this->pio, &prog);
         pio_sm_config c = bu79100g_parallel3_program_get_default_config(off);
 
         // Map pins to the SM
@@ -52,11 +52,11 @@
         sm_config_set_sideset_pins(&c, this->pinSCK);          // SCK (sideset)
 
         // Put pins into PIO control
-        pio_gpio_init(pio, this->pinSCK);
-        pio_gpio_init(pio, this->pinCSB);
-        pio_gpio_init(pio, this->pinD0);
-        pio_gpio_init(pio, this->pinD1);
-        pio_gpio_init(pio, this->pinD2);
+        pio_gpio_init(this->pio, this->pinSCK);
+        pio_gpio_init(this->pio, this->pinCSB);
+        pio_gpio_init(this->pio, this->pinD0);
+        pio_gpio_init(this->pio, this->pinD1);
+        pio_gpio_init(this->pio, this->pinD2);
 
         // Directions (from the SM’s point of view)
         pio_sm_set_consecutive_pindirs(pio, sm, this->pinSCK, 1, true);   // SCK out
