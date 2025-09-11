@@ -1,0 +1,34 @@
+.program bu79100g_parallel3
+; BU79100G-LA parallel read of 3 ADCs with a trigger GPIO
+; sideset pin: SCK (1 pin), CPOL=1 idle HIGH
+; set pin:     CSB (1 pin)
+; in_base:     D0..D2 (3 contiguous input pins)
+
+.side_set 1 opt            ; 1 sideset bit to drive SCK
+.wrap_target
+    set pins, 1   side 1   ; CSB=1, SCK=1
+    ; -------- wait external falling edge on absolute GPIO ----------
+    wait 1 gpio 11 ;THIS INSTRUCTION WILL BE PATCHED AT RUNTIME TO CHANGE GPIO. DO NOT MOVE IT WITHOUT CHANGING PIO INIT.
+    wait 0 gpio 11 ;THIS INSTRUCTION WILL BE PATCHED AT RUNTIME TO CHANGE GPIO. DO NOT MOVE IT WITHOUT CHANGING PIO INIT.
+    set pins, 0   side 1          ; CS=0, SCK=1
+    set x, 15     side 1          ; prepare loop cpt
+    ; -------- 16 dummy clocks (no sampling) ----------------------- 
+dummy_loop:
+        nop           side 0          ; SCK=0
+        jmp x--, dummy_loop side 1    ; SCK=1
+    set pins, 1   side 1       ; CSB=0, keep SCK=HIGH at CSB falling (datasheet rec.)
+    set x, 15     side 1  
+    set pins, 0
+    ; -------- 16 real clocks, sample on SCK falling edge -----------
+read_loop:    
+        in  pins, 4   side 0          ; SCK=0, sample D2..D0 on falling edge  ;Note, Here I had to read 4 pins instead of 3. It seems that with 3, a bit is lost after the first push. Need to read the doc again
+        jmp x--, read_loop side 1      ; SCK=1
+    ; -------- finish conversion -----------------------------------
+    set pins, 1   side 1               ; CSB=1, SCK=1
+    ; -------- Pad with 0 ------------------------------------------
+    ;set x, 0        ; Clear x
+    ;mov x, ~x 
+    ;in x, 16        ; Push 16 bits of 1 into ISR
+
+    ;push 
+.wrap
