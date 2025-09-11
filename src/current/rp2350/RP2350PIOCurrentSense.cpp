@@ -1,5 +1,5 @@
     #include "RP2350PIOCurrentSense.h"
-
+    #if defined(ARDUINO_ARCH_RP2040)
     RP2350PIOCurrentSense::RP2350PIOCurrentSense(PIO pio, float gain, uint32_t max_adc_value, int pinSCK, int pinCSB, int pinD0, int pinTRIG) : CurrentSense() {
         this->pio = pio;
         this->pinSCK = pinSCK;
@@ -155,6 +155,6 @@
         
         return current;
     };
-
+    #endif
 
 

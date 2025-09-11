@@ -1,6 +1,6 @@
 
 #pragma once
-
+#if defined(ARDUINO_ARCH_RP2040)
 #include "common/base_classes/CurrentSense.h"
 #include "bu79100g_parallel3.pio.h"
 #include "hardware/dma.h"
@@ -39,3 +39,4 @@ class RP2350PIOCurrentSense: public CurrentSense {
 
   protected: //For debug, all public
 };
+#endif
