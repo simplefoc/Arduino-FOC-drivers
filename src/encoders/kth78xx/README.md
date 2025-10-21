@@ -1,5 +1,7 @@
 # KTH7812 SimpleFOC driver
 
+!warning not yet tested!
+
 Driver for the KTH7812 magnetic positon sensor.
 This driver should also work with other models from the KTH78xx series.
 
@@ -26,7 +28,7 @@ Its actually easier to use than the standard SPI sensor class, because it is les
 #include "encoders/kth78xx/MagneticSensorKTH7812.h"
 
 #define SENSOR1_CS 5 // some digital pin that you're using as the nCS pin
-MagneticSensorMA330 sensor1(SENSOR1_CS);
+MagneticSensorKTH7812 sensor1(SENSOR1_CS);
 
 
 void setup() {
