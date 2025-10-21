@@ -26,7 +26,7 @@ void MT6826S::init(SPIClass* _spi) {
 
 
 float MT6826S::getCurrentAngle(){
-    uint32_t rawangle = readRawAngle21();
+    uint32_t rawangle = readRawAngle15();
     if (checkcrc) {
         if (lastcrc != calcCrc(rawangle, laststatus)) {
             laststatus |= MT6826S_CRC_ERROR;
@@ -63,7 +63,7 @@ uint8_t MT6826S::calcCrc(uint32_t angle, uint8_t status) {
 
 
 
-uint32_t MT6826S::readRawAngle15(){
+uint16_t MT6826S::readRawAngle15(){
     uint8_t data[6]; // transact 48 bits
     data[0] = (MT6826S_OP_ANGLE<<4);
     data[1] = MT6826S_REG_ANGLE1;
@@ -80,7 +80,7 @@ uint32_t MT6826S::readRawAngle15(){
     spi->endTransaction();
     laststatus = data[4]&0x07;
     lastcrc = data[5];
-    return (data[2] << 13) | (data[3] << 5) | (data[4] >> 3);
+    return (data[2] << 7) | ((data[3]>>1)&0x7F); // 15 bits only
 };
 
 
