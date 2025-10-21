@@ -175,7 +175,7 @@ public:
 
 	float getCurrentAngle(); // angle in radians, return current value
 
-	uint32_t readRawAngle15(); // up to 21bit precision angle value
+	uint16_t readRawAngle15(); // up to 15bit precision angle value
 
     
     uint8_t getBandwidth();
@@ -210,7 +210,7 @@ public:
 
     MT6826SOptions4 getOptions4();
     void setOptions4(MT6826SOptions4 opts);
-	
+
     MT6826SOptions5 getOptions5();
     void setOptions5(MT6826SOptions5 opts);
 
