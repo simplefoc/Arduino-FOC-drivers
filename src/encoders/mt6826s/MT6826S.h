@@ -175,7 +175,7 @@ public:
 
 	float getCurrentAngle(); // angle in radians, return current value
 
-	uint32_t readRawAngle21(); // up to 21bit precision angle value
+	uint32_t readRawAngle15(); // up to 21bit precision angle value
 
     
     uint8_t getBandwidth();

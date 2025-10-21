@@ -63,7 +63,7 @@ uint8_t MT6826S::calcCrc(uint32_t angle, uint8_t status) {
 
 
 
-uint32_t MT6826S::readRawAngle21(){
+uint32_t MT6826S::readRawAngle15(){
     uint8_t data[6]; // transact 48 bits
     data[0] = (MT6826S_OP_ANGLE<<4);
     data[1] = MT6826S_REG_ANGLE1;
