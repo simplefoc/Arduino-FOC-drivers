@@ -1,0 +1,51 @@
+#include "Arduino.h"   
+#include "SimpleFOC.h"
+#include "SimpleFOCDrivers.h"
+#include "SimpleCANio.h"
+#include "comms/can/CANCommander.h"
+
+// can pins
+#define CAN_RX PA11
+#define CAN_TX PA12
+#define CAN_ENABLE PA10
+#define CAN_ID 1
+
+// 3pwm pins
+#define PHA PA6
+#define PHB PA7
+#define PHC PA8
+
+BLDCMotor motor = BLDCMotor(7); // 7 pole pairs
+BLDCDriver3PWM driver = BLDCDriver3PWM(PHA, PHB, PHC);
+
+//CANio can(PIN_CAN0_RX, PIN_CAN0_TX); // Create CAN object
+CANio can(CAN_RX, CAN_TX, NC, CAN_ENABLE); // Create CAN object
+
+CANCommander commander(can, CAN_ID);
+void setup()
+{   
+    Serial.begin(115200);
+    SimpleFOCDebug::enable(&Serial);
+
+    commander.init();
+    commander.addMotor(&motor);
+    delay(5000);
+
+    motor.linkDriver(&driver);
+    driver.voltage_power_supply = 12;
+    driver.init();
+
+    motor.init();
+    motor.initFOC();
+
+    Serial.println("Setup complete!");
+    delay(10);
+}
+
+void loop()
+{
+    motor.loopFOC();
+    motor.move();
+  
+    commander.run();
+}
