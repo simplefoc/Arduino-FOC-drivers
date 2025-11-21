@@ -5,9 +5,10 @@
 #include "comms/can/CANCommander.h"
 
 // can pins
-#define CAN_RX PA11
-#define CAN_TX PA12
-#define CAN_ENABLE PA10
+#define CAN_RX NC // define the RX pin
+#define CAN_TX NC // define the TX pin
+#define CAN_SHDN NC // define the Shhutdown pin (inverse of enable) if needed
+#define CAN_ENABLE NC // define the ENABLE pin if needed
 #define CAN_ID 1
 
 // 3pwm pins
