@@ -32,7 +32,7 @@ enum CANPacketType : uint8_t {
 class CANCommander : public RegisterIO
 {
 public:
-    CANCommander(HardwareCAN& can, uint8_t address = 0, bool echo = false);
+    CANCommander(HardwareCAN& can, uint8_t address = 0, bool echo = false, int baudrate = 1000000, bool no_filter = false);
     virtual ~CANCommander();
 
     void addMotor(FOCMotor* motor);
@@ -49,6 +49,14 @@ public:
 
     bool echo = false;
     uint8_t address = 0;
+    int baudrate = 1000000;
+    bool no_filter = false;
+
+    bool addCustomRegister(uint8_t reg, uint8_t size, 
+        RegisterReadHandler readHandler, 
+        RegisterWriteHandler writeHandler) {
+        return SimpleFOCRegisters::regs->addCustomRegister(reg, size, readHandler, writeHandler);
+    }
 
 protected:
     virtual bool commsToRegister(uint8_t reg);

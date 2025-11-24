@@ -1,26 +1,29 @@
 #include "CANCommander.h"
 
-CANCommander::CANCommander(HardwareCAN& can, uint8_t addr, bool echo_enabled) 
-    : _can(&can), address(addr), echo(echo_enabled) {
+CANCommander::CANCommander(HardwareCAN& can, uint8_t addr, bool echo_enabled, int baudrate, bool no_filter) 
+    : _can(&can), address(addr), echo(echo_enabled), baudrate(baudrate), no_filter(no_filter) {
 }
 
 CANCommander::~CANCommander() {
 }
 
 void CANCommander::init() {
-    // Filter to accept only our address (broadcast filtering handled in software)
-    // Mask the address bits [28:21] - the most significant 8 bits
-    uint32_t address_mask = 0xFF << CAN_ADDRESS_SHIFT;  // Mask bits [28:21] (8 bits for address)
-    uint32_t our_address_filter = (uint32_t)address << CAN_ADDRESS_SHIFT;
     
-    // Use MASK_EXTENDED for 29-bit extended CAN IDs
-    // This will only accept messages where the address bits match
-    _can->filter(CanFilter(MASK_EXTENDED, our_address_filter, address_mask, FILTER_ANY_FRAME));
-
-    // Accept all messages (promiscuous mode for debugging)
-    //_can->filter(CanFilter(ACCEPT_ALL));
-    
-    _can->begin(1000000); // 1 Mbps CAN speed
+    if(no_filter) {
+        // Accept all messages (promiscuous mode)
+        _can->filter(CanFilter(ACCEPT_ALL));
+        return;
+    }else{
+        // Filter to accept only our address (broadcast filtering handled in software)
+        // Mask the address bits [28:21] - the most significant 8 bits
+        uint32_t address_mask = 0xFF << CAN_ADDRESS_SHIFT;  // Mask bits [28:21] (8 bits for address)
+        uint32_t our_address_filter = (uint32_t)address << CAN_ADDRESS_SHIFT;
+        
+        // Use MASK_EXTENDED for 29-bit extended CAN IDs
+        // This will only accept messages where the address bits match
+        _can->filter(CanFilter(MASK_EXTENDED, our_address_filter, address_mask, FILTER_ANY_FRAME));
+    }
+    _can->begin(baudrate); // 1 Mbps CAN speed
 }
 
 void CANCommander::addMotor(FOCMotor* motor) {
