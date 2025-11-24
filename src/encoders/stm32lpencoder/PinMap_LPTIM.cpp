@@ -1,6 +1,7 @@
 #include "Arduino.h"
 
-#ifdef HAL_LPTIM_MODULE_ENABLED
+
+#if defined(_STM32_DEF_) && defined(HAL_LPTIM_MODULE_ENABLED)
 
 
 // TODO which models does this apply to? the entire series, or the line?

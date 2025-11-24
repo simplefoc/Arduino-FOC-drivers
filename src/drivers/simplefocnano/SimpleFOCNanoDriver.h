@@ -4,7 +4,7 @@
 
 #include <drivers/BLDCDriver3PWM.h>
 
-#if defined(ARDUINO_NANO_ESP32) || defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_ARDUINO_NANO33BLE) || defined(ARDUINO_AVR_NANO)
+#if defined(ARDUINO_NANO_ESP32) || defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_ARDUINO_NANO33BLE) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_NANO_MATTER)
 
 /*
  * Default pins for the SimpleFOC Nano board

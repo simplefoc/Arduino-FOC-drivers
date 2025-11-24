@@ -10,13 +10,14 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.0.9 - Released xxx 2024, for Simple FOC 2.3.x or later
+v1.1.0 - Released xxx 2025, for Simple FOC xxx or later
 
 
-What's changed since 1.0.8?
-- AS5600 driver bugfix thanks to [@zbas](https://github.com/zbas)
-- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=milestone%3A1.0.9)
-
+What's changed since 1.0.9?
+- Bugfixes [included](https://github.com/simplefoc/Arduino-FOC-drivers/issues?q=milestone%3A1.1.0)
+- new SPI driver for MT6826S magnetic sensors
+- new SPI driver for KTH78xx magnetic sensors
+- new SPI driver for the DRV8376 integrated BLDC driver from TI
 
 ## What is included
 
@@ -28,6 +29,7 @@ Software to control gate driver ICs or integrated driver ICs which have advanced
 
  - [TMC6200 driver](src/drivers/tmc6200/) - SPI driver for Trinamics TMC6200 motor driver IC.
  - [DRV8316 driver](src/drivers/drv8316/) - SPI driver for TI's DRV8316 motor driver IC.
+ - [DRV8376 driver](src/drivers/drv8376/) - SPI driver for TI's DRV8376 motor driver IC.
  - [STSPIN32G4 driver](src/drivers/stspin32g4/) - I2C and BLDCDriver for the STSPIN32G4 integrated gate driver MCU.
 
 ### Encoders
@@ -48,12 +50,20 @@ Drivers for various position sensor ICs. In many cases these hardware-specific d
  - [ESP32 Hardware Encoder](src/encoders/esp32hwencoder/) - ESP32 Hardware timer based encoder driver for ABI type quadrature encoders.
  - [SC60228 SPI driver](src/encoders/sc60228/) - SPI driver for SemiMent SC60288 magnetic encoder IC.
  - [MA330 SPI driver](src/encoders/ma330/) - SPI driver for the MPS MagAlpha MA330 absolute position magnetic rotary encoder IC.
- - [MT6816 SPI driver](src/encoders/mt6816/) - SPI driver for the MagnTek MT6816 absolute position magnetic rotary encoder IC.
  - [MT6701 SSI driver](src/encoders/mt6701/) - SSI driver for the MagnTek MT6701 absolute position magnetic rotary encoder IC.
+ - [MT6816 SPI driver](src/encoders/mt6816/) - SPI driver for the MagnTek MT6816 absolute position magnetic rotary encoder IC.
+ - [MT6826S SPI driver](src/encoders/mt6826s/) - SPI driver for the MagnTek MT6826S absolute position magnetic rotary encoder IC.
  - [MT6835 SPI driver](src/encoders/mt6835/) - SPI driver for the MagnTek MT6835 21 bit magnetic rotary encoder IC.
  - [STM32 PWM sensor driver](src/encoders/stm32pwmsensor/) - STM32 native timer-based driver for PWM angle sensors.
+ - [KTH78xx SPI driver](src/encoders/kth78xx/) - SPI driver for the Conntek KTH78xx series absolute position magnetic rotary encoder ICs.
+
+### Special Encoders
+
  - [CalibratedSensor](src/encoders/calibrated/) - A sensor which can calibrate for eccentricity on the magnet placement.
  - [SmoothingSensor](src/encoders/smoothing/) - A SimpleFOC Sensor wrapper implementation which adds angle extrapolation.
+ - [LinearHall](src/encoders/linearhall/) - A HallSensor with linear interpolation between ticks
+ - [FluxObserver](src/encoders/MXLEMMING_observer/) - A "sensorless sensor" implementing flux observer (requires current sensing)
+ - 
 
 ### Communications
 
@@ -78,7 +88,7 @@ Load and store SimpleFOC motor settings, based on register abstraction. Storing 
 
 Drive different kinds of motors, or use alternate algorithms to SimpleFOC's default BLDCMotor and StepperMotor classes.
 
- - [HybridStepperMotor](motors/HybridStepperMotor/) - Drive stepper motors with 3 phases.
+ - [HybridStepperMotor](https://github.com/simplefoc/Arduino-FOC/blob/master/src/HybridStepperMotor.h) - HybridStepper has moved to the main repostory.
 
 
 ### Utilities

@@ -18,7 +18,7 @@ GenericVoltageSense::GenericVoltageSense(int pin, float gain, float offset, floa
 
 bool GenericVoltageSense::init(int resolution){
     pinMode(pin, INPUT_ANALOG);
-#if !defined(ARDUINO_ARCH_AVR) && !defined(ARDUINO_ARCH_MEGAAVR)
+#if !defined(ARDUINO_ARCH_AVR) && !defined(ARDUINO_ARCH_MEGAAVR) && !defined(ARDUINO_ARCH_SILABS)
     if (resolution>0) {
         analogReadResolution(resolution);
         maxValue = _powtwo(resolution);

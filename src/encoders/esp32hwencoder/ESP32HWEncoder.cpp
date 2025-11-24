@@ -108,7 +108,9 @@ void ESP32HWEncoder::init()
         overflowISR_args[pcnt_config.unit].set = 1;
 
         // Register and enable the interrupt
-        pcnt_isr_register(overflowCounter, (void*)&overflowISR_args, 0, (pcnt_isr_handle_t*) NULL);
+        uint8_t count = 0;
+        for (uint8_t i = 0; i < PCNT_UNIT_MAX; i++) count += used_units[i];
+        if (count == 1) pcnt_isr_register(overflowCounter, (void*)&overflowISR_args, 0, (pcnt_isr_handle_t*) NULL);
         pcnt_intr_enable(pcnt_config.unit);
         
         // Just check the last command for errors

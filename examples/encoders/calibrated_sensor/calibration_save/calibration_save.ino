@@ -1,6 +1,10 @@
 /**
  * The example demonstrates the calibration of the magnetic sensor with the calibration procedure and saving the calibration data. 
  * So that the calibration procedure does not have to be run every time the motor is powered up.
+ * 
+ * 1. Run this Sketch as is and wait for the calibration data to be generated and printed over Serial.
+ * 2. Then copy the output from Serial to calibrationLut, zero_electric_angle and sensor_direction
+ * 3. Change values_provided to true and run the Sketch again to see the motor skipping the calibration.
  */
 
 #include <SimpleFOC.h>
@@ -10,7 +14,9 @@
 // fill this array with the calibration values outputed by the calibration procedure
 float calibrationLut[50] = {0};
 float zero_electric_angle = 0;
-Direction sensor_direction = Direction::CW;
+Direction sensor_direction = Direction::UNKNOWN;
+
+const bool values_provided = false;
 
 // magnetic sensor instance - SPI
 MagneticSensorSPI sensor = MagneticSensorSPI(AS5147_SPI, 14);
@@ -22,7 +28,8 @@ StepperDriver4PWM driver = StepperDriver4PWM(10, 9, 5, 6,8);
 // argument 1 - sensor object
 // argument 2 - number of samples in the LUT (default 200)
 // argument 3 - pointer to the LUT array (defualt nullptr)
-CalibratedSensor sensor_calibrated = CalibratedSensor(sensor, 50);
+CalibratedSensor sensor_calibrated = CalibratedSensor(
+    sensor, sizeof(calibrationLut) / sizeof(calibrationLut[0]));
 
 // voltage set point variable
 float target_voltage = 2;
@@ -57,9 +64,13 @@ void setup() {
   // initialize motor
   motor.init();
 
-  // Running calibration
-  // the function will setup everything for the provided calibration LUT
-  sensor_calibrated.calibrate(motor, calibrationLut, zero_electric_angle, sensor_direction);
+  if(values_provided) {
+    motor.zero_electric_angle = zero_electric_angle;
+    motor.sensor_direction = sensor_direction;
+  } else {
+    // Running calibration
+    sensor_calibrated.calibrate(motor);
+  }
 
   // Linking sensor to motor object
   motor.linkSensor(&sensor_calibrated);

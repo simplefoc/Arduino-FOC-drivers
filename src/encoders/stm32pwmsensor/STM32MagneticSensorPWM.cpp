@@ -6,7 +6,7 @@
 #include "common/foc_utils.h"
 
 
-STM32MagneticSensorPWM::STM32MagneticSensorPWM(int pin, uint32_t _min_ticks, uint32_t _max_ticks) : STM32PWMInput(pin), max_ticks(_max_ticks), min_ticks(_min_ticks) {
+STM32MagneticSensorPWM::STM32MagneticSensorPWM(int pin, uint32_t _min_ticks, uint32_t _max_ticks, uint32_t _pwm_freq) : STM32PWMInput(pin), max_ticks(_max_ticks), min_ticks(_min_ticks) {
 
 };
 

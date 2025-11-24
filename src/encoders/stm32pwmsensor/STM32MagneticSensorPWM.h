@@ -13,7 +13,7 @@
 
 class STM32MagneticSensorPWM : public Sensor, public STM32PWMInput {
     public:
-        STM32MagneticSensorPWM(int pin, uint32_t _min_ticks = 0, uint32_t _max_ticks = 0x0FFF);
+        STM32MagneticSensorPWM(int pin, uint32_t _min_ticks = 0, uint32_t _max_ticks = 0x0FFF, uint32_t _pwm_freq = 1000);
         ~STM32MagneticSensorPWM();
 
         void init() override;

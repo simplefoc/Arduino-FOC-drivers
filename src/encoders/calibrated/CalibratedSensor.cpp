@@ -3,12 +3,15 @@
 // CalibratedSensor()
 // sensor              - instance of original sensor object
 // n_lut               - number of samples in the LUT
-CalibratedSensor::CalibratedSensor(Sensor &wrapped, int n_lut) : _wrapped(wrapped) {
-	this->n_lut = n_lut;
-};
+CalibratedSensor::CalibratedSensor(Sensor &wrapped, int n_lut, float *lut)
+    : _wrapped(wrapped), n_lut(n_lut), allocated(false), calibrationLut(lut) {
+	};
 
 CalibratedSensor::~CalibratedSensor() {
 	// delete calibrationLut;
+	if(allocated) {
+		delete []calibrationLut;
+	}
 };
 
 // call update of calibrated sensor
@@ -28,10 +31,14 @@ void CalibratedSensor::init()
 // Retrieve the calibrated sensor angle
 float CalibratedSensor::getSensorAngle()
 {
-	// raw encoder position e.g. 0-2PI
-	float raw_angle = _wrapped.getMechanicalAngle();
+	if(!calibrationLut) {
+		return _wrapped.getMechanicalAngle();
+	}
+    // raw encoder position e.g. 0-2PI
+    float raw_angle = fmodf(_wrapped.getMechanicalAngle(), _2PI);
+    raw_angle += raw_angle < 0 ? _2PI:0;
 
-	// Calculate the resolution of the LUT in radians
+    // Calculate the resolution of the LUT in radians
     float lut_resolution = _2PI / n_lut;
     // Calculate LUT index
     int lut_index = raw_angle / lut_resolution;
@@ -41,7 +48,7 @@ float CalibratedSensor::getSensorAngle()
     float y1 = calibrationLut[(lut_index + 1) % n_lut];
 
     // Linearly interpolate between the y0 and y1 values
-	// Calculate the relative distance from the y0 (raw_angle has to be between y0 and y1)
+    // Calculate the relative distance from the y0 (raw_angle has to be between y0 and y1)
     // If distance = 0, interpolated offset = y0
     // If distance = 1, interpolated offset = y1
     float distance = (raw_angle - lut_index * lut_resolution) / lut_resolution;
@@ -85,19 +92,15 @@ void CalibratedSensor::filter_error(float* error, float &error_mean, int n_ticks
 
 }
 
-void CalibratedSensor::calibrate(FOCMotor &motor, float* lut, float zero_electric_angle, Direction senor_direction)
+void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 {
 	// if the LUT is already defined, skip the calibration
-	if(lut != nullptr){
-		motor.monitor_port->println("Using the provided LUT.");
-		motor.zero_electric_angle = zero_electric_angle;
-		motor.sensor_direction = senor_direction;
-		this->calibrationLut = lut;
-		return;
-	}else{
-		this->calibrationLut = new float[n_lut]();
-		motor.monitor_port->println("Starting Sensor Calibration.");
+
+	if(calibrationLut == NULL) {
+		allocated = true;
+		calibrationLut = new float[n_lut];
 	}
+	motor.monitor_port->println("Starting Sensor Calibration.");
 
 	// Calibration variables
 	
@@ -170,14 +173,14 @@ void CalibratedSensor::calibrate(FOCMotor &motor, float* lut, float zero_electri
 		}
 
 		// delay to settle in position before taking a position sample
-		_delay(30);
+		_delay(settle_time_ms);
 		_wrapped.update();
 		// calculate the error
-		theta_actual = motor.sensor_direction*(_wrapped.getAngle() - theta_init);
+		theta_actual = (int)motor.sensor_direction * (_wrapped.getAngle() - theta_init);
         error[i] = 0.5 * (theta_actual - elec_angle / _NPP);
 
 		// calculate the current electrical zero angle
-		float zero_angle = (motor.sensor_direction*_wrapped.getMechanicalAngle() * _NPP ) - (elec_angle + _PI_2);
+		float zero_angle = ((int)motor.sensor_direction * _wrapped.getMechanicalAngle() * _NPP ) - (elec_angle + _PI_2);
 		zero_angle = _normalizeAngle(zero_angle);
 		// remove the 2PI jumps
 		if(zero_angle - zero_angle_prev > _PI){
@@ -210,13 +213,13 @@ void CalibratedSensor::calibrate(FOCMotor &motor, float* lut, float zero_electri
 		}
 
 		// delay to settle in position before taking a position sample
-		_delay(30);
+		_delay(settle_time_ms);
 		_wrapped.update();
 		// calculate the error
-		theta_actual = motor.sensor_direction*(_wrapped.getAngle() - theta_init);
+		theta_actual = (int)motor.sensor_direction * (_wrapped.getAngle() - theta_init);
         error[i] += 0.5 * (theta_actual - elec_angle / _NPP);
 		// calculate the current electrical zero angle
-		float zero_angle = (motor.sensor_direction*_wrapped.getMechanicalAngle() * _NPP ) - (elec_angle + _PI_2);
+		float zero_angle = ((int)motor.sensor_direction * _wrapped.getMechanicalAngle() * _NPP ) - (elec_angle + _PI_2);
 		zero_angle = _normalizeAngle(zero_angle);
 		// remove the 2PI jumps
 		if(zero_angle - zero_angle_prev > _PI){
@@ -271,7 +274,7 @@ void CalibratedSensor::calibrate(FOCMotor &motor, float* lut, float zero_electri
 		if (ind < 0) ind += n_lut;
 		calibrationLut[ind] = (float)(error[(int)(i * dn)] - error_mean); 
 		// negate the error if the sensor is in the opposite direction
-		calibrationLut[ind] =  motor.sensor_direction * calibrationLut[ind];
+		calibrationLut[ind] =  (int)motor.sensor_direction * calibrationLut[ind];
 	}
 	motor.monitor_port->println("");
 	_delay(1000);

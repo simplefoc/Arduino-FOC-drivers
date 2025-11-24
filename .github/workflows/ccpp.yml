@@ -13,64 +13,116 @@ jobs:
     name: Test compile
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        arduino-boards-fqbn:
-          - arduino:avr:nano                         # arudino nano
-          - arduino:sam:arduino_due_x                # arduino due
-          - arduino:samd:nano_33_iot                 # samd21
-          - adafruit:samd:adafruit_metro_m4          # samd51
-          - esp32:esp32:esp32                        # esp32
-          - esp32:esp32:esp32s2                      # esp32s2
-          - STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8   # stm32 bluepill
-          - STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F411RE # stm32 nucleo
-          - arduino:mbed_rp2040:pico                 # rpi pico          
-        include:
-          - arduino-boards-fqbn: arduino:avr:nano
-            sketches-exclude: calibrated calibration_save mt6816_spi smoothing simplefocnano_torque_voltage
-            required-libraries: Simple FOC
-          - arduino-boards-fqbn: arduino:sam:arduino_due_x
-            required-libraries: Simple FOC
-            sketches-exclude: calibrated calibration_save smoothing simplefocnano_torque_voltage simplefocnano_atmega
-          - arduino-boards-fqbn: arduino:samd:nano_33_iot
-            required-libraries: Simple FOC 
-            sketches-exclude: calibrated calibration_save  smoothing
-          - arduino-boards-fqbn: arduino:mbed_rp2040:pico
-            required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage simplefocnano_atmega
-          - arduino-boards-fqbn: adafruit:samd:adafruit_metro_m4
-            platform-url: https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
-            required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage simplefocnano_atmega
-          # - arduino-boards-fqbn: esp32:esp32:esp32doit-devkit-v1
-          #   platform-url: https://dl.espressif.com/dl/package_esp32_index.json
-          #   required-libraries: Simple FOC
-          #   sketch-names: '**.ino'
-          - arduino-boards-fqbn: esp32:esp32:esp32 # esp32 
-            platform-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
-            required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage simplefocnano_atmega linearhall
-          - arduino-boards-fqbn: esp32:esp32:esp32s2 # esp32s2
-            platform-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
-            required-libraries: Simple FOC
-            sketches-exclude: calibrated smoothing simplefocnano_torque_voltage simplefocnano_atmega
-          - arduino-boards-fqbn: STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
-            platform-url:  https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json 
-            required-libraries: Simple FOC
-            sketches-exclude: calibrated mt6816_spi smoothing simplefocnano_torque_voltage simplefocnano_atmega
-          - arduino-boards-fqbn: STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F411RE
-            platform-url:  https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
-            required-libraries: Simple FOC
-            sketches-exclude: smoothing simplefocnano_torque_voltage simplefocnano_atmega
-      # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
+      matrix:
+        board:
+          - fqbn: arduino:avr:nano                         # arudino nano
+            platforms: |
+              - name: arduino:avr
+            sketch-paths: |
+              - examples/drivers/simplefocnano/simplefocnano_atmega
+              - examples/encoders/linearhall
+            report-name-suffix: arduino_avr_nano
+          - fqbn: arduino:sam:arduino_due_x                # arduino due
+            platforms: |
+              - name: arduino:sam
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor/calibration_save
+              - examples/encoders/linearhall
+              - examples/encoders/mt6816
+            report-name-suffix: arduino_sam_due
+          - fqbn: arduino:samd:nano_33_iot                 # samd21
+            platforms: |
+              - name: arduino:samd
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor/calibration_save
+              - examples/encoders/linearhall
+              - examples/encoders/mt6816
+            report-name-suffix: arduino_samd_nano_33_iot
+          - fqbn: adafruit:samd:adafruit_metro_m4          # samd51
+            platforms: |
+              - name: adafruit:samd
+                source-url: "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json"
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor/calibration_save
+              - examples/encoders/linearhall
+              - examples/encoders/mt6816
+            report-name-suffix: adafruit_samd_metro_m4
+          - fqbn: esp32:esp32:esp32                        # esp32
+            platforms: |
+              - name: esp32:esp32
+                source-url: "https://espressif.github.io/arduino-esp32/package_esp32_index.json"
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor/calibration_save
+              - examples/encoders/mt6816
+            report-name-suffix: esp32_esp32
+          - fqbn: esp32:esp32:esp32s2                      # esp32s2
+            platforms: |
+              - name: esp32:esp32
+                source-url: "https://espressif.github.io/arduino-esp32/package_esp32_index.json"
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor/calibration_save
+              - examples/encoders/linearhall
+              - examples/encoders/mt6816
+            report-name-suffix: esp32_esp32s2
+          - fqbn: STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8   # stm32 bluepill
+            platforms: |
+              - name: STMicroelectronics:stm32
+                source-url: "https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json"
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor/calibration_save
+              - examples/encoders/linearhall
+            report-name-suffix: stm32_genf1_bluepill_f103c8
+          - fqbn: STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F411RE # stm32 nucleo
+            platforms: |
+              - name: STMicroelectronics:stm32
+                source-url: "https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json"
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor
+              - examples/encoders/linearhall
+              - examples/encoders/mt6816
+            report-name-suffix: stm32_nucleo_f411re
+          - fqbn: rp2040:rp2040:rpipico                 # rpi pico
+            platforms: |
+              - name: rp2040:rp2040
+                source-url: "https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json"
+            sketch-paths: |
+              - examples/drivers/drv8316
+              - examples/encoders/calibrated_sensor/calibration_save
+              - examples/encoders/linearhall
+              - examples/encoders/mt6816
+            report-name-suffix: arduino_mbed_rp2040_pico
     steps:
     - name: Checkout
       uses: actions/checkout@master
     - name: Compile all examples
-      uses: ArminJo/arduino-test-compile@master
+      uses: arduino/compile-sketches@v1
       with:
-          arduino-board-fqbn: ${{ matrix.arduino-boards-fqbn }}
-          required-libraries: ${{ matrix.required-libraries }}
-          platform-url: ${{ matrix.platform-url }}
-          sketch-names: ${{ matrix.sketch-names }}
-          sketches-exclude: ${{ matrix.sketches-exclude }}
+        fqbn: ${{ matrix.board.fqbn }}
+        platforms: ${{ matrix.board.platforms }}
+        libraries: |
+          - name: "Arduino-FOC"
+            source-url: "https://github.com/simplefoc/Arduino-FOC.git"
+            version: dev
+          - name: "Arduino-FOC-Drivers"
+            source-path: .
+        sketch-paths:  ${{ matrix.board.sketch-paths || 'examples' }}
+        enable-deltas-report: true
+        sketches-report-path: sketches-reports
+    - name: Upload sketches reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: sketches-report-${{ matrix.board.report-name-suffix }}
+        path: sketches-reports
+  report:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Report size deltas
+      uses: arduino/report-size-deltas@v1

@@ -21,6 +21,10 @@ The direction input is optional - if not provided, you can control the direction
 
 The velocity values returned are in the range `min_speed` to `max_speed`, while the input PWM duty cycle should lie within the range `min_pwm` to `max_pwm`. Actual input values smaller than `min_pwm` will be treated as `min_pwm`, values larger than `max_pwm` will be treated as `max_pwm`. The behaviour for 100% or 0% duty cycles is undefined, and they should be avoided.
 
+> **IMPORTANT**<br>
+> If the PWM frequency of the speed input is not known, provide its value in Hz to the constructor. If not provided, it will default to 1kHz (very common value). The frequency is used to make sure that the PWM period stays within one timer counter period. If this is not the case the timer counter can overflow and the input will not work correctly.
+
+
 ## Usage
 
 Use it like this:
@@ -31,8 +35,9 @@ Use it like this:
 // some example pins - the speed pin has to be on channel 1 or 2 of a timer
 #define PIN_SPEED PC6
 #define PIN_DIRECTION PB8
+#define PWM_FREQUENCY 1000 // 1kHz (defualt)
 
-STM32SpeedDirInput speed_dir = STM32SpeedDirInput(PIN_SPEED, PIN_DIRECTION);
+STM32SpeedDirInput speed_dir = STM32SpeedDirInput(PIN_SPEED, PIN_DIRECTION, PWM_FREQUENCY);
 
 float target = 0.0f;
 

@@ -10,7 +10,21 @@
 
 class STM32SpeedDirInput : public STM32PWMInput {
     public:
-        STM32SpeedDirInput(int pin_speed, int pin_dir = NOT_SET);
+
+        /**
+         * STM32SpeedDirInput constructor
+         * 
+         * @param pin_speed - the pin number to read the speed PWM signal from
+         * @param pin_dir - the pin number to read the direction signal from (default is NOT_SET)
+         * @param pwm_freq - the frequency of the PWM signal (default is 1kHz)
+         * 
+         * This class is used to read speed and direction signals from a pin using the STM32 HAL library.
+         * IMPORTANT!
+         *      This class can only be used with the pins that are associated with some timer,
+         *      and only if they are associated to the channels 1 or 2. The timer can not be
+         *      used for other purposes, like motor control.
+         */
+        STM32SpeedDirInput(int pin_speed, int pin_dir = NOT_SET, uint32_t pwm_freq = 1000);
         ~STM32SpeedDirInput();
 
         int init();

@@ -2,14 +2,17 @@
 
 #if defined(_STM32_DEF_)
 
+#include "drivers/hardware_specific/stm32/stm32_mcu.h"
+
 /*
   HardwareEncoder(int cpr)
 */
-STM32HWEncoder::STM32HWEncoder(unsigned int _ppr, int8_t pinA, int8_t pinB, int8_t pinI) {
+STM32HWEncoder::STM32HWEncoder(unsigned int _ppr, int pinA, int pinB, int pinI) {
     cpr = _ppr * 4; // 4x for quadrature
     _pinA = digitalPinToPinName(pinA);
     _pinB = digitalPinToPinName(pinB);
     _pinI = digitalPinToPinName(pinI);
+    index_found = false;
 }
 
 /*
@@ -20,10 +23,10 @@ float STM32HWEncoder::getSensorAngle() {
 }
 
 // getter for index pin
-int STM32HWEncoder::needsSearch() { return false; }
+int STM32HWEncoder::needsSearch() { return false && !index_found; }
 
 // private function used to determine if encoder has index
-int STM32HWEncoder::hasIndex() { return 0; }
+int STM32HWEncoder::hasIndex() { return (_pinI!=NC); }
 
 // encoder initialisation of the hardware pins
 void STM32HWEncoder::init() {
@@ -74,11 +77,21 @@ void STM32HWEncoder::init() {
         return;
     }
 
+    // TODO on STM32G4 MCUs we can use the TIMx_ETR pin for the index, and configure how it is handled automatically by the hardware
+    // on non-G4 MCUs we need to use an external interrupt to handle the index signal
+    // attachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)), [this]() {
+    //     encoder_handle.Instance->CNT = 0; // reset counter
+    //     index_found = true;
+    //     // detach interrupt
+    //     detachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)));
+    // }, index_polarity);
+
     if (HAL_TIM_Encoder_Start(&encoder_handle, TIM_CHANNEL_1) != HAL_OK) {
         initialized = false;
         return;
     }
 
+    stm32_reserveTimer(encoder_handle.Instance);
     initialized = true;
 }
 

@@ -21,10 +21,18 @@ sensor.getDutyCycleTicks();
 
 By rotating the motor through several full turns while printing the ticks to the screen you will be able to determine the correct values empirically.
 
+
+> **IMPORTANT**<br>
+> If the PWM frequency of the speed input is not known, provide its value in Hz to the constructor. If not provided, it will default to 1kHz (very common value). The frequency is used to make sure that the PWM period stays within one timer counter period. If this is not the case the timer counter can overflow and the input will not work correctly.
+
+
 ## Usage
 
 ```
-STM32MagneticSensorPWM sensor = STM32MagneticSensorPWM(PB7, 412, 6917); // sample values, yours will be different
+
+#define PWM_FREQ_HZ 1000 // 1kHz (default)
+
+STM32MagneticSensorPWM sensor = STM32MagneticSensorPWM(PB7, 412, 6917, PWM_FREQ_HZ); // sample values, yours will be different
 
 void setup() {
     ...

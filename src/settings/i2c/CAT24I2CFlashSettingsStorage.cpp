@@ -86,8 +86,12 @@ void CAT24I2CFlashSettingsStorage::reset() {
 int CAT24I2CFlashSettingsStorage::readBytes(void* valueToSet, int numBytes) {
     int read = _wire->requestFrom((uint8_t)_address, (uint8_t)numBytes, (uint8_t)true);
     _currptr += read;
-    if (read==numBytes)
-        _wire->readBytes((uint8_t*)valueToSet, numBytes);
+    if (read==numBytes) {
+        //_wire->readBytes((uint8_t*)valueToSet, numBytes);
+        for (int i=0; i < numBytes; i++) {
+            ((uint8_t*)valueToSet)[i] = _wire->read();
+        }
+    }
     return read;
 };
 

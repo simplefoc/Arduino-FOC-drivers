@@ -1,12 +1,15 @@
 
 #include "./STM32PWMInput.h"
+#include <SimpleFOC.h>
+#include "communication/SimpleFOCDebug.h"
 
 #if defined(_STM32_DEF_)
 
 
 
-STM32PWMInput::STM32PWMInput(int pin){
+STM32PWMInput::STM32PWMInput(int pin, uint32_t pwm_freq){
     _pin = digitalPinToPinName(pin);
+    _pwm_freq = pwm_freq;
 };
 
 
@@ -20,9 +23,13 @@ int STM32PWMInput::initialize(){
     pinmap_pinout(_pin, PinMap_TIM);
     uint32_t channel = STM_PIN_CHANNEL(pinmap_function(_pin, PinMap_TIM));
     timer.Instance = (TIM_TypeDef *)pinmap_peripheral(_pin, PinMap_TIM);
-    timer.Init.Prescaler = 0;
     timer.Init.CounterMode = TIM_COUNTERMODE_UP;
-    timer.Init.Period = 4.294967295E9;    // TODO max period, depends on which timer is used - 32 bits or 16 bits
+    // Check if timer is 16 or 32 bit and set max period accordingly
+    if (IS_TIM_32B_COUNTER_INSTANCE(timer.Instance)) {
+        timer.Init.Period = 0xFFFFFFFF; // 32-bit timer max
+    } else {
+        timer.Init.Period = 0xFFFF; // 16-bit timer max
+    }
     timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
     if (channel!=1 && channel!=2) // only channels 1 & 2 supported
@@ -76,6 +83,32 @@ int STM32PWMInput::initialize(){
     if (HAL_TIM_IC_Start(&timer, TIM_CHANNEL_2)!=HAL_OK) {
         return -9;
     }
+
+    // Check if the timer period is longer than the PWM period 
+    // if it isnt set the perescaler to make it longer
+    // Calculate timer clock frequency
+    uint32_t timer_clk = HAL_RCC_GetPCLK1Freq();
+    if (IS_TIM_CLOCK_DIVISION_INSTANCE(timer.Instance)) {
+        // If APB1 prescaler > 1, timer clock is doubled
+        if ((RCC->CFGR & RCC_CFGR_PPRE1) != RCC_CFGR_PPRE1_DIV1) {
+            timer_clk *= 2;
+        }
+    }
+
+    // Calculate required period (in timer ticks) for one PWM period
+    uint32_t desired_period_ticks = timer_clk / _pwm_freq;
+
+    // Check if timer's max period can fit the desired period
+    uint32_t max_period = (IS_TIM_32B_COUNTER_INSTANCE(timer.Instance)) ? 0xFFFFFFFF : 0xFFFF;
+    uint32_t prescaler = 1;
+    if (desired_period_ticks > max_period) {
+        prescaler = (desired_period_ticks + max_period - 1) / max_period;
+        if (prescaler > 0xFFFF) prescaler = 0xFFFF; // limit to 16-bit prescaler
+    }
+
+    // Set the prescaler to achieve the desired period
+    LL_TIM_SetPrescaler(timer.Instance, prescaler);
+
     timer.Instance->CR1 |= TIM_CR1_CEN;
     return 0;
 };

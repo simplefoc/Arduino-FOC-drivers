@@ -3,7 +3,7 @@
 
 #if defined(_STM32_DEF_)
 
-STM32SpeedDirInput::STM32SpeedDirInput(int pin_speed, int pin_dir) : STM32PWMInput(pin_speed) {
+STM32SpeedDirInput::STM32SpeedDirInput(int pin_speed, int pin_dir, uint32_t pwm_freq) : STM32PWMInput(pin_speed, _pwm_freq) {
     _pin_speed = pin_speed;
     _pin_dir = pin_dir;
 };

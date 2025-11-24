@@ -50,8 +50,11 @@ int I2CCommanderMaster::readRegister(int motor, SimpleFOCRegister registerNum, v
 
 int I2CCommanderMaster::readLastUsedRegister(int motor, void* data, uint8_t size){
     int numRead = motors[motor].wire->requestFrom(motors[motor].address, size);
-    if (numRead==size)
-        motors[motor].wire->readBytes((uint8_t*)data, size);
+    if (numRead==size) {
+        for (int i=0; i < size; i++) {
+    		((uint8_t*)data)[i] = motors[motor].wire->read();
+	    }
+    }
     else {
         return 0;
     }

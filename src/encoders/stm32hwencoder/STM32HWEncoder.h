@@ -16,7 +16,7 @@ class STM32HWEncoder : public Sensor {
     Encoder class constructor
     @param ppr  impulses per rotation  (cpr=ppr*4)
     */
-    explicit STM32HWEncoder(unsigned int ppr, int8_t pinA, int8_t pinB, int8_t pinI=-1);
+    explicit STM32HWEncoder(unsigned int ppr, int pinA, int pinB, int pinI=-1);
 
     void init() override;
     int needsSearch() override;
@@ -25,6 +25,8 @@ class STM32HWEncoder : public Sensor {
     bool initialized = false;
     uint32_t cpr;  //!< encoder cpr number
     PinName _pinA, _pinB, _pinI;
+    bool index_found;
+    uint32_t index_polarity = RISING;
     
   protected:
     float getSensorAngle() override;

@@ -10,8 +10,13 @@
 class CalibratedSensor: public Sensor{
 
 public:
-    // constructor of class with pointer to base class sensor and driver
-    CalibratedSensor(Sensor& wrapped, int n_lut = 200);
+    /**
+     * @brief Constructor of class with pointer to base class sensor and driver
+     * @param wrapped the wrapped sensor which needs calibration
+     * @param n_lut the number of entries in the lut
+     * @param lut the look up table (if null, the lut will be allocated on the heap)
+     */
+    CalibratedSensor(Sensor& wrapped, int n_lut = 200, float* lut = nullptr);
 
     ~CalibratedSensor();
 
@@ -23,7 +28,7 @@ public:
     /**
     * Calibrate method computes the LUT for the correction
     */
-    virtual void calibrate(FOCMotor& motor, float* lut = nullptr, float zero_electric_angle = 0.0, Direction senor_direction= Direction::CW);
+    virtual void calibrate(FOCMotor& motor, int settle_time_ms = 30);
 
     // voltage to run the calibration: user input
     float voltage_calibration = 1;    
@@ -49,9 +54,10 @@ protected:
     
      // lut size - settable by the user
     int  n_lut { 200 } ;
-    // create pointer for lut memory 
+    // pointer for lut memory 
     // depending on the size of the lut
-    // will be allocated in the constructor
+    // will be allocated in the calibrate function if not given.
+    bool allocated;
     float* calibrationLut;
 };
 
