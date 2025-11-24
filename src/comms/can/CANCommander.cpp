@@ -12,7 +12,6 @@ void CANCommander::init() {
     if(no_filter) {
         // Accept all messages (promiscuous mode)
         _can->filter(CanFilter(ACCEPT_ALL));
-        return;
     }else{
         // Filter to accept only our address (broadcast filtering handled in software)
         // Mask the address bits [28:21] - the most significant 8 bits
