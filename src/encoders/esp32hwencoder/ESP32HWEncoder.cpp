@@ -1,6 +1,6 @@
 #include "ESP32HWEncoder.h"
 
-#if defined(ESP_H) && defined(ARDUINO_ARCH_ESP32)
+#if defined(ESP_H) && defined(ARDUINO_ARCH_ESP32) && defined(CONFIG_SOC_PCNT_SUPPORTED)
 
 
 

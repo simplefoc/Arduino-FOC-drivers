@@ -5,7 +5,8 @@
 
 
 #if defined(ESP_H) && defined(ARDUINO_ARCH_ESP32)
-
+#include "sdkconfig.h"
+#if defined(CONFIG_SOC_PCNT_SUPPORTED)
 #include "driver/pcnt.h"
 #include "soc/pcnt_struct.h"
 #include "common/base_classes/Sensor.h"
@@ -62,5 +63,5 @@ class ESP32HWEncoder : public Sensor{
         int32_t cpr; // Counts per rotation = 4 * ppr for quadrature encoders
         float inv_cpr;
 };
-
+#endif
 #endif
