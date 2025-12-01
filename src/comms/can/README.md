@@ -87,7 +87,6 @@ Selected register groups (see header for full list):
 | Motion Targets   | `REG_TARGET` (position/velocity/torque depending on mode) |
 | Sensor Feedback  | `REG_ANGLE`, `REG_VELOCITY`, `REG_SENSOR_ANGLE`, `REG_SENSOR_VELOCITY` |
 | Phase / Driver   | `REG_PHASE_VOLTAGE`, `REG_PHASE_STATE`, `REG_DRIVER_ENABLE` |
-| Telemetry Config | `REG_TELEMETRY_REG`, `REG_TELEMETRY_CTRL`, `REG_TELEMETRY_DOWNSAMPLE`, `REG_ITERATIONS_SEC` |
 | FOC Internal     | `REG_VOLTAGE_Q/D`, `REG_CURRENT_Q/D`, `REG_CURRENT_ABC`, `REG_CURRENT_DC` |
 | PID Velocity     | `REG_VEL_PID_P/I/D/LIM/RAMP`, `REG_VEL_LPF_T` |
 | PID Position     | `REG_ANG_PID_P/I/D/LIM/RAMP`, `REG_ANG_LPF_T` |
@@ -98,6 +97,8 @@ Selected register groups (see header for full list):
 | Custom Range     | `REG_CUSTOM_START (0xE0)` .. +32 via registration |
 
 Registers are read-only (RO), write-only (WO) or read/write (R/W) as indicated in the header.
+
+**📋 Complete register reference**: See [REGISTERS.md](../REGISTERS.md) for the full table with access types, data types, and sizes.
 
 ## Adding a Custom Register
 

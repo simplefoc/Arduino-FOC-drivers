@@ -29,6 +29,9 @@ Implementations are available for either ASCII based protocol (TextIO) or binary
 
 [SimpleFOCRegisters.h](./SimpleFOCRegisters.h) contains a list of registers known to SimpleFOC. These registers can be read and/or written and code is provided to serialize/deserialize them.
 
+**📋 Complete register reference**: See [REGISTERS.md](./REGISTERS.md) for the full table with access types, data types, and sizes.
+
 The SimpleFOC packet based IO (PacketCommander, Telemetry), I2CCommander and SettingsStorage as well as our Python API [PySimpleFOC](https://github.com/simplefoc/pysimplefoc) are all based on this register abstraction, and therefore share the same register names/ids.
 
 If implementing your own communications protocol, we encourage you to base it on the Register abstraction if appropriate. This will provide you with ready to use code to access/write the register values, and will make your solution easier to use due to the shared common conventions.
+
