@@ -25,9 +25,9 @@ void KTH7812::init(SPIClass* _spi) {
 float KTH7812::getCurrentAngle(){
     int32_t rawangle = -1;
     if (checkcrc)
-        rawangle = readRawAngle16();
-    else
         rawangle = readRawAngle12WithCRC();
+    else
+        rawangle = readRawAngle16();
     if (rawangle < 0) // error
         return -1.0f;
     return rawangle / (float)KTH7812_CPR * _2PI;
@@ -35,7 +35,7 @@ float KTH7812::getCurrentAngle(){
 
 
 
-int32_t KTH7812::readRawAngle16(){
+uint16_t KTH7812::readRawAngle16(){
     uint16_t resp = transfer16(0x0000);
     if (!fastmode)
         resp = transfer16(0x0000);
@@ -206,6 +206,7 @@ uint8_t KTH7812::readRegister(uint8_t reg){
 uint8_t KTH7812::writeRegister(uint8_t reg, uint8_t value){
     uint16_t cmd = ((reg&0x3F) << 8) | (value & 0xFF);
     uint16_t resp = transfer16(cmd);
+    delayMicroseconds(20100); // wait for write to complete
     resp = transfer16(0x0000);
     // TODO status
     return (resp & 0xFF); // TODO response value
