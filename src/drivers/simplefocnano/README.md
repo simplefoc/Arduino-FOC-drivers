@@ -18,11 +18,11 @@ SimpleFOCNanoDriver driver = SimpleFOCNanoDriver();
 BLDCMotor motor = BLDCMotor(7);
 
 void setup() {
-    driver.voltage_power_supply = driver.getBusVoltage();
+    driver.voltage_power_supply = driver.getBusVoltage(3.3f, 1024);
     driver.init();
     motor.linkDriver(driver);
     motor.voltage_limit = driver.voltage_limit / 2.0f;
-    motor.controller = MotionControlMode::velocity_openloop;
+    motor.controller = MotionControlType::velocity_openloop;
     motor.init();
 }
 
@@ -59,7 +59,7 @@ As shown in the example you can read the bus voltage:
 :warning: *this is a slow function. Do not call it while motor is running!*
 
 ```c++
-float val = driver.getBusVoltage(); // get the bus voltage, in Volts
+float val = driver.getBusVoltage(3.3f, 1024); // get the bus voltage, in Volts
 ```
 
 ### SPI port
