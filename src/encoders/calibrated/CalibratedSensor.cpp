@@ -100,7 +100,7 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 		allocated = true;
 		calibrationLut = new float[n_lut];
 	}else{
-		motor.monitor_port->println("Calibration skipped, lut already provided!");
+		motor.monitor_port->println("Using pre-defined LUT for calibration.");
 		return;
 	}
 	motor.monitor_port->println("Starting Sensor Calibration.");
@@ -118,8 +118,8 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 	// which amounts to n_ticks (n_pos * motor.pole_pairs) samples per mechanical rotation
 	// Additionally, the motor will take n2_ticks steps to reach any of the n_ticks posiitons
 	// incrementing the electrical angle by deltaElectricalAngle each time
-	int n_pos = 5;
 	int _NPP = motor.pole_pairs;								      // number of pole pairs which is user input
+	int n_pos = ceil(n_lut/_NPP);									  // number of positions per electrical angle (we always sample more than n_lut points: n_pos*_NPP>=n_lut)
 	const int n_ticks = n_pos * _NPP;							      // number of positions to be sampled per mechanical rotation.  Multiple of NPP for filtering reasons (see later)
 	const int n2_ticks = 5;										      // increments between saved samples (for smoothing motion)
 	float deltaElectricalAngle = _2PI * _NPP / (n_ticks * n2_ticks);  // Electrical Angle increments for calibration steps
