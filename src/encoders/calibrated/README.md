@@ -81,7 +81,7 @@ void setup() {
 
 Please see the more complete [example](https://github.com/simplefoc/Arduino-FOC-drivers/blob/master/examples/encoders/calibrated/sensor_calibration.ino) in our examples directory.
 
-## EDIT March 2025
+## EDIT December 2025
 
 The code has been rewritten to reduce its memory footprint and allow more flexible Lookup table (LUT) sizing. 
 Additionally, the calibrated sensor class now supports providing the saved LUT as a paramer for calibration. This allows you to save the LUT and load it on startup to avoid recalibration on each startup.
@@ -123,14 +123,15 @@ float zero_electric_angle = 4.007072;
 Direction sensor_direction = Direction::CCW;
 
 // provide the sensor class and the number of points in the LUT
-CalibratedSensor sensor_calibrated = CalibratedSensor(sensor, N_LUT);
+CalibratedSensor sensor_calibrated = CalibratedSensor(sensor, N_LUT, calibrationLut);
 
 ... 
 
 void setup() {
   ...
-  // as LUT is provided to this function
-  sensor_calibrated.calibrate(motor, calibrationLut, zero_eletrical_angle, sensor_direction);
+  // NOTE: When providing a pre-defined LUT, the calibration step is skipped!
+  // You can remove it from your code if you want.
+  sensor_calibrated.calibrate(motor);
   ...
 
   motor.linkSensor(&sensor_calibrated);
@@ -146,4 +147,4 @@ void setup() {
 ## Future work
 
 - Reduce the LUT size by using a more efficient LUT type - maybe pass to uint16_t
-- Use a more eficient LUT interpolation method - maybe a polynomial interpolation
+- Use a more efficient LUT interpolation method - maybe a polynomial interpolation
