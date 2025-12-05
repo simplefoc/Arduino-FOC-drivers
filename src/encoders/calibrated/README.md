@@ -1,33 +1,43 @@
 # Calibrated Sensor
 
-by [@MarethyuPrefect](https://github.com/MarethyuPrefect)
+Originally implemented by [@MarethyuPrefect](https://github.com/MarethyuPrefect)
 
-A SimpleFOC Sensor wrapper implementation which adds sensor eccentricity calibration.
+A SimpleFOC Sensor wrapper that corrects for **eccentricity errors** in magnetic sensor measurements. It builds a lookup table (LUT) during calibration to linearize sensor output and improve torque control accuracy.
 
-Please also see our [forum thread](https://community.simplefoc.com/t/simplefoc-sensor-eccentricity-calibration/2212) on this topic.
+**More info**: See the [SimpleFOC forum thread](https://community.simplefoc.com/t/simplefoc-sensor-eccentricity-calibration/2212) for detailed discussion.
 
+## The Problem: Sensor Eccentricity
 
-When you mount your (magnetic) sensor on your frame or motor, there will always be a slight misalignment between magnet and sensor (measurement system). This misalignment between center of rotation and the center of the sensor is called the eccentricity error.
+When mounting a magnetic sensor on a motor, the magnet and sensor centers are rarely perfectly aligned. This **eccentricity error** causes:
+- Non-linear sensor output across the rotor's range
+- Variable measurement errors as the motor rotates
+- Distortion in I_q (torque) control, reducing control performance
 
-As a result your measurement system output is non-linear with respect to the rotor of the motor. This will cause an error with respect to the ideal torque you attempt to create with the I_q vector as function of the position. You could interpret this as a disturbance on your control loop which you want to minimize for optimal performance. 
+Example: A 0.5mm offset on a 3mm-diameter magnet can introduce ~10% error in angle measurement.
 
-This calibration compensates the sensor reading in a feed forward fashion such that your performance improves.
+## The Solution: Calibration LUT
+
+CalibratedSensor runs a calibration routine that:
+1. Rotates the motor through several full turns
+2. Records raw sensor readings at fixed intervals (creates lookup table)
+3. Outputs corrective offset values (or stores them on disk)
+4. Applies the LUT to sensor readings in real-time, linearizing output
+
+Result: Non-linearity is greatly reduced, improving torque control loop stability and accuracy.
 
 
 ## Hardware setup
 
-Connect your sensor as usual. Make sure the sensor is working 'normally' i.e. without calibration first. Once things are working and tuned without sensor calibration, you can add the CalibratedSensor to see if you get an improvement.
+Connect your sensor as usual. Make sure the sensor is working 'normally' i.e. without calibration first. Once things are working and tuned without sensor calibration, you can add the `CalibratedSensor` to see if you get an improvement.
 
 Note that during calibration, the motor is turned through several turns, and should be in an unloaded condition. Please ensure your hardware setup can support the motor rotating through full turns.
 
 
 ## Softwate setup
 
-The CalibratedSensor acts as a wrapper to the actual sensor class. When creating the CalibratedSensor object, provide the real
-sensor to the constructor of CalibratedSensor.
+The `CalibratedSensor` acts as a wrapper to the actual `Sensor` class. When creating the `CalibratedSensor` object, provide the real sensor to the constructor of `CalibratedSensor`.
 
-First, initialize the real sensor instance as normal. Then, call calibrate() on the CalibratedSensor instance. Then link the 
-CalibratedSensor to the motor and call motor.initFOC().
+First, initialize the real sensor instance as normal. Then, call `calibrate()` on the `CalibratedSensor` instance. Then link the `CalibratedSensor` to the motor and call `motor.initFOC()`.
 
 The motor will then use the calibrated sensor instance.
 
@@ -42,6 +52,11 @@ BLDCDriver3PWM driver = BLDCDriver3PWM(PB4,PC7,PB10,PA9);
 CalibratedSensor sensor_calibrated = CalibratedSensor(sensor);
 
 void setup() {
+  // use monitoring with serial 
+  Serial.begin(115200);
+  // enable debug output
+  SimpleFOCDebug::enable(&Serial);
+
   sensor.init();
   // Link motor to sensor
   motor.linkSensor(&sensor);
@@ -49,18 +64,8 @@ void setup() {
   driver.voltage_power_supply = 20;
   driver.init();
   motor.linkDriver(&driver);
-  // aligning voltage 
-  motor.voltage_sensor_align = 8;
-  motor.voltage_limit = 20;
-  // set motion control loop to be used
-  motor.controller = MotionControlType::torque;
-
-  // use monitoring with serial 
-  Serial.begin(115200);
   // comment out if not needed
   motor.useMonitoring(Serial);
-  motor.monitor_variables =  _MON_VEL; 
-  motor.monitor_downsample = 10; // default 10
 
   // initialize motor
   motor.init();
@@ -69,8 +74,6 @@ void setup() {
   sensor_calibrated.voltage_calibration = 6;
   // Running calibration
   sensor_calibrated.calibrate(motor); 
-
-  //Serial.println("Calibrating Sensor Done.");
   // Linking sensor to motor object
   motor.linkSensor(&sensor_calibrated);
 
@@ -81,59 +84,71 @@ void setup() {
 
 Please see the more complete [example](https://github.com/simplefoc/Arduino-FOC-drivers/blob/master/examples/encoders/calibrated/sensor_calibration.ino) in our examples directory.
 
-## EDIT March 2025
+## Saving the LUT persistently in the code
+After running the calibration once, you can save the generated LUT and load it on startup to avoid recalibration on each startup.
 
-The code has been rewritten to reduce its memory footprint and allow more flexible Lookup table (LUT) sizing. 
-Additionally, the calibrated sensor class now supports providing the saved LUT as a paramer for calibration. This allows you to save the LUT and load it on startup to avoid recalibration on each startup.
+Make sure to call `calibrate()` once to generate the LUT, then use `printLUT()` to output the LUT to Serial. 
 
-Once you do the calibration once, it will output something like this:
+```cpp
+sensor_calibrated.calibrate(motor); // run the calibration
+sensor_calibrated.printLUT(motor, Serial); // print the LUT to serial monitor
+```
+
+Copy the output and paste it into your code as shown below.
 
 ```
 ...
-
-Starting Sensor Calibration.
-MOT: Align sensor.
+SEN_CAL: Starting Sensor Calibration.
 MOT: sensor_direction==CCW
 MOT: PP check: OK!
-MOT: Zero elec. angle: 3.17
+MOT: Zero elec. angle: 2.83
 MOT: No current sense.
-MOT: Ready.Rotating: CCW
-Rotating: CW
-Average Zero Electrical Angle: 4.01
-Constructing LUT.
+MOT: Ready.
+SEN_CAL: Rotating: CCW
+SEN_CAL: Rotating: CW
+SEN_CAL: Average Zero Electrical Angle: 2.74
+SEN_CAL: Constructing LUT.
+SEN_CAL: Sensor Calibration Done.
 
-uint16_t calibrationLut[50] = {32803, 32828, 32843, 32854, 32859, 32846, 32830, 32810, 32781, 32753, 32725, 32689, 32658, 32631, 32612, 32586, 32576, 32568, 32571, 32588, 32609, 32638, 32678, 32726, 32775, 32822, 32870, 32906, 32939, 32956, 32959, 32944, 32941, 32929, 32909, 32887, 32858, 32831, 32800, 32771, 32743, 32722, 32706, 32694, 32693, 32693, 32705, 32728, 32749, 32777};
-float zero_electric_angle = 4.007072;
+// Calibrated Sensor LUT
+uint16_t calibrationLut[200] = {32701, 32694, 32689, 32684, 32678, 32671, 32665, 32661, 32656, 32649, 32644, 32641, 32638, 32634, 32629, 32624, 32619, 32612, 32609, 32607, 32604, 32600, 32596, 32594, 32594, 32591, 32588, 32587, 32588, 32592, 32593, 32594, 32594, 32594, 32597, 32602, 32605, 32609, 32614, 32620, 32627, 32632, 32636, 32642, 32649, 32658, 32666, 32673, 32681, 32687, 32692, 32702, 32711, 32719, 32725, 32732, 32740, 32748, 32755, 32760, 32766, 32773, 32781, 32787, 32792, 32796, 32797, 32800, 32804, 32807, 32809, 32809, 32810, 32810, 32812, 32810, 32808, 32808, 32808, 32808, 32807, 32804, 32804, 32803, 32802, 32803, 32805, 32805, 32804, 32803, 32803, 32805, 32804, 32802, 32803, 32805, 32820, 32824, 32826, 32823, 32817, 32810, 32807, 32807, 32807, 32805, 32803, 32803, 32806, 32809, 32808, 32807, 32806, 32804, 32802, 32799, 32796, 32791, 32791, 32791, 32789, 32787, 32786, 32786, 32785, 32783, 32781, 32783, 32784, 32786, 32788, 32790, 32790, 32791, 32791, 32795, 32800, 32803, 32806, 32810, 32815, 32820, 32824, 32827, 32832, 32838, 32845, 32850, 32856, 32860, 32863, 32868, 32874, 32879, 32883, 32886, 32890, 32894, 32899, 32902, 32903, 32906, 32911, 32912, 32911, 32909, 32905, 32903, 32902, 32899, 32895, 32891, 32886, 32883, 32879, 32872, 32866, 32860, 32856, 32850, 32843, 32835, 32827, 32818, 32810, 32804, 32798, 32790, 32781, 32774, 32768, 32761, 32753, 32745, 32739, 32735, 32729, 32722, 32716, 32708};
+float zero_electric_angle = 2.74;
 Direction sensor_direction = Direction::CCW;
-Sensor Calibration Done
 ...
 ```
 
 The LUT and sensor's zero angle and direction are outputed by the calibration process to the Serial terminal. So you can copy and paste them into your code.
+
+## Workflow: Fast Recalibration Using Saved LUT
+
+If you calibrate once during setup and save the LUT to EEPROM or hardcode it, you can skip re-calibration on every startup:
+
+1. **First run**: Call `calibrate(motor)` → Serial outputs LUT
+2. **Copy LUT**: Paste the generated values into your code
+3. **Subsequent runs**: Pass LUT to constructor and `calibrate()` → instantaneous, no rotation needed
 
 Your code will look something like this:
 
 ```c++
 
 // number of LUT entries
-const N_LUT = 50;
+const N_LUT = 200;
 // Lookup table that has been output from the calibration process
 // The LUT is now stored as uint16_t for 50% memory savings (2 bytes vs 4 bytes per entry)
-uint16_t calibrationLut[50] = {32803, 32828, 32843, 32854, 32859, 32846, 32830, 32810, 32781, 32753, 32725, 32689, 32658, 32631, 32612, 32586, 32576, 32568, 32571, 32588, 32609, 32638, 32678, 32726, 32775, 32822, 32870, 32906, 32939, 32956, 32959, 32944, 32941, 32929, 32909, 32887, 32858, 32831, 32800, 32771, 32743, 32722, 32706, 32694, 32693, 32693, 32705, 32728, 32749, 32777};
-float zero_electric_angle = 4.007072;
+// Calibrated Sensor LUT
+uint16_t calibrationLut[200] = {32701, 32694, 32689, 32684, 32678, 32671, 32665, 32661, 32656, 32649, 32644, 32641, 32638, 32634, 32629, 32624, 32619, 32612, 32609, 32607, 32604, 32600, 32596, 32594, 32594, 32591, 32588, 32587, 32588, 32592, 32593, 32594, 32594, 32594, 32597, 32602, 32605, 32609, 32614, 32620, 32627, 32632, 32636, 32642, 32649, 32658, 32666, 32673, 32681, 32687, 32692, 32702, 32711, 32719, 32725, 32732, 32740, 32748, 32755, 32760, 32766, 32773, 32781, 32787, 32792, 32796, 32797, 32800, 32804, 32807, 32809, 32809, 32810, 32810, 32812, 32810, 32808, 32808, 32808, 32808, 32807, 32804, 32804, 32803, 32802, 32803, 32805, 32805, 32804, 32803, 32803, 32805, 32804, 32802, 32803, 32805, 32820, 32824, 32826, 32823, 32817, 32810, 32807, 32807, 32807, 32805, 32803, 32803, 32806, 32809, 32808, 32807, 32806, 32804, 32802, 32799, 32796, 32791, 32791, 32791, 32789, 32787, 32786, 32786, 32785, 32783, 32781, 32783, 32784, 32786, 32788, 32790, 32790, 32791, 32791, 32795, 32800, 32803, 32806, 32810, 32815, 32820, 32824, 32827, 32832, 32838, 32845, 32850, 32856, 32860, 32863, 32868, 32874, 32879, 32883, 32886, 32890, 32894, 32899, 32902, 32903, 32906, 32911, 32912, 32911, 32909, 32905, 32903, 32902, 32899, 32895, 32891, 32886, 32883, 32879, 32872, 32866, 32860, 32856, 32850, 32843, 32835, 32827, 32818, 32810, 32804, 32798, 32790, 32781, 32774, 32768, 32761, 32753, 32745, 32739, 32735, 32729, 32722, 32716, 32708};
+float zero_electric_angle = 2.74;
 Direction sensor_direction = Direction::CCW;
 
 // provide the sensor class and the number of points in the LUT
-CalibratedSensor sensor_calibrated = CalibratedSensor(sensor, N_LUT);
+CalibratedSensor sensor_calibrated = CalibratedSensor(sensor, N_LUT, calibrationLut);
 
 ... 
 
 void setup() {
   ...
-  // as LUT is provided to this function
-  sensor_calibrated.calibrate(motor, calibrationLut, zero_eletrical_angle, sensor_direction);
-  ...
-
+  // No need to call calibrate() any more as the LUT is provided
+  // Only link the calibrated sensor to the motor
   motor.linkSensor(&sensor_calibrated);
 
   ... 
@@ -144,16 +159,17 @@ void setup() {
 
 ```
 
-## Implementation Details
+## Changelog
 
-### Memory Optimization
+#### **Dec 2024** 
+- A rewrite to reduce memory usage passed to `uint16_t` LUT type. 
+    - Previous `float` LUT used 4 bytes per entry, `uint16_t` uses 2 bytes - a 50% reduction.
+    - The LUT values are scaled internally to maintain precision.
+    - Precision is 2PI/65536 radians (~0.005 degrees), which is sufficient for most applications.  If more precision is needed, consider increasing the LUT_SCALE constant in `CalibratedSensor.h`.
+- Fixed bug due to hardcoded number of sampled positions.
+    - Previously, the LUT size was variable but the number of sampled positions was hardcoded to `pole_pairs * 5`. 
+    - Now the number of samples is derived from the LUT size provided to the constructor. 
 
-The LUT is now stored using `uint16_t` instead of `float`, providing a 50% reduction in memory usage:
-- **Old**: 4 bytes per entry (float)
-- **New**: 2 bytes per entry (uint16_t)
-- **Example**: For a 200-point LUT: 800 bytes → 400 bytes
-
-The quantization maps the offset range [-π, π] radians to [0, 65535], providing a resolution of approximately 0.0001 radians (0.0057°), which is more than sufficient for motor control applications.
 
 ## Future work
 

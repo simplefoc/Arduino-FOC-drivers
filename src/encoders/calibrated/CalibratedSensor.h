@@ -9,7 +9,10 @@
 
 // LUT quantization constants for uint16_t encoding
 // Maps radians in range [-PI, PI] to uint16_t [0, 65535]
-#define LUT_SCALE 10430.2191955f  // 65535 / (2*PI) 
+// The real error is probably going to be much smaller than that 
+// range so in some cases it might make sense to
+// raise the LUT_SCALE constants to improve resolution.
+#define LUT_SCALE 10430.2191955f  // 65535 / (2*PI)  ~ 
 #define LUT_OFFSET 32767.0f       // center value for symmetric range
 
 class CalibratedSensor: public Sensor{
