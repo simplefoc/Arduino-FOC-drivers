@@ -102,7 +102,7 @@ Rotating: CW
 Average Zero Electrical Angle: 4.01
 Constructing LUT.
 
-float calibrationLut[50] = {0.003486, 0.005795, 0.007298, 0.008303, 0.008771, 0.007551, 0.005986, 0.004115, 0.001361, -0.001392, -0.004069, -0.007474, -0.010420, -0.013135, -0.014891, -0.017415, -0.018328, -0.019125, -0.018849, -0.017193, -0.015152, -0.012422, -0.008579, -0.003970, 0.000678, 0.005211, 0.009821, 0.013280, 0.016470, 0.018127, 0.018376, 0.016969, 0.016716, 0.015466, 0.013602, 0.011431, 0.008646, 0.006092, 0.003116, 0.000409, -0.002342, -0.004367, -0.005932, -0.006998, -0.007182, -0.007175, -0.006017, -0.003746, -0.001783, 0.000948};
+uint16_t calibrationLut[50] = {32803, 32828, 32843, 32854, 32859, 32846, 32830, 32810, 32781, 32753, 32725, 32689, 32658, 32631, 32612, 32586, 32576, 32568, 32571, 32588, 32609, 32638, 32678, 32726, 32775, 32822, 32870, 32906, 32939, 32956, 32959, 32944, 32941, 32929, 32909, 32887, 32858, 32831, 32800, 32771, 32743, 32722, 32706, 32694, 32693, 32693, 32705, 32728, 32749, 32777};
 float zero_electric_angle = 4.007072;
 Direction sensor_direction = Direction::CCW;
 Sensor Calibration Done
@@ -117,8 +117,9 @@ Your code will look something like this:
 
 // number of LUT entries
 const N_LUT = 50;
-// Lookup table that has been ouptut from the calibration process
-float calibrationLut[50] = {0.003486, 0.005795, 0.007298, 0.008303, 0.008771, 0.007551, 0.005986, 0.004115, 0.001361, -0.001392, -0.004069, -0.007474, -0.010420, -0.013135, -0.014891, -0.017415, -0.018328, -0.019125, -0.018849, -0.017193, -0.015152, -0.012422, -0.008579, -0.003970, 0.000678, 0.005211, 0.009821, 0.013280, 0.016470, 0.018127, 0.018376, 0.016969, 0.016716, 0.015466, 0.013602, 0.011431, 0.008646, 0.006092, 0.003116, 0.000409, -0.002342, -0.004367, -0.005932, -0.006998, -0.007182, -0.007175, -0.006017, -0.003746, -0.001783, 0.000948};
+// Lookup table that has been output from the calibration process
+// The LUT is now stored as uint16_t for 50% memory savings (2 bytes vs 4 bytes per entry)
+uint16_t calibrationLut[50] = {32803, 32828, 32843, 32854, 32859, 32846, 32830, 32810, 32781, 32753, 32725, 32689, 32658, 32631, 32612, 32586, 32576, 32568, 32571, 32588, 32609, 32638, 32678, 32726, 32775, 32822, 32870, 32906, 32939, 32956, 32959, 32944, 32941, 32929, 32909, 32887, 32858, 32831, 32800, 32771, 32743, 32722, 32706, 32694, 32693, 32693, 32705, 32728, 32749, 32777};
 float zero_electric_angle = 4.007072;
 Direction sensor_direction = Direction::CCW;
 
@@ -143,7 +144,18 @@ void setup() {
 
 ```
 
+## Implementation Details
+
+### Memory Optimization
+
+The LUT is now stored using `uint16_t` instead of `float`, providing a 50% reduction in memory usage:
+- **Old**: 4 bytes per entry (float)
+- **New**: 2 bytes per entry (uint16_t)
+- **Example**: For a 200-point LUT: 800 bytes → 400 bytes
+
+The quantization maps the offset range [-π, π] radians to [0, 65535], providing a resolution of approximately 0.0001 radians (0.0057°), which is more than sufficient for motor control applications.
+
 ## Future work
 
-- Reduce the LUT size by using a more efficient LUT type - maybe pass to uint16_t
-- Use a more eficient LUT interpolation method - maybe a polynomial interpolation
+- Use a more efficient LUT interpolation method - maybe a polynomial interpolation
+- Support for saving/loading LUT to/from persistent storage (EEPROM, Flash)

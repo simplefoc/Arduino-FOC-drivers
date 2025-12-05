@@ -3,8 +3,10 @@
 // CalibratedSensor()
 // sensor              - instance of original sensor object
 // n_lut               - number of samples in the LUT
-CalibratedSensor::CalibratedSensor(Sensor &wrapped, int n_lut, float *lut)
+CalibratedSensor::CalibratedSensor(Sensor &wrapped, int n_lut, uint16_t *lut)
     : _wrapped(wrapped), n_lut(n_lut), allocated(false), calibrationLut(lut) {
+		lut_resolution = n_lut / _2PI;
+		lut_resolution_inv = 1/ lut_resolution;
 	};
 
 CalibratedSensor::~CalibratedSensor() {
@@ -34,28 +36,29 @@ float CalibratedSensor::getSensorAngle()
 	if(!calibrationLut) {
 		return _wrapped.getMechanicalAngle();
 	}
+
     // raw encoder position e.g. 0-2PI
-    float raw_angle = fmodf(_wrapped.getMechanicalAngle(), _2PI);
-    raw_angle += raw_angle < 0 ? _2PI:0;
+	float raw_angle = _wrapped.getMechanicalAngle();
+	// wrap to 0-2PI only if needed (for Encoder sensors that can go beyond 2PI)
+	if (raw_angle < 0 || raw_angle >= _2PI) raw_angle = _normalizeAngle(raw_angle);
 
-    // Calculate the resolution of the LUT in radians
-    float lut_resolution = _2PI / n_lut;
     // Calculate LUT index
-    int lut_index = raw_angle / lut_resolution;
+    int lut_index = raw_angle * lut_resolution_inv;
 
-    // Get calibration values from the LUT
-    float y0 = calibrationLut[lut_index];
-    float y1 = calibrationLut[(lut_index + 1) % n_lut];
+    // Get calibration values from the LUT and decode them
+	float lut_entry_lower = decodeOffsetU16(calibrationLut[lut_index]);
+	float lut_entry_higher = decodeOffsetU16(calibrationLut[ lut_index >= n_lut-1 ? 0 : (lut_index + 1)]);
 
-    // Linearly interpolate between the y0 and y1 values
-    // Calculate the relative distance from the y0 (raw_angle has to be between y0 and y1)
-    // If distance = 0, interpolated offset = y0
-    // If distance = 1, interpolated offset = y1
-    float distance = (raw_angle - lut_index * lut_resolution) / lut_resolution;
-    float offset = (1 - distance) * y0 + distance * y1;
+    // Linearly interpolate between the two closest LUT entries (one lower and one higher than the raw angle)
+	// Calculate the distance between the raw angle and the lower LUT entry
+	// Distance is normalized to [0,1]
+	float lut_lower_angle = lut_index * lut_resolution;
+	float distance_lower = (raw_angle - lut_lower_angle) * lut_resolution_inv;
+	// Linearly interpolate between lower and higher LUT entries
+	float correction_offset = (1.0f - distance_lower) * lut_entry_lower + distance_lower * lut_entry_higher;
 
     // Calculate the calibrated angle
-    return raw_angle - offset;
+    return raw_angle - correction_offset;
 }
 
 // Perform filtering to linearize position sensor eccentricity
@@ -98,9 +101,12 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 
 	if(calibrationLut == NULL) {
 		allocated = true;
-		calibrationLut = new float[n_lut];
+		calibrationLut = new uint16_t[n_lut];
+	}else{
+		SIMPLEFOC_DEBUG("SEN_CAL:Using pre-defined LUT for calibration.");
+		return;
 	}
-	motor.monitor_port->println("Starting Sensor Calibration.");
+	SIMPLEFOC_DEBUG("SEN_CAL:Starting Sensor Calibration.");
 
 	// Calibration variables
 	
@@ -136,7 +142,7 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 	motor.current_sense = nullptr;
 	motor.linkSensor(&this->_wrapped);
 	if(!motor.initFOC()){
-		motor.monitor_port->println("Failed to align the sensor.");
+		SIMPLEFOC_DEBUG("SEN_CAL: Failed to align the sensor.");
 		return;
 	}
 	// link back the sensor and current sense
@@ -160,8 +166,7 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 	/*
 	forwards rotation
 	*/
-	motor.monitor_port->print("Rotating: ");
-	motor.monitor_port->println( motor.sensor_direction == Direction::CCW ? "CCW" : "CW" );
+	SIMPLEFOC_DEBUG(motor.sensor_direction == Direction::CCW ? "Rotating: CCW" : "Rotating: CW" );
 	float zero_angle_prev = 0.0;
 	for (int i = 0; i < n_ticks; i++)
 	{
@@ -191,18 +196,17 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 		zero_angle_prev = zero_angle;
 		avg_elec_angle += zero_angle/n_ticks;
 
-		// motor.monitor_port->print(">zero:");
-		// motor.monitor_port->println(zero_angle);
-		// motor.monitor_port->print(">zero_average:");
-		// motor.monitor_port->println(avg_elec_angle/2.0);
+#ifdef SIMPLEFOC_CALIBRATEDSENSOR_DEBUG
+		SIMPLEFOC_DEBUG(">zero:",zero_angle);
+		SIMPLEFOC_DEBUG(">zero_average:", (float)(avg_elec_angle/2.0));
+#endif
 	}
 	_delay(2000);
 
 	/*
 	backwards rotation
 	*/
-	motor.monitor_port->print("Rotating: ");
-	motor.monitor_port->println( motor.sensor_direction == Direction::CCW ? "CW" : "CCW" );
+	SIMPLEFOC_DEBUG(motor.sensor_direction == Direction::CCW ? "Rotating: CW" : "Rotating: CCW" );
 	for (int i = n_ticks - 1; i >= 0; i--)
 	{
 		for (int j = 0; j < n2_ticks; j++) // move to the next location
@@ -229,11 +233,10 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 		}
 		zero_angle_prev = zero_angle;
 		avg_elec_angle += zero_angle/n_ticks;
-
-		// motor.monitor_port->print(">zero:");
-		// motor.monitor_port->println(zero_angle);
-		// motor.monitor_port->print(">zero_average:");
-		// motor.monitor_port->println(avg_elec_angle/2.0);
+#ifdef SIMPLEFOC_CALIBRATEDSENSOR_DEBUG
+		SIMPLEFOC_DEBUG(">zero:", zero_angle);
+		SIMPLEFOC_DEBUG(">zero_average:",  (float)(avg_elec_angle/2.0));
+#endif
 	}
 
 	// get post calibration mechanical angle.
@@ -248,8 +251,7 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 
 	// calculating the average zero electrical angle from the forward calibration.
 	motor.zero_electric_angle = _normalizeAngle(avg_elec_angle / (2.0));
-	motor.monitor_port->print("Average Zero Electrical Angle: ");
-	motor.monitor_port->println(motor.zero_electric_angle);
+	SIMPLEFOC_DEBUG("SEN_CAL:Average Zero Electrical Angle: ", motor.zero_electric_angle);
 	_delay(1000);
 
 	// Perform filtering to linearize position sensor eccentricity
@@ -264,7 +266,7 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 	int index_offset = floor((float)n_lut * raw_offset / _2PI);
 	float dn = n_ticks / (float)n_lut;
 
-	motor.monitor_port->println("Constructing LUT.");
+	SIMPLEFOC_DEBUG("SEN_CAL: Constructing LUT.");
 	_delay(1000);
 	// Build Look Up Table
 	for (int i = 0; i < n_lut; i++)
@@ -272,36 +274,45 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 		int ind = index_offset + i*motor.sensor_direction;
 		if (ind > (n_lut - 1)) ind -= n_lut;
 		if (ind < 0) ind += n_lut;
-		calibrationLut[ind] = (float)(error[(int)(i * dn)] - error_mean); 
+		float offset_value = (float)(error[(int)(i * dn)] - error_mean); 
 		// negate the error if the sensor is in the opposite direction
-		calibrationLut[ind] =  (int)motor.sensor_direction * calibrationLut[ind];
+		offset_value =  (int)motor.sensor_direction * offset_value;
+		// encode to uint16_t
+		calibrationLut[ind] = encodeOffsetU16(offset_value);
 	}
-	motor.monitor_port->println("");
 	_delay(1000);
 
+	SIMPLEFOC_DEBUG("SEN_CAL: Sensor Calibration Done.");
+
+	// pre-compute inverse LUT resolution for faster lookups
+	lut_resolution = _2PI / n_lut;
+	lut_resolution_inv = 1.0 / lut_resolution;
+}
+
+// print the LUT for debugging
+void CalibratedSensor::printLUT(FOCMotor &motor, Print &printer)
+{
 	// Display the LUT
-	motor.monitor_port->print("float calibrationLut[");
-	motor.monitor_port->print(n_lut);
-	motor.monitor_port->println("] = {");
+	printer.print("uint16_t calibrationLut[");
+	printer.print(n_lut);
+	printer.println("] = {");
 	_delay(100); 
 	for (int i=0;i < n_lut; i++){
-		motor.monitor_port->print(calibrationLut[i],6);
-		if(i < n_lut - 1) motor.monitor_port->print(", ");
+		printer.print(calibrationLut[i]);
+		if(i < n_lut - 1) printer.print(", ");
 		_delay(1);
 	}
-	motor.monitor_port->println("};");
+	printer.println("");
+	printer.println("};");
 	_delay(1000);
 
 	// Display the zero electrical angle
-	motor.monitor_port->print("float zero_electric_angle = ");
-	motor.monitor_port->print(motor.zero_electric_angle,6);
-	motor.monitor_port->println(";");
+	printer.print("float zero_electric_angle = ");
+	printer.print(motor.zero_electric_angle);
+	printer.println(";");
 
 	// Display the sensor direction
-	motor.monitor_port->print("Direction sensor_direction = ");
-	motor.monitor_port->println(motor.sensor_direction == Direction::CCW ? "Direction::CCW;" : "Direction::CW;");
+	printer.print("Direction sensor_direction = ");
+	printer.println(motor.sensor_direction == Direction::CCW ? "Direction::CCW;" : "Direction::CW;");
 	_delay(1000);
-
-	motor.monitor_port->println("Sensor Calibration Done.");
 }
-
