@@ -150,6 +150,9 @@ void setup() {
   // No need to call calibrate() any more as the LUT is provided
   // Only link the calibrated sensor to the motor
   motor.linkSensor(&sensor_calibrated);
+  // provide the saved zero angle and direction
+  motor.zero_electric_angle = zero_electric_angle;
+  motor.sensor_direction = sensor_direction;
 
   ... 
   motor.initFOC();

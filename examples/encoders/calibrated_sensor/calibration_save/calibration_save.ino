@@ -4,19 +4,18 @@
  * 
  * 1. Run this Sketch as is and wait for the calibration data to be generated and printed over Serial.
  * 2. Then copy the output from Serial to calibrationLut, zero_electric_angle and sensor_direction
- * 3. Change values_provided to true and run the Sketch again to see the motor skipping the calibration.
+ * 3. Run the same example again and the code will use the provided calibration data and skip the calibration procedure.
  */
 
 #include <SimpleFOC.h>
 #include <SimpleFOCDrivers.h>
 #include "encoders/calibrated/CalibratedSensor.h"
 
-// fill this array with the calibration values outputed by the calibration procedure
-float calibrationLut[50] = {0};
+// Replace these with the calibration data obtained from the first run
+uint16_t calibrationLut[50] = {0};
 float zero_electric_angle = 0;
 Direction sensor_direction = Direction::UNKNOWN;
 
-const bool values_provided = false;
 
 // magnetic sensor instance - SPI
 MagneticSensorSPI sensor = MagneticSensorSPI(AS5147_SPI, 14);
@@ -29,7 +28,10 @@ StepperDriver4PWM driver = StepperDriver4PWM(10, 9, 5, 6,8);
 // argument 2 - number of samples in the LUT (default 200)
 // argument 3 - pointer to the LUT array (defualt nullptr)
 CalibratedSensor sensor_calibrated = CalibratedSensor(
-    sensor, sizeof(calibrationLut) / sizeof(calibrationLut[0]));
+  sensor, 
+  sizeof(calibrationLut)/sizeof(calibrationLut[0]), // number of samples 
+  sensor_direction==Direction::UNKNOWN ? nullptr : calibrationLut // pointer to LUT array
+);
 
 // voltage set point variable
 float target_voltage = 2;
@@ -64,12 +66,17 @@ void setup() {
   // initialize motor
   motor.init();
 
-  if(values_provided) {
+  if(sensor_direction != Direction::UNKNOWN){
+    Serial.println(F("Using saved calibration data."));
+    // provide the saved zero angle and direction
     motor.zero_electric_angle = zero_electric_angle;
     motor.sensor_direction = sensor_direction;
   } else {
     // Running calibration
+    Serial.println(F("Running calibration..."));
     sensor_calibrated.calibrate(motor);
+    // print the LUT to serial monitor
+    sensor_calibrated.printLUT(motor, Serial);
   }
 
   // Linking sensor to motor object
