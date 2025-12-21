@@ -37,6 +37,7 @@ typedef enum : uint8_t  {
     REG_TELEMETRY_CTRL = 0x1B,          // R/W - 1 byte 
     REG_TELEMETRY_DOWNSAMPLE = 0x1C,    // R/W - uint32_t
     REG_ITERATIONS_SEC = 0x1D,          // RO - uint32_t
+    REG_TELEMETRY_MIN_ELAPSED = 0x1E,   // R/W - uint32_t (microseconds)
 
     REG_VOLTAGE_Q = 0x20,       // RO - float
     REG_VOLTAGE_D = 0x21,       // RO - float
