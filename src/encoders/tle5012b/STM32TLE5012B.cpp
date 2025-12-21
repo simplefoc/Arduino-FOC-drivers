@@ -127,7 +127,9 @@ void TLE5012B::init() {
 
     if (HAL_SPI_Init(&_spi) != HAL_OK) {
         // setup error
+#ifdef DEBUG_SERIAL
         Serial.println("TLE5012B setup error");
+#endif
     }
 };
 
