@@ -99,6 +99,9 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 	if(calibrationLut == NULL) {
 		allocated = true;
 		calibrationLut = new float[n_lut];
+	}else{
+		motor.monitor_port->println("Calibration skipped, lut already provided!");
+		return;
 	}
 	motor.monitor_port->println("Starting Sensor Calibration.");
 
