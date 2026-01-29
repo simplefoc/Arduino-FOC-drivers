@@ -42,6 +42,11 @@ void DRV832xDriver::init(SPIClass* _spi) {
 
 		//attachInterrupt(digitalPinToInterrupt(nFault), handleInterrupt, PinStatus::FALLING);
 	}
+	/*for (size_t i = 0; i < 7; i++)
+	{
+		auto read = readSPI(i);
+		Serial.printf("DRV8323 Register %d = %#x\n", i, read);
+	}*/
 };
 
 
@@ -55,10 +60,7 @@ uint16_t DRV832xDriver::readSPI(uint8_t addr) {
 	uint16_t result = spi->transfer16(data);
 	spi->endTransaction();
 	digitalWrite(cs, 1);
-//	Serial.print("SPI Read Result: ");
-//	Serial.print(data, HEX);
-//	Serial.print(" -> ");
-//	Serial.println(result, HEX);
+	//Serial.printf("SPI read result: @%#x -> %#x\n", data, result);
 	return result;
 }
 
@@ -72,10 +74,7 @@ uint16_t DRV832xDriver::writeSPI(uint8_t addr, uint16_t value) {
 	uint16_t result = spi->transfer16(data);
 	spi->endTransaction();
 	digitalWrite(cs, 1);
-//	Serial.print("SPI Write Result: ");
-//	Serial.print(data, HEX);
-//	Serial.print(" -> ");
-//	Serial.println(result, HEX);
+	//Serial.printf("SPI write result: @%#x -> %#x\n", data, result);
 	return result;
 }
 
