@@ -15,13 +15,35 @@
  * 
  */
 
+#ifndef D3
+#define D3  3
+#endif
+#ifndef D4
+#define D4  4
+#endif
+#ifndef D6
+#define D6  6
+#endif
+#ifndef D7
+#define D7  7
+#endif
+#ifndef D8
+#define D8  8
+#endif
+#ifndef D9
+#define D9  9
+#endif
+#ifndef D10
+#define D10 10
+#endif
 
-#define PIN_INU     3
-#define PIN_INV     6
-#define PIN_INW     9
-#define PIN_ENU     4
-#define PIN_ENV     7
-#define PIN_ENW     8
+
+#define PIN_INU     D3
+#define PIN_INV     D6
+#define PIN_INW     D9
+#define PIN_ENU     D4
+#define PIN_ENV     D7
+#define PIN_ENW     D8
 #ifdef ARDUINO_NANO_RP2040_CONNECT
 #define PIN_nSLEEP  17
 #define PIN_nFAULT  20
@@ -32,7 +54,7 @@
 #define PIN_nRST    A7
 #endif
 #define PIN_VBUS    A0
-#define PIN_nCS     10
+#define PIN_nCS     D10
 
 #define VBUS_CONV_FACTOR (22.0f/2.2f)
 

@@ -10,7 +10,7 @@ The intent is to keep the core of SimpleFOC clean, and thus easy to maintain, un
 
 ## New Release
 
-v1.1.0 - Released xxx 2025, for Simple FOC xxx or later
+v1.1.0 - Released xxx 2026, for Simple FOC 2.3.x or later
 
 
 What's changed since 1.0.9?
@@ -31,6 +31,7 @@ Software to control gate driver ICs or integrated driver ICs which have advanced
  - [DRV8316 driver](src/drivers/drv8316/) - SPI driver for TI's DRV8316 motor driver IC.
  - [DRV8376 driver](src/drivers/drv8376/) - SPI driver for TI's DRV8376 motor driver IC.
  - [STSPIN32G4 driver](src/drivers/stspin32g4/) - I2C and BLDCDriver for the STSPIN32G4 integrated gate driver MCU.
+ - [SimpleFOCNano driver](src/drivers/simplefocnano/) - BLDCDriver subclass preconfigured for SimpleFOCNano
 
 ### Encoders
 
