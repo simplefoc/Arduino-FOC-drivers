@@ -16,7 +16,9 @@ STM32FlashSettingsStorage::~STM32FlashSettingsStorage(){};
 
 void STM32FlashSettingsStorage::init(){
     if (!IS_FLASH_PROGRAM_ADDRESS(_address))
+#ifndef SIMPLEFOC_DISABLE_DEBUG
         SimpleFOCDebug::println("SS: Invalid address");
+#endif
     SettingsStorage::init(this);
     reset();
 };
@@ -37,7 +39,9 @@ void STM32FlashSettingsStorage::beforeSave(){
     _writeBuffer.l = 0;
     _page = PAGE_OF(_writeptr);
     if (HAL_FLASH_Unlock()!=HAL_OK)
+#ifndef SIMPLEFOC_DISABLE_DEBUG
         SimpleFOCDebug::println("SS: Flash unlock err");
+#endif
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
     erasePage(_page);
 };
@@ -50,13 +54,17 @@ void STM32FlashSettingsStorage::erasePage(uint32_t page) {
     eraseInit.Banks = 0;//_bank;
     eraseInit.NbPages = 1;
     uint32_t err;
+#ifndef SIMPLEFOC_DISABLE_DEBUG
     SimpleFOCDebug::print("SS: erase page ");
     SimpleFOCDebug::println((int)page);
+#endif
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
     if (HAL_FLASHEx_Erase(&eraseInit, &err) != HAL_OK) {
         uint32_t ferr = HAL_FLASH_GetError();
+#ifndef SIMPLEFOC_DISABLE_DEBUG
         SimpleFOCDebug::print("SS: flash erase err nr ");
         SimpleFOCDebug::println((int)ferr);
+#endif
         HAL_FLASH_Lock();
         return;
     }
@@ -72,8 +80,10 @@ void STM32FlashSettingsStorage::flushBuffer() {
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
     if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, (uint32_t)_writeptr, _writeBuffer.l)!=HAL_OK) {
         uint32_t ferr = HAL_FLASH_GetError();
+#ifndef SIMPLEFOC_DISABLE_DEBUG
         SimpleFOCDebug::println("SS: flash write err nr ");
         SimpleFOCDebug::println((int)ferr);
+#endif
     }
     _writeptr += 8;
     _buffed = 0;
