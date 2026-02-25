@@ -13,6 +13,7 @@ BLDCDriver3PWM driver = BLDCDriver3PWM(PB4,PC7,PB10,PA9);
 // instantiate the calibrated sensor object
 // argument 1 - sensor object
 // argument 2 - number of samples in the LUT (default 200)
+// argument 3 - pointer to LUT array (if null, LUT will be filled only during calibration)
 CalibratedSensor sensor_calibrated = CalibratedSensor(sensor);
 
 // voltage set point variable
@@ -57,6 +58,8 @@ void setup() {
   // Running calibration
   // it will ouptut the LUT and the zero electrical angle to the serial monitor !!!!
   sensor_calibrated.calibrate(motor); 
+  // print the LUT to serial monitor
+  sensor_calibrated.printLUT(motor, Serial);
 
   //Serial.println("Calibrating Sensor Done.");
   // Linking sensor to motor object
