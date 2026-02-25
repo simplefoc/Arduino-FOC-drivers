@@ -5,8 +5,8 @@
 // n_lut               - number of samples in the LUT
 CalibratedSensor::CalibratedSensor(Sensor &wrapped, int n_lut, uint16_t *lut)
     : _wrapped(wrapped), n_lut(n_lut), allocated(false), calibrationLut(lut) {
-		lut_resolution = n_lut / _2PI;
-		lut_resolution_inv = 1/ lut_resolution;
+		lut_resolution = _2PI / n_lut;
+		lut_resolution_inv = 1.0f / lut_resolution;
 	};
 
 CalibratedSensor::~CalibratedSensor() {
@@ -57,8 +57,10 @@ float CalibratedSensor::getSensorAngle()
 	// Linearly interpolate between lower and higher LUT entries
 	float correction_offset = (1.0f - distance_lower) * lut_entry_lower + distance_lower * lut_entry_higher;
 
-    // Calculate the calibrated angle
-    return raw_angle - correction_offset;
+	// Calculate and normalize the calibrated angle to keep it in [0, 2PI)
+	float calibrated_angle = raw_angle - correction_offset;
+	if (calibrated_angle < 0 || calibrated_angle >= _2PI) calibrated_angle = _normalizeAngle(calibrated_angle);
+	return calibrated_angle;
 }
 
 // Perform filtering to linearize position sensor eccentricity
