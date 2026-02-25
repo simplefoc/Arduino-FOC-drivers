@@ -95,7 +95,7 @@ public:
 
 	float getCurrentAngle(); // angle in radians, return current value
 
-	int32_t readRawAngle16(); // 16 bit angle, no CRC
+	uint16_t readRawAngle16(); // 16 bit angle, no CRC
     int32_t readRawAngle12WithCRC(); // 12 bit angle with CRC
 
     uint8_t getGainTrim();
