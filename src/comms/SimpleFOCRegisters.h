@@ -10,7 +10,8 @@
 // does not change the version, but removing or changing the meaning of existing registers does, or changing the number of an existing register.
 #define SIMPLEFOC_REGISTERS_VERSION 0x01
 
-
+#define MAX_CUSTOM_REGISTERS 32
+#define REG_CUSTOM_START 0xE0
 
 typedef enum : uint8_t  {
     REG_STATUS = 0x00,          // RO - 1 byte (motor status)
@@ -104,6 +105,18 @@ typedef enum : uint8_t  {
 } SimpleFOCRegister;
 
 
+// Custom register handlers
+typedef bool (*RegisterReadHandler)(RegisterIO& comms, FOCMotor* motor);
+typedef bool (*RegisterWriteHandler)(RegisterIO& comms, FOCMotor* motor);
+// Custom register handler structure
+struct CustomRegisterHandler {
+    uint8_t reg_id;
+    uint8_t size;
+    RegisterReadHandler readHandler;
+    RegisterWriteHandler writeHandler;
+};
+
+
 class SimpleFOCRegisters {
 public:
     SimpleFOCRegisters();
@@ -113,4 +126,10 @@ public:
     virtual bool commsToRegister(RegisterIO& comms, uint8_t reg, FOCMotor* motor);
 
     static SimpleFOCRegisters* regs;
+
+    // Method to add custom register handlers
+    bool addCustomRegister(uint8_t reg, uint8_t size, RegisterReadHandler readHandler, RegisterWriteHandler writeHandler);
+    protected:
+        CustomRegisterHandler* customRegisters[MAX_CUSTOM_REGISTERS] = {nullptr};
+        uint8_t customRegisterCount = 0;
 };

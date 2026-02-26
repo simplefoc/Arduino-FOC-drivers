@@ -1,6 +1,7 @@
 
 #include "./SimpleFOCRegisters.h"
 #include "BLDCMotor.h"
+#include "communication/SimpleFOCDebug.h"
 #include "./telemetry/Telemetry.h"
 
 
@@ -322,8 +323,14 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_NUM_MOTORS:
         case SimpleFOCRegister::REG_MOTOR_ADDRESS:
         case SimpleFOCRegister::REG_ENABLE_ALL:
-        default:
             return false;
+        default:
+            // check the custom registers
+            for (uint8_t i=0; i<customRegisterCount; i++) {
+                if (reg == customRegisters[i]->reg_id) {
+                    return customRegisters[i]->readHandler(comms, motor);
+                }
+            }
     }
     return true;
 };
@@ -591,9 +598,17 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_NUM_MOTORS:
         case SimpleFOCRegister::REG_MOTOR_ADDRESS:
         case SimpleFOCRegister::REG_ENABLE_ALL:
-        default:
             return false;
+        default:
+            // check the custom registers
+            for (uint8_t i=0; i<customRegisterCount; i++) {
+                if (reg == customRegisters[i]->reg_id) {
+                    return customRegisters[i]->writeHandler(comms, motor);
+                }
+            }
     }
+    // if we reach here, the register is not found
+    SIMPLEFOC_DEBUG("Write to unknown register: ", reg);
     return false;
 };
 
@@ -691,10 +706,43 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
                 return 1;
         case SimpleFOCRegister::REG_DRIVER_ENABLE:
         case SimpleFOCRegister::REG_ENABLE_ALL: // write-only
-        default: // unknown register or write only register (no output) or can't handle in superclass
+            return 0;
+        default: 
+            // register not in the predefined regs, check the custom ones
+            for (uint8_t i=0; i<customRegisterCount; i++) {
+                if (customRegisters[i]->reg_id == reg) {
+                    return customRegisters[i]->size;
+                }
+            }
+            // if the code commes here the register is either
+            //  unknown register or write only register (no output) or can't handle in superclass
+            SIMPLEFOC_DEBUG("Size of unknown register requested: ", reg);
             return 0;
     }
 };
+
+bool SimpleFOCRegisters::addCustomRegister(uint8_t reg, uint8_t size, RegisterReadHandler readHandler, RegisterWriteHandler writeHandler) {
+    // check if we have space
+    if (customRegisterCount >= MAX_CUSTOM_REGISTERS) {
+        SIMPLEFOC_DEBUG("Custom register count exceeded maximum (32): ", reg);
+        return false;
+    }
+    // check if the register has valid id
+    if (reg < REG_CUSTOM_START) {
+        SIMPLEFOC_DEBUG("Custom register ID invalid (should be >= 0xE0): ", reg);
+        return false;
+    }
+    // check if the register is already registered
+    for (uint8_t i=0; i<customRegisterCount; i++) {
+        if (customRegisters[i]->reg_id == reg) {
+            SIMPLEFOC_DEBUG("Custom register ID already registered: ", reg);
+            return false;
+        }
+    }
+    // add the custom register
+    customRegisters[customRegisterCount++] = new CustomRegisterHandler{reg, size, readHandler, writeHandler};
+    return true;
+}
 
 
 SimpleFOCRegisters* SimpleFOCRegisters::regs = new SimpleFOCRegisters();
