@@ -125,7 +125,7 @@ If you calibrate once during setup and save the LUT to EEPROM or hardcode it, yo
 
 1. **First run**: Call `calibrate(motor)` → Serial outputs LUT
 2. **Copy LUT**: Paste the generated values into your code
-3. **Subsequent runs**: Pass LUT to constructor and `calibrate()` → instantaneous, no rotation needed
+3. **Subsequent runs**: Pass LUT to constructor and DO NOT call `calibrate()` → instantaneous, no rotation needed
 
 Your code will look something like this:
 

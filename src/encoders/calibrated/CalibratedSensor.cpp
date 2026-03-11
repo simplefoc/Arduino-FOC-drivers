@@ -101,12 +101,11 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 {
 	// if the LUT is already defined, skip the calibration
 
-	if(calibrationLut == NULL) {
+	if (calibrationLut == NULL) {
 		allocated = true;
 		calibrationLut = new uint16_t[n_lut];
-	}else{
-		SIMPLEFOC_DEBUG("SEN_CAL: Using pre-defined LUT for calibration.");
-		return;
+	} else {
+		SIMPLEFOC_DEBUG("SEN_CAL: Overwriting pre-defined LUT for calibration.");
 	}
 	SIMPLEFOC_DEBUG("SEN_CAL: Starting Sensor Calibration.");
 
