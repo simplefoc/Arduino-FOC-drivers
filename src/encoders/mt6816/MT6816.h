@@ -30,7 +30,6 @@ public:
 
 private:
     bool parityCheck(uint16_t data);
-    uint16_t spi_transfer16(uint16_t outdata);
     SPIClass* spi;
     SPISettings settings;
     bool no_magnetic_reading = false;
