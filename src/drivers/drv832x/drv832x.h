@@ -230,6 +230,8 @@ class DRV832xDriver {
 		decl_isset(CurrentSenseCalibrateA);
 		decl_isset(CurrentSenseCalibrateB);
 		decl_isset(CurrentSenseCalibrateC);
+		void calibrate_current_sense();
+		
 		decl_isset(CurrentSenseOvercurrentDisable);
 		decl_getset(CurrentSenseGain, DRV832x_CSAGain);
 		decl_isset(CurrentSenseOvercurrentResistor);
