@@ -23,9 +23,7 @@ void DRV832xDriver6PWM::init(SPIClass* _spi) {
 };
 
 void DRV832xDriver::init(SPIClass* _spi) {
-	// TODO make SPI speed configurable
 	spi = _spi;
-	settings = SPISettings(1000000, MSBFIRST, SPI_MODE1);
 
 	//setup pins
 	pinMode(cs, OUTPUT);
@@ -118,7 +116,6 @@ DRV832xStatus DRV832xDriver::getStatus() {
 	data1.reg = (result & BIT_READ_MASK);
 	return DRV832xStatus(data0, data1);
 }
-
 
 void DRV832xDriver::clearFault() {
 	uint16_t result = readSPI(Driver_Control_ADDR);
