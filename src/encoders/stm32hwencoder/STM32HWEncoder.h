@@ -21,6 +21,9 @@ class STM32HWEncoder : public Sensor {
     void init() override;
     int needsSearch() override;
     int hasIndex();  // !< function returning 1 if encoder has index pin and 0 if not.
+    void setCurrentAngle(float set_angle); // !< helper function for setting the angle by using the count register
+    void setEncoderCount(uint32_t ecount); // !< function for setting the count register
+    TIM_HandleTypeDef getEncoderTimerHandle(); // !< function for getting the encoder timer handle
 
     bool initialized = false;
     uint32_t cpr;  //!< encoder cpr number

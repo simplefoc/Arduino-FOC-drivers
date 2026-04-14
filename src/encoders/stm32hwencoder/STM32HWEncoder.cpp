@@ -15,15 +15,30 @@ STM32HWEncoder::STM32HWEncoder(unsigned int _ppr, int pinA, int pinB, int pinI) 
     index_found = false;
 }
 
+// function returns encoder handle
+TIM_HandleTypeDef STM32HWEncoder::getEncoderTimerHandle() { return encoder_handle; }
+
 /*
   Shaft angle calculation
 */
 float STM32HWEncoder::getSensorAngle() { 
     return _2PI * encoder_handle.Instance->CNT / static_cast<float>(cpr);
 }
+/* 
+  Set the current angle using CNT register
+*/
+void STM32HWEncoder::setCurrentAngle(float set_angle) {
+    encoder_handle.Instance->CNT = set_angle * cpr / _2PI;
+}
+/*
+  Modify encoder count directly
+*/
+void STM32HWEncoder::setEncoderCount(uint32_t ecount) {
+    encoder_handle.Instance->CNT = ecount;
+}
 
 // getter for index pin
-int STM32HWEncoder::needsSearch() { return false && !index_found; }
+int STM32HWEncoder::needsSearch() { return hasIndex() && !index_found; }
 
 // private function used to determine if encoder has index
 int STM32HWEncoder::hasIndex() { return (_pinI!=NC); }
@@ -34,11 +49,13 @@ void STM32HWEncoder::init() {
     TIM_TypeDef *InstanceA = (TIM_TypeDef *)pinmap_peripheral(_pinA, PinMap_TIM);
     if (!IS_TIM_ENCODER_INTERFACE_INSTANCE(InstanceA)) {
         initialized = false;
+        SIMPLEFOC_DEBUG("STM32HWEncoder pin A doesn't support encoder interface");
         return;
     }
     TIM_TypeDef *InstanceB = (TIM_TypeDef *)pinmap_peripheral(_pinB, PinMap_TIM);
     if (InstanceA != InstanceB) {
         initialized = false;
+        SIMPLEFOC_DEBUG("STM32HWEncoder pin B is not in the same timer as A");
         return;
     }
     pinmap_pinout(_pinA, PinMap_TIM);
@@ -74,17 +91,38 @@ void STM32HWEncoder::init() {
 
     if (HAL_TIM_Encoder_Init(&encoder_handle, &encoder_config) != HAL_OK) {
         initialized = false;
+        SIMPLEFOC_DEBUG("Couldn't initialize timer in encoder mode!");
         return;
     }
 
-    // TODO on STM32G4 MCUs we can use the TIMx_ETR pin for the index, and configure how it is handled automatically by the hardware
-    // on non-G4 MCUs we need to use an external interrupt to handle the index signal
-    // attachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)), [this]() {
-    //     encoder_handle.Instance->CNT = 0; // reset counter
-    //     index_found = true;
-    //     // detach interrupt
-    //     detachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)));
-    // }, index_polarity);
+    // TODO: figure out way to check if Index pin is specifically ETR line
+    //if(IS_TIM_ETR_INSTANCE())
+    
+    // Encoder index configuration
+    //TIMEx_EncoderIndexConfigTypeDef encoder_indexconfig = {0};
+    //encoder_indexconfig.Polarity = TIM_ENCODERINDEX_POLARITY_NONINVERTED;
+    //encoder_indexconfig.Prescaler = TIM_ENCODERINDEX_PRESCALER_DIV1;
+    //encoder_indexconfig.Filter = 0;
+    //encoder_indexconfig.FirstIndexEnable = ENABLE;
+    //encoder_indexconfig.Position = TIM_ENCODERINDEX_POSITION_00;
+    //encoder_indexconfig.Direction = TIM_ENCODERINDEX_DIRECTION_UP_DOWN; // Double check this is ok
+    //if (HAL_TIMEx_ConfigEncoderIndex(&encoder_handle, &encoder_indexconfig) != HAL_OK)
+    //{
+    //    SIMPLEFOC_DEBUG("Couldn't configure encoder index pin");
+    //    initialized = false;
+    //    return;
+    //}
+
+    // If index pin provided attach search interrupt
+    if(hasIndex())
+    {
+        attachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)), [this]() {
+            encoder_handle.Instance->CNT = 0; // reset counter
+            index_found = true;
+            // detach interrupt
+            detachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)));
+        }, index_polarity);
+    }
 
     if (HAL_TIM_Encoder_Start(&encoder_handle, TIM_CHANNEL_1) != HAL_OK) {
         initialized = false;

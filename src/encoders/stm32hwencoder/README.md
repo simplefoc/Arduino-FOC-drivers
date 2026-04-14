@@ -6,7 +6,7 @@ Big thank you to @conroy-cheers for originally contributing this code in pull re
 
 ## Warning
 
-This code has not been tested much! Use at your own risk, your milage may vary.
+This code has not been tested much! Use at your own risk, your milage may vary.\
 I have tested on: STM32F401CC/TIM4-PB6,PB7
 
 ## Hardware setup
@@ -17,8 +17,7 @@ Not all of the timers support the encoder mode, so check the datasheet which tim
 
 An excellent option can be to use the STM32CubeIDE software's pin assignment view to quickly check which pins connect to which timer.
 
-Note that the index (I) pin is currently not used.
-
+Right now the index pin can be any pin supporting interrupts.
 
 ## Software setup
 
@@ -46,4 +45,22 @@ void setup() {
     encoder.init();
 }
 
+```
+
+Set the encoder angle:
+
+```c++
+encoder.setCurrentAngle(1.28);
+```
+
+Set the encoder count:
+
+```c++
+encoder.setEncoderCount(693);
+```
+
+Get the encoder timer handle:
+
+```c++
+encoder.getEncoderTimerHandle();
 ```
