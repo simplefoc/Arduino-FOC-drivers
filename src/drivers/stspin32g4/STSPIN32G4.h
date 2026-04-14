@@ -116,8 +116,13 @@ public:
     STSPIN32G4();
     ~STSPIN32G4();
 
+    unsigned int bootstrap_capacitor_charge_time = 10; //time to let the bootstrap capacitors charge for, in ms. During his time, brakes are applied. This is not necessary if the motor is rotating, as the BEMF allows the caps to charge.
+
     int init() override;
 
+    void enable() override;
+
+    void bootstrap_charge();
     void wake();
     void sleep();
     bool isReady();

@@ -37,10 +37,45 @@ int STSPIN32G4::init(){
 
     // TODO init fault monitor
 
+    bootstrap_charge();
+
     return isReady() ? 1 : 0;
 };
 
+void STSPIN32G4::enable()
+{
+    bootstrap_charge();
+    BLDCDriver6PWM::enable();
+}
 
+
+void STSPIN32G4::bootstrap_charge()
+{
+    //store phase states, enable low side drive
+    static const int num_phases = sizeof(phase_state)/sizeof(phase_state[0]);
+    PhaseState phase_state_before[num_phases];
+    bool none_disabled = true;
+    for (size_t i = 0; i < num_phases; i++)
+    {
+        phase_state_before[i] = phase_state[i];
+        if (phase_state[i] == PHASE_HI || phase_state[i] == PHASE_OFF)
+        {
+            none_disabled = false;
+        }
+    }
+    if (none_disabled)
+    {
+        return;
+    }
+    setPhaseState(PHASE_LO, PHASE_LO, PHASE_LO);
+    setPwm(0,0,0);
+    _delay(bootstrap_capacitor_charge_time);
+    //restore phase states
+    for (size_t i = 0; i < num_phases; i++)
+    {
+        phase_state[i] = phase_state_before[i];
+    }
+}
 
 void STSPIN32G4::wake() {
     digitalWrite(STSPIN32G4_PIN_WAKE, HIGH);
