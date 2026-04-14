@@ -187,7 +187,7 @@ class DRV832xStatus : public DRV832xFault, public DRV832xVGS {
 class DRV832xDriver {
 
 	public:
-		DRV832xDriver(int cs, bool currentLimit = false, int nFault = NOT_SET) : currentLimit(currentLimit), cs(cs), nFault(nFault), spi(&SPI), settings(1000000, MSBFIRST, SPI_MODE1) {};
+		DRV832xDriver(int cs, int nFault = NOT_SET, uint32_t spi_clock = 1000000) : cs(cs), nFault(nFault), spi(&SPI), settings(spi_clock, MSBFIRST, SPI_MODE1) {};
 		virtual ~DRV832xDriver() {};
 
 		virtual void init(SPIClass* _spi = &SPI);
@@ -230,6 +230,8 @@ class DRV832xDriver {
 		decl_isset(CurrentSenseCalibrateA);
 		decl_isset(CurrentSenseCalibrateB);
 		decl_isset(CurrentSenseCalibrateC);
+		void calibrate_current_sense();
+		
 		decl_isset(CurrentSenseOvercurrentDisable);
 		decl_getset(CurrentSenseGain, DRV832x_CSAGain);
 		decl_isset(CurrentSenseOvercurrentResistor);
@@ -240,7 +242,6 @@ class DRV832xDriver {
 		uint16_t readSPI(uint8_t addr);
 		uint16_t writeSPI(uint8_t addr, uint16_t value);
 
-		bool currentLimit;
 		int cs;
 		int nFault;
 		SPIClass* spi;
@@ -253,8 +254,8 @@ class DRV832xDriver {
 class DRV832xDriver3PWM : public DRV832xDriver, public BLDCDriver3PWM {
 
 	public:
-		DRV832xDriver3PWM(int phA,int phB,int phC, int cs, bool currentLimit = false, int en = NOT_SET, int nFault = NOT_SET) :
-			DRV832xDriver(cs, currentLimit, nFault), BLDCDriver3PWM(phA, phB, phC, en) { enable_active_high=false; };
+		DRV832xDriver3PWM(int phA,int phB,int phC, int cs, int en = NOT_SET, int nFault = NOT_SET, uint32_t spi_clock = 1000000) :
+			DRV832xDriver(cs, nFault, spi_clock), BLDCDriver3PWM(phA, phB, phC, en) { enable_active_high=false; };
 		virtual ~DRV832xDriver3PWM() {};
 
 		virtual void init(SPIClass* _spi = &SPI) override;
@@ -266,8 +267,8 @@ class DRV832xDriver3PWM : public DRV832xDriver, public BLDCDriver3PWM {
 class DRV832xDriver6PWM : public DRV832xDriver, public BLDCDriver6PWM {
 
 	public:
-		DRV832xDriver6PWM(int phA_h,int phA_l,int phB_h,int phB_l,int phC_h,int phC_l, int cs, bool currentLimit = false, int en = NOT_SET, int nFault = NOT_SET) :
-			DRV832xDriver(cs, currentLimit, nFault), BLDCDriver6PWM(phA_h, phA_l, phB_h, phB_l, phC_h, phC_l, en) { enable_active_high=false; };
+		DRV832xDriver6PWM(int phA_h,int phA_l,int phB_h,int phB_l,int phC_h,int phC_l, int cs, int en = NOT_SET, int nFault = NOT_SET, uint32_t spi_clock = 1000000) :
+			DRV832xDriver(cs, nFault, spi_clock), BLDCDriver6PWM(phA_h, phA_l, phB_h, phB_l, phC_h, phC_l, en) { enable_active_high=false; };
 		virtual ~DRV832xDriver6PWM() {};
 
 		virtual void init(SPIClass* _spi = &SPI) override;

@@ -23,9 +23,7 @@ void DRV832xDriver6PWM::init(SPIClass* _spi) {
 };
 
 void DRV832xDriver::init(SPIClass* _spi) {
-	// TODO make SPI speed configurable
 	spi = _spi;
-	settings = SPISettings(1000000, MSBFIRST, SPI_MODE1);
 
 	//setup pins
 	pinMode(cs, OUTPUT);
@@ -48,8 +46,6 @@ void DRV832xDriver::init(SPIClass* _spi) {
 		Serial.printf("DRV8323 Register %d = %#x\n", i, read);
 	}*/
 };
-
-
 
 
 uint16_t DRV832xDriver::readSPI(uint8_t addr) {
@@ -119,7 +115,6 @@ DRV832xStatus DRV832xDriver::getStatus() {
 	return DRV832xStatus(data0, data1);
 }
 
-
 void DRV832xDriver::clearFault() {
 	uint16_t result = readSPI(Driver_Control_ADDR);
 	Driver_Control data;
@@ -172,6 +167,24 @@ def_getset(CurrentSenseOvercurrentSensitivity, DRV832x_CS_VSEN_LVL, CSA_Control_
 def_isset(CurrentSenseCalibrateA, CSA_Control_ADDR, CSA_Control, CSA_CAL_A);
 def_isset(CurrentSenseCalibrateB, CSA_Control_ADDR, CSA_Control, CSA_CAL_B);
 def_isset(CurrentSenseCalibrateC, CSA_Control_ADDR, CSA_Control, CSA_CAL_C);
+
+
+void DRV832xDriver::calibrate_current_sense()
+{
+	CSA_Control csa_control_before, csa_control_cal;
+	csa_control_before.reg = readSPI(CSA_Control_ADDR);
+	csa_control_cal.reg = csa_control_before.reg;
+	csa_control_cal.CSA_CAL_A = 1;
+	csa_control_cal.CSA_CAL_B = 1;
+	csa_control_cal.CSA_CAL_C = 1;
+	writeSPI(CSA_Control_ADDR, csa_control_cal.reg);
+	delay(1); //Calibration routine requires 100us, we're waiting for 1ms to be safe
+	csa_control_before.CSA_CAL_A = 0;
+	csa_control_before.CSA_CAL_B = 0;
+	csa_control_before.CSA_CAL_C = 0;
+	writeSPI(CSA_Control_ADDR, csa_control_before.reg); //restore settings, as the calibration may have changed the sensitivity to 40V/V
+}
+
 def_isset(CurrentSenseOvercurrentDisable, CSA_Control_ADDR, CSA_Control, DIS_SEN);
 def_getset(CurrentSenseGain, DRV832x_CSAGain, CSA_Control_ADDR, CSA_Control, CSA_GAIN)
 def_isset(CurrentSenseOvercurrentResistor, CSA_Control_ADDR, CSA_Control, LS_REF);
