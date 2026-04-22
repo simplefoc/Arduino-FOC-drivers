@@ -113,14 +113,13 @@ void STM32HWEncoder::init() {
     //    return;
     //}
 
-    // If index pin provided attach search interrupt
+    // If index pin provided attach interrupt to reset the counter 
+    // on index pulse
     if(hasIndex())
     {
         attachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)), [this]() {
             encoder_handle.Instance->CNT = 0; // reset counter
             index_found = true;
-            // detach interrupt
-            detachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)));
         }, index_polarity);
     }
 
