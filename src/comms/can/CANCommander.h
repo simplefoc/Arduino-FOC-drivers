@@ -1,7 +1,12 @@
 #ifndef CANCOMMANDER_H 
 #define CANCOMMANDER_H
-#if __has_include("SimpleCANio.h")
+#if __cplusplus >= 201703L //Check for C++17 or later
+    #if __has_include("SimpleCANio.h") //C++17 required for __has_include
+        #define has_SimpleCANio 1
+    #endif
+#endif
 
+#ifdef has_SimpleCANio
 #include "SimpleFOC.h"
 #include "../SimpleFOCRegisters.h"
 #include "../RegisterIO.h"
