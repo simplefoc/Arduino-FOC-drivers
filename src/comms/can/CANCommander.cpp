@@ -1,3 +1,4 @@
+#if has_SimpleCANio
 #include "CANCommander.h"
 
 CANCommander::CANCommander(HardwareCAN& can, uint8_t addr, bool echo_enabled, int baudrate, bool no_filter) 
@@ -191,3 +192,5 @@ RegisterIO& CANCommander::operator>>(float& value) {
     }
     return *this;
 }
+
+#endif
