@@ -1,5 +1,6 @@
 #ifndef CANCOMMANDER_H 
 #define CANCOMMANDER_H
+#if __has_include("SimpleCANio.h")
 
 #include "SimpleFOC.h"
 #include "../SimpleFOCRegisters.h"
@@ -82,4 +83,5 @@ protected:
     uint8_t rx_available = 0;
 };
 
+#endif
 #endif
