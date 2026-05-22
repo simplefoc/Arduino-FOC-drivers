@@ -1,0 +1,205 @@
+#if defined(ARDUINO_PHOQUE2a)
+
+#include "Phoque2a_CurrentSense.hpp"
+#include "communication/SimpleFOCDebug.h"
+#include "current_sense/hardware_specific/stm32/stm32_adc_utils.h"
+
+
+
+Phoque2a_CurrentSense::Phoque2a_CurrentSense(float _shunt_resistor, float _gain, bool _read_bemf)
+	:Phoque_CurrentSense(_shunt_resistor, _gain, _read_bemf)
+{
+	pinA = A_CURRU;
+	pinB = A_CURRV;
+	pinC = A_CURRW;
+}
+
+Phoque2a_CurrentSense::Phoque2a_CurrentSense(float mVpA, bool _read_bemf)
+	:Phoque_CurrentSense(mVpA, _read_bemf)
+{
+	pinA = A_CURRU;
+	pinB = A_CURRV;
+	pinC = A_CURRW;
+}
+
+Phoque2a_CurrentSense::~Phoque2a_CurrentSense()
+{
+}
+
+int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
+{
+	ADC_ChannelConfTypeDef sConfig = {0};
+
+	hadc1->Init.NbrOfConversion += 3 + read_bemf * 2;
+
+	Phoque_CurrentSense::ADC1_Init(hadc1);
+
+	/** Configure Regular Channel (PA1 / phase U current)
+	*/
+	sConfig.Channel = _getADCChannel(analogInputToPinName(A_CURRU), ADC1); //ADC_CHANNEL_2;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
+	{
+		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+	}
+
+	if (read_bemf)
+	{
+		/* Configure Regular Channel (PB0 / BEMFV / Phase V)
+		*/
+		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFV), ADC1); //ADC_CHANNEL_15;
+		sConfig.Rank = ADC_REGULAR_RANK_2;
+		sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+		sConfig.SingleDiff = ADC_SINGLE_ENDED;
+		sConfig.OffsetNumber = ADC_OFFSET_NONE;
+		sConfig.Offset = 0;
+		if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
+		{
+			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		}
+
+		/* Configure Regular Channel (PB1 / BEMFW / Phase W)
+		*/
+		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFW), ADC1); //ADC_CHANNEL_12;
+		sConfig.Rank = ADC_REGULAR_RANK_3;
+		sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+		sConfig.SingleDiff = ADC_SINGLE_ENDED;
+		sConfig.OffsetNumber = ADC_OFFSET_NONE;
+		sConfig.Offset = 0;
+		if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
+		{
+			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		}
+	}
+
+	//******************************************************************
+	// Aux analog readings
+	/* Configure Regular Channel (PB12, mosfet temperature)
+	*/
+	sConfig.Channel = _getADCChannel(analogInputToPinName(A_TEMPERATURE), ADC1); //ADC_CHANNEL_11;
+	sConfig.Rank = read_bemf ? ADC_REGULAR_RANK_4 : ADC_REGULAR_RANK_2;
+	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
+	{
+		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+	}
+
+	/** Configure Regular Channel (PA3 / Bus voltage monitor)
+	*/
+	sConfig.Channel = _getADCChannel(analogInputToPinName(A_VBUS), ADC1); //ADC_CHANNEL_4;
+	sConfig.Rank = read_bemf ? ADC_REGULAR_RANK_5 : ADC_REGULAR_RANK_3;
+	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
+	{
+		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+	}
+	return hadc1->Init.NbrOfConversion;
+}
+
+int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
+{
+	ADC_ChannelConfTypeDef sConfig = {0};
+
+	hadc2->Init.NbrOfConversion += 3 + read_bemf;
+
+	Phoque_CurrentSense::ADC2_Init(hadc2);
+
+	/** Configure Regular Channel (PC4 / phase V current)
+	*/
+	sConfig.Channel = _getADCChannel(analogInputToPinName(A_CURRV), ADC2); //ADC_CHANNEL_5;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
+	{
+		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+	}
+	/** Configure Regular Channel (PB2 / phase W current)
+	*/
+	sConfig.Channel = _getADCChannel(analogInputToPinName(A_CURRW), ADC2); //ADC_CHANNEL_12;
+	sConfig.Rank = ADC_REGULAR_RANK_2;
+	sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
+	{
+		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+	}
+
+	if(read_bemf)
+	{
+		/** Configure Regular Channel (PA0 / BEMFU / Phase U)
+		*/
+		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFU), ADC2); //ADC_CHANNEL_1;
+		sConfig.Rank = ADC_REGULAR_RANK_3;
+		sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+		sConfig.SingleDiff = ADC_SINGLE_ENDED;
+		sConfig.OffsetNumber = ADC_OFFSET_NONE;
+		sConfig.Offset = 0;
+		if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
+		{
+			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		}
+	}
+
+	/** Configure Regular Channel (PA4 / Potentiometer)
+	*/
+	sConfig.Channel = _getADCChannel(analogInputToPinName(A_POTENTIOMETER), ADC2); //ADC_CHANNEL_17;
+	sConfig.Rank = read_bemf ? ADC_REGULAR_RANK_4 : ADC_REGULAR_RANK_3;
+	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
+	{
+		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+	}
+	return hadc2->Init.NbrOfConversion;
+}
+
+uint16_t Phoque2a_CurrentSense::readRaw(const int pin)
+{
+	switch (pin)
+	{
+	case A_CURRU:
+	case -1:
+		return adc1_buffer[0];
+	case A_CURRV:
+	case -2:
+		return adc2_buffer[0];
+	case A_CURRW:
+	case -3:
+		return adc2_buffer[1];
+
+	case A_BEMFU:
+		return adc2_buffer[2];
+	case A_BEMFV:
+		return adc1_buffer[1];
+	case A_BEMFW:
+		return adc1_buffer[2];
+
+	case A_POTENTIOMETER:
+		return adc2_buffer[2+read_bemf];
+	case A_TEMPERATURE:
+		return adc1_buffer[1+read_bemf*2];
+	case A_VBUS:
+		return adc1_buffer[2+read_bemf*2];
+	default:
+		return 0;
+	}
+}
+
+#endif
