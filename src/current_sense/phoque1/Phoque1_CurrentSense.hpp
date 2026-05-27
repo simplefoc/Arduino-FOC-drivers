@@ -6,10 +6,6 @@
 
 class Phoque1_CurrentSense : public Phoque_CurrentSense
 {
-private:
-	volatile uint16_t *adc1_buffer = nullptr;
-	volatile uint16_t *adc2_buffer = nullptr;
-	bool read_bemf;
 public:
 	Phoque1_CurrentSense(float shunt_resistor, float gain, bool read_bemf=false);
 	Phoque1_CurrentSense(float mVpA, bool read_bemf=false);

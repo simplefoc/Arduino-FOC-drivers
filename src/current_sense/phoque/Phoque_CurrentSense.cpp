@@ -306,7 +306,7 @@ int Phoque_CurrentSense::driverAlign(float align_voltage, bool modulation_center
 {
 	_UNUSED(align_voltage);
 	_UNUSED(modulation_centered);
-	return 0;
+	return 1;
 }
 
 extern "C" {
