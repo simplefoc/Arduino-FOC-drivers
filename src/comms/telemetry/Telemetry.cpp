@@ -42,9 +42,6 @@ void Telemetry::init(PacketIO& _comms) {
     }
     this->id = Telemetry::num_telemetry++;
     headerSent = false;
-    if (SimpleFOCRegisters::regs == NULL) {
-        SimpleFOCRegisters::regs = new SimpleFOCRegisters();
-    }
 };
 
 
@@ -87,7 +84,21 @@ void Telemetry::addMotor(FOCMotor* motor) {
     }
 };
 
+uint8_t Telemetry::sizeOfRegister() const
+{
+    return 2*numRegisters + 1;
+}
 
+bool Telemetry::registerToComms(RegisterIO& comms)
+{
+    comms << numRegisters;
+    for (uint8_t i=0; i<numRegisters; i++) {
+        comms << registers_motor[i];
+        comms << registers[i];
+    }
+    headerSent = false;
+    return true;
+}
 
 void Telemetry::sendHeader() {
     if (numRegisters > 0) {
@@ -105,11 +116,11 @@ void Telemetry::sendTelemetry(){
     if (numRegisters > 0) {
         uint8_t size = 1;
         for (uint8_t i = 0; i < numRegisters; i++) {
-            size += SimpleFOCRegisters::regs->sizeOfRegister(registers[i]);
+            size += SimpleFOCRegisters::sizeOfRegister(registers[i]);
         }
         *comms << START_PACKET(PacketType::TELEMETRY, size) << id << Separator('=');
         for (uint8_t i = 0; i < numRegisters; i++) {
-            SimpleFOCRegisters::regs->registerToComms(*comms, registers[i], motors[registers_motor[i]]);
+            SimpleFOCRegisters::registerToComms(*comms, registers[i], motors[registers_motor[i]]);
         };
         *comms << END_PACKET;
     }

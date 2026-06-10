@@ -117,19 +117,11 @@ struct CustomRegisterHandler {
 };
 
 
-class SimpleFOCRegisters {
-public:
-    SimpleFOCRegisters();
-    virtual ~SimpleFOCRegisters();
-    virtual uint8_t sizeOfRegister(uint8_t reg);
-    virtual bool registerToComms(RegisterIO& comms, uint8_t reg, FOCMotor* motor);
-    virtual bool commsToRegister(RegisterIO& comms, uint8_t reg, FOCMotor* motor);
-
-    static SimpleFOCRegisters* regs;
+namespace SimpleFOCRegisters {
+    uint8_t sizeOfRegister(uint8_t reg);
+    bool registerToComms(RegisterIO& comms, uint8_t reg, FOCMotor* motor);
+    bool commsToRegister(RegisterIO& comms, uint8_t reg, FOCMotor* motor);
 
     // Method to add custom register handlers
     bool addCustomRegister(uint8_t reg, uint8_t size, RegisterReadHandler readHandler, RegisterWriteHandler writeHandler);
-    protected:
-        CustomRegisterHandler* customRegisters[MAX_CUSTOM_REGISTERS] = {nullptr};
-        uint8_t customRegisterCount = 0;
 };

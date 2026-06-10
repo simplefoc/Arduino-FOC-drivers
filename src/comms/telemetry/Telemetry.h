@@ -30,7 +30,6 @@ typedef enum : uint8_t {
 
 
 class Telemetry {
-    friend class SimpleFOCRegisters;
 public:
     Telemetry();
     virtual ~Telemetry();
@@ -47,6 +46,8 @@ public:
     static uint8_t num_telemetry;
     static uint8_t telemetry_ctrl;
     static Telemetry* telemetries[];
+    uint8_t sizeOfRegister() const;
+    bool registerToComms(RegisterIO& comms);
 protected:
     virtual void sendTelemetry();
     virtual void sendHeader();

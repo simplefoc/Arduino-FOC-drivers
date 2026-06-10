@@ -24,7 +24,7 @@ void TeleplotTelemetry::sendTelemetry(){
                 *comms << registers_motor[i] << '_';
             }
             *comms << registers[i] << ':';
-            SimpleFOCRegisters::regs->registerToComms(*comms, registers[i], motors[registers_motor[i]]);
+            SimpleFOCRegisters::registerToComms(*comms, registers[i], motors[registers_motor[i]]);
             *comms << '\n';
         };
     }
