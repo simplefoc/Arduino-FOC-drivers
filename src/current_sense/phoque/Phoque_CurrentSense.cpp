@@ -54,13 +54,15 @@ void Phoque_CurrentSense::DMA_Init()
 	__HAL_RCC_DMA1_CLK_ENABLE();
 	__HAL_RCC_DMA2_CLK_ENABLE();
 
+	#ifdef DMA_USE_INTERRUPT
 	/* DMA interrupt init */
 	/* DMA1_Channel1_IRQn interrupt configuration */
 	HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 	/* DMA1_Channel2_IRQn interrupt configuration */
-	HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+	HAL_NVIC_SetPriority(DMA2_Channel1_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA2_Channel1_IRQn);
+	#endif
 
 	// Enable external clock for ADC
 	RCC_PeriphCLKInitTypeDef PeriphClkInit;
@@ -171,7 +173,6 @@ void* Phoque_CurrentSense::SyncLowSide(void* _driver_params, void* _cs_params)
 		SIMPLEFOC_DEBUG("STM32-CS: timer has no repetition counter, ADC interrupt not supported for this Phoque");
 		return SIMPLEFOC_CURRENT_SENSE_INIT_FAILED;
 	}
-
 	// set the trigger output event
 	LL_TIM_SetTriggerOutput(cs_params->timer_handle->Instance, LL_TIM_TRGO_UPDATE);
 
@@ -202,7 +203,7 @@ void* Phoque_CurrentSense::ConfigureADC(const void* driver_params, const int pin
 	HAL_ADCEx_Calibration_Start(&hadc2,ADC_SINGLE_ENDED);
 
 	DMA1_Init(&hadc1, &hdma_adc1, DMA1_Channel1, DMA_REQUEST_ADC1);
-	DMA1_Init(&hadc2, &hdma_adc2, DMA1_Channel2, DMA_REQUEST_ADC2);
+	DMA1_Init(&hadc2, &hdma_adc2, DMA2_Channel1, DMA_REQUEST_ADC2);
 
 	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_buffer, adc1_len) != HAL_OK)
 	{
@@ -276,6 +277,7 @@ int Phoque_CurrentSense::init()
 void Phoque_CurrentSense::calibrateOffsets(){    
     const int calibration_rounds = 2000;
 
+
     // find adc offset = zero current voltage
 	uint32_t accA = 0, accB = 0, accC = 0;
     // read the adc voltage 1000 times ( arbitrary number )
@@ -287,7 +289,11 @@ void Phoque_CurrentSense::calibrateOffsets(){
 			//no new data: this iteration didn't happen
 			i--;
 			//wait for interrupt (dma irq should do it)
+			#ifdef DMA_USE_INTERRUPT
 			__WFI();
+			#else
+			delayMicroseconds(100);
+			#endif
 			continue;
 		}
 		//invalidate current data
@@ -296,10 +302,12 @@ void Phoque_CurrentSense::calibrateOffsets(){
         accB += currv;
         accC += currw;
     }
+	
     // calculate the mean offsets
     offset_ia = accA * ((Stm32CurrentSenseParams*)params)->adc_voltage_conv / calibration_rounds;
     offset_ib = accB * ((Stm32CurrentSenseParams*)params)->adc_voltage_conv / calibration_rounds;
     offset_ic = accC * ((Stm32CurrentSenseParams*)params)->adc_voltage_conv / calibration_rounds;
+	SimpleFOCDebug::printf("PHOQUE-CS: Calibrated centers at %f, %f, %f\r\n", offset_ia, offset_ib, offset_ic);
 }
 
 int Phoque_CurrentSense::driverAlign(float align_voltage, bool modulation_centered)
@@ -309,14 +317,16 @@ int Phoque_CurrentSense::driverAlign(float align_voltage, bool modulation_center
 	return 1;
 }
 
+#ifdef DMA_USE_INTERRUPT
 extern "C" {
 void DMA1_Channel1_IRQHandler(void) {
 	HAL_DMA_IRQHandler(&hdma_adc1);
 }
 
-void DMA1_Channel2_IRQHandler(void) {
+void DMA2_Channel1_IRQHandler(void) {
 	HAL_DMA_IRQHandler(&hdma_adc2);
 }
 }
+#endif
 
 #endif
