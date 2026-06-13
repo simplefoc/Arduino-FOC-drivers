@@ -3,6 +3,7 @@
 #if defined(_STM32_DEF_)
 
 #include "drivers/hardware_specific/stm32/stm32_mcu.h"
+#include "drivers/hardware_specific/stm32/stm32_timerutils.h"
 
 /*
   HardwareEncoder(int cpr)
