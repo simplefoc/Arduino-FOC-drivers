@@ -97,6 +97,7 @@ void LinearHall::init(FOCMotor *motor) {
       return;
     }
 
+    _delay(2);
     ReadLinearHalls(pinA, pinB, &lastA, &lastB);
     minA = maxA = centerA = lastA;
     minB = maxB = centerB = lastB;
