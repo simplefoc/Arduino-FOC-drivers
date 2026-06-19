@@ -26,6 +26,20 @@ Phoque2a_CurrentSense::~Phoque2a_CurrentSense()
 {
 }
 
+#define SAMPLETIME_IMPORTANT ADC_SAMPLETIME_6CYCLES_5
+#define SAMPLETIME_PERIPHERAL ADC_SAMPLETIME_47CYCLES_5
+
+int Phoque2a_CurrentSense::get_adc1_important_duration()
+{
+	return (read_bemf ? 2:0) * get_conversion_duration(6) + 6;
+}
+
+int Phoque2a_CurrentSense::get_adc2_important_duration()
+{
+	return (read_bemf ? 2:1) * get_conversion_duration(6) + 6;
+}
+
+
 int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 {
 	ADC_ChannelConfTypeDef sConfig = {0};
@@ -41,7 +55,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 	*/
 	sConfig.Channel = _getADCChannel(analogInputToPinName(A_CURRU), ADC1); //ADC_CHANNEL_2;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+	sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 	{
 		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -53,7 +67,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 		*/
 		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFV), ADC1); //ADC_CHANNEL_15;
 		sConfig.Rank = ADC_REGULAR_RANK_2;
-		sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 		{
 			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -63,7 +77,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 		*/
 		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFW), ADC1); //ADC_CHANNEL_12;
 		sConfig.Rank = ADC_REGULAR_RANK_3;
-		sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 		{
 			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -76,7 +90,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 	*/
 	sConfig.Channel = _getADCChannel(analogInputToPinName(A_TEMPERATURE), ADC1); //ADC_CHANNEL_11;
 	sConfig.Rank = read_bemf ? ADC_REGULAR_RANK_4 : ADC_REGULAR_RANK_2;
-	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SamplingTime = SAMPLETIME_PERIPHERAL;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 	{
 		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -86,7 +100,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 	*/
 	sConfig.Channel = _getADCChannel(analogInputToPinName(A_VBUS), ADC1); //ADC_CHANNEL_4;
 	sConfig.Rank = read_bemf ? ADC_REGULAR_RANK_5 : ADC_REGULAR_RANK_3;
-	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SamplingTime = SAMPLETIME_PERIPHERAL;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 	{
 		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -109,7 +123,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	*/
 	sConfig.Channel = _getADCChannel(analogInputToPinName(A_CURRV), ADC2); //ADC_CHANNEL_5;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+	sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 	{
 		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -118,7 +132,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	*/
 	sConfig.Channel = _getADCChannel(analogInputToPinName(A_CURRW), ADC2); //ADC_CHANNEL_12;
 	sConfig.Rank = ADC_REGULAR_RANK_2;
-	sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+	sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 	{
 		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -130,7 +144,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 		*/
 		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFU), ADC2); //ADC_CHANNEL_1;
 		sConfig.Rank = ADC_REGULAR_RANK_3;
-		sConfig.SamplingTime = ADC_SAMPLETIME_6CYCLES_5;
+		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 		{
 			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -141,7 +155,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	*/
 	sConfig.Channel = _getADCChannel(analogInputToPinName(A_POTENTIOMETER), ADC2); //ADC_CHANNEL_17;
 	sConfig.Rank = read_bemf ? ADC_REGULAR_RANK_4 : ADC_REGULAR_RANK_3;
-	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SamplingTime = SAMPLETIME_PERIPHERAL;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 	{
 		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
@@ -149,7 +163,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	return hadc2->Init.NbrOfConversion;
 }
 
-uint16_t Phoque2a_CurrentSense::readRaw(const int pin)
+inline uint16_t Phoque2a_CurrentSense::readRaw(const int pin) const
 {
 	switch (pin)
 	{
@@ -179,6 +193,13 @@ uint16_t Phoque2a_CurrentSense::readRaw(const int pin)
 	default:
 		return 0;
 	}
+}
+
+inline void Phoque2a_CurrentSense::clear_currents()
+{
+	adc1_buffer[0] = UINT16_MAX;
+	adc2_buffer[0] = UINT16_MAX;
+	adc2_buffer[1] = UINT16_MAX;
 }
 
 #endif
