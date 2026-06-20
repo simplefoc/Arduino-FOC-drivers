@@ -5,6 +5,7 @@
 
 #ifdef ARDUINO_GENERIC_G431VBTX
 
+#include "stm32g4xx_hal_i2c.h"
 #include "Wire.h"
 #include "drivers/BLDCDriver6PWM.h"
 
