@@ -76,9 +76,9 @@ enum DRV8316_OCPDeglitch {
 
 enum DRV8316_CSAGain {
 	Gain_0V15 = 0b00,
-	Gain_0V1875 = 0b01,
-	Gain_0V25 = 0b10,
-	Gain_0V375 = 0b11
+	Gain_0V3 = 0b01,
+	Gain_0V6 = 0b10,
+	Gain_1V2 = 0b11
 };
 
 
