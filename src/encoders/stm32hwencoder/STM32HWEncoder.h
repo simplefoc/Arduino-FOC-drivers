@@ -30,6 +30,8 @@ class STM32HWEncoder : public Sensor {
     PinName _pinA, _pinB, _pinI;
     bool index_found;
     uint32_t index_polarity = RISING;
+    // Use TIM_ENCODERMODE_CLOCKPLUSDIRECTION_X1 for step/dir counting (pinA ch1 dir, pinB ch2 step)
+    uint32_t encoder_mode = TIM_ENCODERMODE_TI12; // Must be set before calling init
     
   protected:
     float getSensorAngle() override;

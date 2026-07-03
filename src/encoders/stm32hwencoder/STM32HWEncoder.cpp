@@ -3,6 +3,7 @@
 #if defined(_STM32_DEF_)
 
 #include "drivers/hardware_specific/stm32/stm32_mcu.h"
+#include "drivers/hardware_specific/stm32/stm32_timerutils.h"
 
 /*
   HardwareEncoder(int cpr)
@@ -74,7 +75,7 @@ void STM32HWEncoder::init() {
 
     TIM_Encoder_InitTypeDef encoder_config;
 
-    encoder_config.EncoderMode = TIM_ENCODERMODE_TI12;
+    encoder_config.EncoderMode = encoder_mode;
 
     encoder_config.IC1Polarity = TIM_ICPOLARITY_RISING;
     encoder_config.IC1Selection = TIM_ICSELECTION_DIRECTTI;

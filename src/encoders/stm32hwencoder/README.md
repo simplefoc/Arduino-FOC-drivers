@@ -2,6 +2,8 @@
 
 This encoder driver uses the STM32 timer hardware to track the A/B impulses, which is much more efficient (and will support higher speeds) than the generic interrupt-based solution used by the standard encoder driver.
 
+It can also be used for hardware counting of step/dir signals by setting encoder_mode = TIM_ENCODERMODE_CLOCKPLUSDIRECTION_X1 (pinA/ch1 is dir, pinB/ch2 is step).
+
 Big thank you to @conroy-cheers for originally contributing this code in pull request #114 to the simplefoc repository. Due its hardware-specific nature we moved the code to this drivers repository.
 
 ## Warning
