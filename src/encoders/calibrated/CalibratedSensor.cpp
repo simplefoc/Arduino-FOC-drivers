@@ -176,7 +176,14 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 	/*
 	forwards rotation
 	*/
-	SIMPLEFOC_DEBUG(motor.sensor_direction == Direction::CCW ? "SEN_CAL: Rotating: CCW" : "SEN_CAL: Rotating: CW" );
+#ifndef SIMPLEFOC_DISABLE_DEBUG
+	if (motor.sensor_direction == Direction::CCW) {
+		SIMPLEFOC_DEBUG("SEN_CAL: Rotating: CCW");
+	}
+	else {
+		SIMPLEFOC_DEBUG("SEN_CAL: Rotating: CW");
+	}
+#endif
 	float zero_angle_prev = 0.0;
 	for (int i = 0; i < samples_per_full_rotation; i++)
 	{
