@@ -29,7 +29,9 @@ float STM32HWEncoder::getSensorAngle() {
   Set the current angle using CNT register
 */
 void STM32HWEncoder::setCurrentAngle(float set_angle) {
-    encoder_handle.Instance->CNT = set_angle * cpr / _2PI;
+    angle_prev = _normalizeAngle(set_angle);
+    full_rotations = (int32_t)((set_angle - angle_prev) / _2PI);
+    encoder_handle.Instance->CNT = (int32_t)(angle_prev * cpr / _2PI);
 }
 /*
   Modify encoder count directly
@@ -75,7 +77,7 @@ void STM32HWEncoder::init() {
 
     TIM_Encoder_InitTypeDef encoder_config;
 
-    encoder_config.EncoderMode = encoder_mode;
+    encoder_config.EncoderMode = encoder_mode;;
 
     encoder_config.IC1Polarity = TIM_ICPOLARITY_RISING;
     encoder_config.IC1Selection = TIM_ICSELECTION_DIRECTTI;
