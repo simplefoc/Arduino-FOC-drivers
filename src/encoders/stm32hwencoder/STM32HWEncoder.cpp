@@ -31,6 +31,11 @@ float STM32HWEncoder::getSensorAngle() {
 void STM32HWEncoder::setCurrentAngle(float set_angle) {
     angle_prev = _normalizeAngle(set_angle);
     full_rotations = (int32_t)((set_angle - angle_prev) / _2PI);
+    float check_rounding_error = full_rotations * _2PI + angle_prev;
+    if (check_rounding_error > set_angle + _PI)
+        full_rotations -= 1;
+    else if (check_rounding_error < set_angle - _PI)
+        full_rotations += 1;
     encoder_handle.Instance->CNT = (int32_t)(angle_prev * cpr / _2PI);
 }
 /*
