@@ -1,5 +1,6 @@
 #if defined(ARDUINO_PHOQUE1)
 
+
 #include "Phoque1_CurrentSense.hpp"
 #include "communication/SimpleFOCDebug.h"
 #include "current_sense/hardware_specific/stm32/stm32_adc_utils.h"
@@ -11,6 +12,7 @@ static OPAMP_HandleTypeDef hopamp3;
 Phoque1_CurrentSense::Phoque1_CurrentSense(float _shunt_resistor, float _gain, bool _read_bemf)
 	:Phoque_CurrentSense(_shunt_resistor, _gain, _read_bemf)
 {
+	pga_gain = _gain;
 	pinA = A_CURRU_H;
 	pinB = A_CURRV_H;
 	pinC = A_CURRW_H;
@@ -35,14 +37,37 @@ void Phoque1_CurrentSense::OPAMP_Init()
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 
 	GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_3 | GPIO_PIN_5|GPIO_PIN_7; //Opamp 1 | Opamp 2
+	#ifdef OPAMP_USE_EXTERNAL_CHANNEL
+	GPIO_InitStruct.Pin |= GPIO_PIN_2 | GPIO_PIN_6;
+	#endif
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_2; // Opamp 3
+	#ifdef OPAMP_USE_EXTERNAL_CHANNEL
+	GPIO_InitStruct.Pin |= GPIO_PIN_1;
+	#endif
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 	OPAMP_HandleTypeDef *opamp_handles[] = {&hopamp1, &hopamp2, &hopamp3};
 	OPAMP_TypeDef *opamp_instances[] = {OPAMP1, OPAMP2, OPAMP3};
 	static_assert(sizeof(opamp_handles)/sizeof(opamp_handles[0]) == sizeof(opamp_instances)/sizeof(opamp_instances[0]));
+
+	uint32_t gain_setting = OPAMP_PGA_GAIN_32_OR_MINUS_31;
+	switch (pga_gain)
+	{
+	case 32:
+		gain_setting = OPAMP_PGA_GAIN_32_OR_MINUS_31;
+		break;
+	case 16:
+		gain_setting = OPAMP_PGA_GAIN_16_OR_MINUS_15;
+		break;
+	case 8:
+		gain_setting = OPAMP_PGA_GAIN_8_OR_MINUS_7;
+		break;
+	
+	default:
+		break;
+	}
 
 	for (size_t i = 0; i < sizeof(opamp_handles)/sizeof(opamp_handles[0]); i++)
 	{
@@ -52,15 +77,19 @@ void Phoque1_CurrentSense::OPAMP_Init()
 			.PowerMode = OPAMP_POWERMODE_HIGHSPEED,
 			.Mode = OPAMP_PGA_MODE,
 			.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO0,
+			#ifdef OPAMP_USE_EXTERNAL_CHANNEL
+			.InternalOutput = DISABLE,
+			#else
 			.InternalOutput = ENABLE,
+			#endif
 			.TimerControlledMuxmode = OPAMP_TIMERCONTROLLEDMUXMODE_DISABLE,
 			.PgaConnect = OPAMP_PGA_CONNECT_INVERTINGINPUT_IO0_BIAS,
-			.PgaGain = OPAMP_PGA_GAIN_16_OR_MINUS_15,
+			.PgaGain = gain_setting,
 			.UserTrimming = OPAMP_TRIMMING_FACTORY,
 		};
 		if (HAL_OPAMP_Init(hopamp) != HAL_OK)
 		{
-			SIMPLEFOC_DEBUG("HAL_OPAMP_Init failed!");
+			SimpleFOCDebug::println("HAL_OPAMP_Init failed!");
 		}
 		HAL_OPAMP_Start(hopamp);
 	}
@@ -96,7 +125,11 @@ int Phoque1_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 
 	/** Configure Regular Channel (Opamp 1 / phase W current)
 	*/
-	sConfig.Channel = ADC_CHANNEL_13;  // OP1_OUT is ADC1_IN13 for internal channel
+	#ifdef OPAMP_USE_EXTERNAL_CHANNEL
+	sConfig.Channel = ADC_CHANNEL_3;
+	#else
+	sConfig.Channel = _OPAMP_internal_channel_to_ADC(1, ADC1);  // OP1_OUT is ADC1_IN13 for internal channel
+	#endif
 	sConfig.Rank = ADC_REGULAR_RANK_1;
 	sConfig.SamplingTime = SAMPLETIME_BULB;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
@@ -116,9 +149,9 @@ int Phoque1_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 			SimpleFOCDebug::printf(ADC_ConfigFail, 2);
 		}
 
-		/* Configure Regular Channel (PC4 / BEMFV / Phase V)
+		/* Configure Regular Channel (PA2 / BEMFW / Phase W)
 		*/
-		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFV), ADC1);
+		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFW), ADC1);
 		sConfig.Rank = ADC_REGULAR_RANK_3;
 		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
@@ -164,7 +197,11 @@ int Phoque1_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 
 	/** Configure Regular Channel (Opamp 2 / phase U current)
 	*/
-	sConfig.Channel = ADC_CHANNEL_16;  // OP2_OUT is ADC2_IN16 for internal channel
+	#ifdef OPAMP_USE_EXTERNAL_CHANNEL
+	sConfig.Channel = ADC_CHANNEL_3;
+	#else
+	sConfig.Channel = _OPAMP_internal_channel_to_ADC(2, ADC2);  // OP2_OUT is ADC2_IN16 for internal channel
+	#endif
 	sConfig.Rank = ADC_REGULAR_RANK_1;
 	sConfig.SamplingTime = SAMPLETIME_BULB;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
@@ -173,7 +210,11 @@ int Phoque1_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	}
 	/** Configure Regular Channel (Opamp 3 / phase V current)
 	*/
-	sConfig.Channel = ADC_CHANNEL_18;     // OP3_OUT is ADC2_IN18 for internal channel
+	#ifdef OPAMP_USE_EXTERNAL_CHANNEL
+	sConfig.Channel = ADC_CHANNEL_12;
+	#else
+	sConfig.Channel = _OPAMP_internal_channel_to_ADC(3, ADC2);     // OP3_OUT is ADC2_IN18 for internal channel
+	#endif
 	sConfig.Rank = ADC_REGULAR_RANK_2;
 	sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
@@ -183,9 +224,9 @@ int Phoque1_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 
 	if(read_bemf)
 	{
-		/** Configure Regular Channel (PA2 / BEMFW / Phase W)
+		/** Configure Regular Channel (PC4 / BEMFV / Phase V)
 		*/
-		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFW), ADC2);
+		sConfig.Channel = _getADCChannel(analogInputToPinName(A_BEMFV), ADC2);
 		sConfig.Rank = ADC_REGULAR_RANK_3;
 		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)

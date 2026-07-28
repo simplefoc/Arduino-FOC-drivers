@@ -3,9 +3,13 @@
 #if defined(ARDUINO_PHOQUE1)
 
 #include "current_sense/phoque/Phoque_CurrentSense.hpp"
+#include <stm32g4xx.h>
 
 class Phoque1_CurrentSense : public Phoque_CurrentSense
 {
+private:
+	uint8_t pga_gain = 32;
+
 public:
 	Phoque1_CurrentSense(float shunt_resistor, float gain, bool read_bemf=false);
 	Phoque1_CurrentSense(float mVpA, bool read_bemf=false);
@@ -13,9 +17,9 @@ public:
 
 	virtual uint16_t readRaw(const int pin) const override;
 
-	static constexpr float compute_equivalent_shunt(float rshunt = 3e-3f, float rline = 1.5e3f, float rup = 2.2e3f, float rdown = 22e3f)
+	static constexpr float compute_equivalent_shunt(float rshunt = 3e-3f, float rline = 1.5e3f, float rup = 100e3f, float rdown = INFINITY) //On bg431-esc1, this is 3m, 1.5k, 22k, 2.2k
 	{
-		float req1 = rup*rdown/(rup+rdown);
+		float req1 = isinff(rdown) ? rup : rup*rdown/(rup+rdown);
 		return rshunt*req1/(rshunt+rline+req1);
 	}
 

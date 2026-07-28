@@ -1,4 +1,4 @@
-#if defined(ARDUINO_PHOQUE)
+#if defined(STM32G4xx)
 
 #include "Phoque_CurrentSense.hpp"
 #include <communication/SimpleFOCDebug.h>
@@ -103,7 +103,7 @@ int Phoque_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 
 	if (HAL_ADC_Init(hadc1) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "HAL_ADC_Init failed!");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "HAL_ADC_Init failed!");
 	}
 
 	/** Configure the ADC multi-mode 
@@ -111,7 +111,7 @@ int Phoque_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 	multimode.Mode = ADC_MODE_INDEPENDENT;
 	if (HAL_ADCEx_MultiModeConfigChannel(hadc1, &multimode) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "HAL_ADCEx_MultiModeConfigChannel 1 failed!");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "HAL_ADCEx_MultiModeConfigChannel 1 failed!");
 	}
 
 	return 0;
@@ -137,7 +137,7 @@ int Phoque_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 
 	if (HAL_ADC_Init(hadc2) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "HAL_ADC_Init failed!");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "HAL_ADC_Init failed!");
 	}
 
 	return 0;
@@ -157,7 +157,7 @@ void Phoque_CurrentSense::DMA_Init(ADC_HandleTypeDef *hadc, DMA_HandleTypeDef *h
 	HAL_DMA_DeInit(hdma_adc);
 	if (HAL_DMA_Init(hdma_adc) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "HAL_DMA_Init failed!");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "HAL_DMA_Init failed!");
 	}
 	__HAL_LINKDMA(hadc, DMA_Handle, *hdma_adc);
 }
@@ -177,7 +177,7 @@ void* Phoque_CurrentSense::SyncLowSide(void* _driver_params, void* _cs_params)
 	bool tim_interrupt = _initTimerInterruptDownsampling(cs_params, driver_params, adc_int_config);
 	if(tim_interrupt) {
 	// error in the timer interrupt initialization
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "timer has no repetition counter, ADC interrupt not supported for this Phoque");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "timer has no repetition counter, ADC interrupt not supported for this Phoque");
 		return SIMPLEFOC_CURRENT_SENSE_INIT_FAILED;
 	}
 	uint32_t adc_ccr = ADC12_COMMON->CCR;
@@ -274,11 +274,11 @@ void* Phoque_CurrentSense::ConfigureADC(const void* driver_params, const int pin
 
 	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_buffer, adc1_len) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "ADC1 DMA read init failed");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "ADC1 DMA read init failed");
 	}
 	if (HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_buffer, adc2_len) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "ADC2 DMA read init failed");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "ADC2 DMA read init failed");
 	}
 	
 	Stm32CurrentSenseParams* params = new Stm32CurrentSenseParams {
@@ -307,7 +307,7 @@ PhaseCurrent_s Phoque_CurrentSense::getPhaseCurrents(){
 int Phoque_CurrentSense::init()
 {
 	if (driver==nullptr) {
-		SIMPLEFOC_DEBUG(PHOQUE_CS_DEBUG "Driver not linked!");
+		SimpleFOCDebug::println(PHOQUE_CS_DEBUG "Driver not linked!");
 		return 0;
 	}
 	if (initialized)
@@ -393,16 +393,21 @@ int Phoque_CurrentSense::driverAlign(float align_voltage, bool modulation_center
 #if defined(NTC_B_CONSTANT) && defined(NTC_T0)
 #include <array>
 
+//size of the look up table, in powers of two (7 is 128 values, 6 is 64 values...)
 #ifndef TEMP_LUT_SIZE
 	#define TEMP_LUT_SIZE 7
 #endif
 #ifndef TEMP_STEP
-	#define TEMP_STEP 1 //get every n degrees
+	#define TEMP_STEP 1 //get every n degrees. Can only be greater than 1 since temperature return type is int
 #endif
 #ifndef TEMP_INDEX_ZERO
 	#define TEMP_INDEX_ZERO 20 //start at 20C
 #endif
+#ifndef NTC_DIVIDER_BALANCE
+#pragma message("NTC divider balance not set, assuming 1")
+#endif
 
+//compute the ideal ADC reading for each temperature
 uint16_t temperature_to_adc_reading(float temp_C)
 {
 	//R0 : resistance at T0
@@ -418,7 +423,7 @@ uint16_t temperature_to_adc_reading(float temp_C)
 	#else
 	float R_over_R1 = R_over_R0;
 	#endif
-	float adc_reading = R_over_R1/(1+R_over_R1) *adc_resolution;
+	float adc_reading = R_over_R1/(1+R_over_R1) * adc_resolution;
 	return adc_reading;
 }
 
@@ -430,8 +435,11 @@ std::array<T, N> fill_temperature_lut() {
     return a;
 }
 
+//bake the ADC readings into a look up table at compile time
 const auto temperature_lut = fill_temperature_lut<uint16_t, 1<<TEMP_LUT_SIZE>();
 
+//perform binary search to find the temperature corresponding to the adc value
+//Does not perform interpolation, made to fast first and foremost
 int Phoque_CurrentSense::get_temperature(uint16_t adc_value)
 {
 	uint8_t index = 0;
@@ -449,6 +457,14 @@ int Phoque_CurrentSense::get_temperature(uint16_t adc_value)
 int Phoque_CurrentSense::read_temperature() const
 {
 	return get_temperature(readRaw(A_TEMPERATURE));
+}
+
+void Phoque_CurrentSense::print_temperature_LUT()
+{
+	for (size_t i = 0; i < temperature_lut.size(); i++)
+	{
+		SimpleFOCDebug::printf("%ddegC: %d\r\n", i*TEMP_STEP+TEMP_INDEX_ZERO, temperature_lut[i]);
+	}
 }
 #endif
 

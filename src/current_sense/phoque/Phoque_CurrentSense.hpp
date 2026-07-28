@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(ARDUINO_PHOQUE)
+#if defined(STM32G4xx)
 
 #include "common/base_classes/CurrentSense.h"
 
@@ -24,6 +24,8 @@ public:
 	#if defined(NTC_B_CONSTANT) && defined(NTC_T0)
 	static int get_temperature(uint16_t adc_value);
 	int read_temperature() const;
+	//Print the expected ADC values for each temperature in the look up table (for debug purposes)
+	static void print_temperature_LUT();
 	#endif
 
 protected:
