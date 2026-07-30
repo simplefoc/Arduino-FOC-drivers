@@ -19,6 +19,10 @@ ESP32HWEncoder::ESP32HWEncoder(int pinA, int pinB, int32_t ppr, int pinI)
 
     cpr = ppr * 4; // 4x for quadrature
 
+    // NOTE: despite their names, these two fields are passed CROSSED into
+    // pcnt_set_pin() in init(). Pin A ends up on the PULSE input, not the
+    // control input. See the comment in init() before concluding that A and B
+    // have been given the wrong roles here.
     pcnt_config.ctrl_gpio_num =  _pinA;
     pcnt_config.pulse_gpio_num = _pinB;
     pcnt_config.counter_l_lim = INT16_MIN;
@@ -90,6 +94,18 @@ void ESP32HWEncoder::init()
     if (initialized)
     {
         // Set up the PCNT peripheral
+        //
+        // pcnt_set_pin() takes (unit, channel, pulse_io, ctrl_io), so the two
+        // config fields are passed CROSSED with respect to their names:
+        // channel 0 gets pin A on PULSE and pin B on CONTROL, channel 1 the
+        // reverse. That is the standard quadrature arrangement, and combined
+        // with the pcnt_set_mode() calls below it gives the standard direction
+        // convention: A leading B counts up.
+        //
+        // Spelled out because the constructor assigns ctrl_gpio_num = _pinA,
+        // which reads like the roles are swapped. They are not -- the crossing
+        // here cancels it, and swapping the fields in the constructor would
+        // invert the counting direction rather than correct it. See issue #101.
         pcnt_set_pin(pcnt_config.unit, PCNT_CHANNEL_0, pcnt_config.ctrl_gpio_num, pcnt_config.pulse_gpio_num);
         pcnt_set_pin(pcnt_config.unit, PCNT_CHANNEL_1, pcnt_config.pulse_gpio_num, pcnt_config.ctrl_gpio_num);
         pcnt_set_mode(pcnt_config.unit, PCNT_CHANNEL_0, PCNT_COUNT_INC, PCNT_COUNT_DEC, PCNT_MODE_REVERSE, PCNT_MODE_KEEP);
