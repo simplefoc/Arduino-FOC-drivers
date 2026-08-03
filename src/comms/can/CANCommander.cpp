@@ -116,7 +116,7 @@ void CANCommander::sendRegisterResponse(uint8_t reg, uint8_t dest_addr) {
 }
 
 bool CANCommander::commsToRegister(uint8_t reg) {
-  return SimpleFOCRegisters::regs->commsToRegister(*this, reg, motors[curMotor]);
+  return SimpleFOCRegisters::commsToRegister(*this, reg, motors[curMotor]);
 }
 
 bool CANCommander::registerToComms(uint8_t reg) {
@@ -136,7 +136,7 @@ bool CANCommander::registerToComms(uint8_t reg) {
                 commanderror = true;
                 return false;
             }
-            return SimpleFOCRegisters::regs->registerToComms(*this, reg, motors[curMotor]);
+            return SimpleFOCRegisters::registerToComms(*this, reg, motors[curMotor]);
     }
 }
 
