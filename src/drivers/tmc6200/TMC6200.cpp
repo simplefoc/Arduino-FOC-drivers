@@ -180,7 +180,7 @@ uint32_t TMC6200Driver::readRegister(uint8_t addr) {
     value |= (spi->transfer(0x00) << 8);
     value |= (spi->transfer(0x00) << 0);
 
-    spi->end();
+    spi->endTransaction();
     digitalWrite(csPin, HIGH);
 
     return value;
@@ -199,7 +199,7 @@ void TMC6200Driver::writeRegister(uint8_t addr, uint32_t data) {
     spi->transfer(0xFF & (data >> 8));
     spi->transfer(0xFF & (data >> 0));
 
-    spi->end();
+    spi->endTransaction();
     digitalWrite(csPin, HIGH);
 }
 

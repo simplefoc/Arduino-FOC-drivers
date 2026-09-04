@@ -223,7 +223,14 @@ void CalibratedSensor::calibrate(FOCMotor &motor, int settle_time_ms)
 	/*
 	backwards rotation
 	*/
-	SIMPLEFOC_DEBUG(motor.sensor_direction == Direction::CCW ? "SEN_CAL: Rotating: CW" : "SEN_CAL: Rotating: CCW" );
+	#ifndef SIMPLEFOC_DISABLE_DEBUG
+	if (motor.sensor_direction == Direction::CCW) {
+		SIMPLEFOC_DEBUG("SEN_CAL: Rotating: CW");
+	}
+	else {
+		SIMPLEFOC_DEBUG("SEN_CAL: Rotating: CCW");
+	}
+	#endif
 	for (int i = samples_per_full_rotation - 1; i >= 0; i--)
 	{
 		for (int j = 0; j < intermeditate_positions; j++) // move to the next location
