@@ -16,6 +16,10 @@
 #define BINARYIO_BUFFER_SIZE 58
 #endif
 
+#ifndef BINARYIO_RX_BUFFER_SIZE
+#define BINARYIO_RX_BUFFER_SIZE 256
+#endif
+
 class BinaryIO : public PacketIO {
     public:
         BinaryIO(Stream& io);
@@ -35,12 +39,21 @@ class BinaryIO : public PacketIO {
         void _buff(uint8_t* data, uint8_t size);
         void _buff(uint8_t data);
         void _flush();
+        void _rx_fill();
+        int _rx_peek();
+        int _rx_read();
+        uint8_t _rx_available() const;
         Stream& _io;
         uint8_t remaining = 0;
         uint8_t _pos = 0;
         uint8_t _buffer[BINARYIO_BUFFER_SIZE];
+        uint8_t _rx_buffer[BINARYIO_RX_BUFFER_SIZE];
+        uint8_t _rx_head = 0;
+        uint8_t _rx_tail = 0;
+        uint8_t _rx_count = 0;
+        bool _pending = false;
+        uint8_t _pending_type = 0;
+        uint8_t _pending_payload = 0;
 };
-
-
 
 

@@ -95,6 +95,12 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
             else
                 comms << (uint32_t)0;
             break;
+        case SimpleFOCRegister::REG_TELEMETRY_MIN_ELAPSED:
+            if (Telemetry::num_telemetry > 0)
+                comms << (uint32_t)(Telemetry::telemetries[Telemetry::telemetry_ctrl]->min_elapsed_time);
+            else
+                comms << (uint32_t)0;
+            break;
         case SimpleFOCRegister::REG_ITERATIONS_SEC:
             if (Telemetry::num_telemetry > 0)
                 comms << (Telemetry::telemetries[0]->last_iterations);
@@ -365,6 +371,11 @@ bool SimpleFOCRegisters::commsToRegister(RegisterIO& comms, uint8_t reg, FOCMoto
             comms >> val32;
             if (Telemetry::telemetry_ctrl < Telemetry::num_telemetry)
                 Telemetry::telemetries[Telemetry::telemetry_ctrl]->downsample = (uint16_t)val32;
+            return true;
+        case SimpleFOCRegister::REG_TELEMETRY_MIN_ELAPSED:
+            comms >> val32;
+            if (Telemetry::telemetry_ctrl < Telemetry::num_telemetry)
+                Telemetry::telemetries[Telemetry::telemetry_ctrl]->min_elapsed_time = val32;
             return true;
         case SimpleFOCRegister::REG_TELEMETRY_CTRL:
             comms >> val8;
@@ -669,6 +680,7 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_INDUCTANCE:
         case SimpleFOCRegister::REG_TELEMETRY_DOWNSAMPLE:
         case SimpleFOCRegister::REG_ITERATIONS_SEC:
+        case SimpleFOCRegister::REG_TELEMETRY_MIN_ELAPSED:
         case SimpleFOCRegister::REG_CURA_GAIN:
         case SimpleFOCRegister::REG_CURB_GAIN:
         case SimpleFOCRegister::REG_CURC_GAIN:
