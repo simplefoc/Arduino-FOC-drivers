@@ -70,7 +70,7 @@ SettingsStatus SettingsStorage::loadSettings() {
         for (int i = 0; i < numRegisters; i++) {
             SimpleFOCRegister reg = registers[i];
             startLoadRegister(reg);
-            SimpleFOCRegisters::regs->commsToRegister(*_io, reg, motors[m]);
+            SimpleFOCRegisters::commsToRegister(*_io, reg, motors[m]);
             endLoadRegister();
         }
         endLoadMotor();
@@ -94,7 +94,7 @@ SettingsStatus SettingsStorage::saveSettings() {
         for (int i = 0; i < numRegisters; i++) {
             SimpleFOCRegister reg = registers[i];
             startSaveRegister(reg);
-            SimpleFOCRegisters::regs->registerToComms(*_io, reg, motors[m]);
+            SimpleFOCRegisters::registerToComms(*_io, reg, motors[m]);
             endSaveRegister();
         }
         endSaveMotor();

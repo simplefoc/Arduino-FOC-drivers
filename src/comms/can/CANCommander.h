@@ -61,7 +61,7 @@ public:
     bool addCustomRegister(uint8_t reg, uint8_t size, 
         RegisterReadHandler readHandler, 
         RegisterWriteHandler writeHandler) {
-        return SimpleFOCRegisters::regs->addCustomRegister(reg, size, readHandler, writeHandler);
+        return SimpleFOCRegisters::addCustomRegister(reg, size, readHandler, writeHandler);
     }
 
 protected:

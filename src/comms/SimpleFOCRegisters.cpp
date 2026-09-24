@@ -4,10 +4,8 @@
 #include "communication/SimpleFOCDebug.h"
 #include "./telemetry/Telemetry.h"
 
-
-SimpleFOCRegisters::SimpleFOCRegisters(){};
-SimpleFOCRegisters::~SimpleFOCRegisters(){};
-
+CustomRegisterHandler* customRegisters[MAX_CUSTOM_REGISTERS] = {nullptr};
+uint8_t customRegisterCount = 0;
 
 // write the register value(s) for the given motor to the given comms object
 bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMotor* motor){
@@ -75,12 +73,7 @@ bool SimpleFOCRegisters::registerToComms(RegisterIO& comms, uint8_t reg, FOCMoto
         case SimpleFOCRegister::REG_TELEMETRY_REG:
             if (Telemetry::num_telemetry > 0){
                 Telemetry* telemetry = Telemetry::telemetries[Telemetry::telemetry_ctrl];
-                comms << telemetry->numRegisters;
-                for (uint8_t i=0; i<telemetry->numRegisters; i++) {
-                    comms << telemetry->registers_motor[i];
-                    comms << telemetry->registers[i];
-                }
-                telemetry->headerSent = false;
+                telemetry->registerToComms(comms);
             }
             else {
                 comms << (uint32_t)0;
@@ -700,7 +693,7 @@ uint8_t SimpleFOCRegisters::sizeOfRegister(uint8_t reg){
         case SimpleFOCRegister::REG_TELEMETRY_REG:
             if (Telemetry::num_telemetry > 0) {
                 Telemetry* telemetry = Telemetry::telemetries[Telemetry::telemetry_ctrl];
-                return 2*telemetry->numRegisters + 1;
+                return telemetry->sizeOfRegister();
             }
             else
                 return 1;
@@ -743,6 +736,3 @@ bool SimpleFOCRegisters::addCustomRegister(uint8_t reg, uint8_t size, RegisterRe
     customRegisters[customRegisterCount++] = new CustomRegisterHandler{reg, size, readHandler, writeHandler};
     return true;
 }
-
-
-SimpleFOCRegisters* SimpleFOCRegisters::regs = new SimpleFOCRegisters();

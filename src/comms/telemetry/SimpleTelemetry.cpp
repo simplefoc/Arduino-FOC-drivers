@@ -19,7 +19,7 @@ void SimpleTelemetry::init(TextIO& _comms){
 void SimpleTelemetry::sendTelemetry(){
     if (numRegisters > 0) {
         for (uint8_t i = 0; i < numRegisters; i++) {
-            SimpleFOCRegisters::regs->registerToComms(*comms, registers[i], motors[registers_motor[i]]);
+            SimpleFOCRegisters::registerToComms(*comms, registers[i], motors[registers_motor[i]]);
             if (i<numRegisters-1) *comms << '\t';
         };
         *comms << '\n';

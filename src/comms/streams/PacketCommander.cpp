@@ -74,7 +74,7 @@ void PacketCommander::handleRegisterPacket(bool write, uint8_t reg) {
         commanderror = commanderror || !ok;
     }
     if (!write || echo) {
-        uint8_t size = SimpleFOCRegisters::regs->sizeOfRegister(reg);
+        uint8_t size = SimpleFOCRegisters::sizeOfRegister(reg);
         if (size > 0) { // sendable register
             *_io << START_PACKET(PacketType::RESPONSE, size+1) << reg << Separator('=');
             // TODO status?
@@ -98,7 +98,7 @@ bool PacketCommander::commsToRegister(uint8_t reg){
                 curMotor = val;
             return true;
         default:
-            return SimpleFOCRegisters::regs->commsToRegister(*_io, reg, motors[curMotor]);
+            return SimpleFOCRegisters::commsToRegister(*_io, reg, motors[curMotor]);
     }
 };
 
@@ -116,6 +116,6 @@ bool PacketCommander::registerToComms(uint8_t reg){
             *_io << numMotors;
             return true;
         default:
-            return SimpleFOCRegisters::regs->registerToComms(*_io, reg, motors[curMotor]);
+            return SimpleFOCRegisters::registerToComms(*_io, reg, motors[curMotor]);
     }
 };

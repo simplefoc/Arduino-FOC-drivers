@@ -129,7 +129,7 @@ bool I2CCommander::receiveRegister(uint8_t motorNum, uint8_t registerNum, int nu
                 (val>0)?motors[i]->enable():motors[i]->disable();
             break;
         default: // unknown register
-            return SimpleFOCRegisters::regs->commsToRegister(*this, registerNum, motors[motorNum]);
+            return SimpleFOCRegisters::commsToRegister(*this, registerNum, motors[motorNum]);
     }
     return true;
 }
@@ -171,7 +171,7 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             break;
         case I2CCOMMANDER_REG_REPORT:
             for (int i=0;i<numReportRegisters;i++)
-                SimpleFOCRegisters::regs->registerToComms(*this, reportRegisters[i], motors[reportMotors[i]]); // send any normal register
+                SimpleFOCRegisters::registerToComms(*this, reportRegisters[i], motors[reportMotors[i]]); // send any normal register
             break;
         case REG_NUM_MOTORS:
             _wire->write(numMotors);
@@ -181,7 +181,7 @@ bool I2CCommander::sendRegister(uint8_t motorNum, uint8_t registerNum) {
             return false;
         // unknown register - not handled here
         default:
-            return SimpleFOCRegisters::regs->registerToComms(*this, registerNum, motors[motorNum]);
+            return SimpleFOCRegisters::registerToComms(*this, registerNum, motors[motorNum]);
     }
     return true;
 }
