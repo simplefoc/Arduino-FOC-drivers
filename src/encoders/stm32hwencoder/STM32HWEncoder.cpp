@@ -19,6 +19,14 @@ STM32HWEncoder::STM32HWEncoder(unsigned int _ppr, int pinA, int pinB, int pinI) 
 // function returns encoder handle
 TIM_HandleTypeDef STM32HWEncoder::getEncoderTimerHandle() { return encoder_handle; }
 
+#if STM32_CORE_VERSION_MAJOR >= 3
+void STM32HWEncoder::IndexInterrupt()
+{
+    encoder_handle.Instance->CNT = 0; // reset counter
+    index_found = true;
+}
+#endif
+
 /*
   Shaft angle calculation
 */
@@ -95,7 +103,11 @@ void STM32HWEncoder::init() {
     encoder_config.IC2Filter = 0;
 
     encoder_handle.Instance = InstanceA; // e.g. TIM4;
+    #if STM32_CORE_VERSION_MAJOR >= 3
+    enableTimerClock(encoder_handle.Instance);
+    #else
     enableTimerClock(&encoder_handle);
+    #endif
 
     if (HAL_TIM_Encoder_Init(&encoder_handle, &encoder_config) != HAL_OK) {
         initialized = false;
@@ -125,10 +137,14 @@ void STM32HWEncoder::init() {
     // on index pulse
     if(hasIndex())
     {
+        #if STM32_CORE_VERSION_MAJOR >= 3
+        attachInterruptParam(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)), (void (*)(void*))&STM32HWEncoder::IndexInterrupt, index_polarity, this);
+        #else
         attachInterrupt(digitalPinToInterrupt(pinNametoDigitalPin(_pinI)), [this]() {
             encoder_handle.Instance->CNT = 0; // reset counter
             index_found = true;
         }, index_polarity);
+        #endif
     }
 
     if (HAL_TIM_Encoder_Start(&encoder_handle, TIM_CHANNEL_1) != HAL_OK) {

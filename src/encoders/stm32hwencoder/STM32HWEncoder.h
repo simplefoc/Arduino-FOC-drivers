@@ -29,12 +29,20 @@ class STM32HWEncoder : public Sensor {
     uint32_t cpr;  //!< encoder cpr number
     PinName _pinA, _pinB, _pinI;
     bool index_found;
-    uint32_t index_polarity = RISING;
+    #if STM32_CORE_VERSION_MAJOR >= 3
+    PinStatus index_polarity = RISING;
+    #else
+    int index_polarity = RISING;
+    #endif
     // Use TIM_ENCODERMODE_CLOCKPLUSDIRECTION_X1 for step/dir counting (pinA ch1 dir, pinB ch2 step)
     uint32_t encoder_mode = TIM_ENCODERMODE_TI12; // Must be set before calling init
     
   protected:
     float getSensorAngle() override;
+    
+    #if STM32_CORE_VERSION_MAJOR >= 3
+    void IndexInterrupt();
+    #endif
     
     TIM_HandleTypeDef encoder_handle;
 

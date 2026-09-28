@@ -9,7 +9,6 @@
 #include "stm32g4xx_ll_rcc.h"
 #include "stm32g4xx_ll_bus.h"
 #include "common/foc_utils.h"
-#include "arm_math.h"
 
 CORDIC_HandleTypeDef thisCordic;
 
@@ -46,37 +45,37 @@ bool SimpleFOC_CORDIC_Config(void){
     return true;
 };
 
+#define float_to_q1_31(in) ((uint32_t)(int32_t)(in * 0x80000000))
+#define q31_to_float(in) ((float)((int32_t)in) / 0x80000000)
 
 
 float _sin(float a) {
     a = fmod(a, _2PI);
     if (a>_PI) a -= _2PI;
     if (a<-_PI) a += _2PI;
-    CORDIC->WDATA = (q31_t)((a / _PI) * 0x80000000);
-    q31_t out_cos = (int32_t)CORDIC->RDATA; // read cosine result
-    q31_t out_sin = (int32_t)CORDIC->RDATA; // read sine result
-    return (float)out_sin / (float)0x80000000;
+    CORDIC->WDATA = float_to_q1_31(a / _PI);
+    uint32_t out_cos = CORDIC->RDATA; // read cosine result
+    float out_sin = q31_to_float(CORDIC->RDATA); // read sine result
+    return out_sin;
 }
 
 float _cos(float a) {
     a = fmod(a, _2PI);
     if (a>_PI) a -= _2PI;
     if (a<-_PI) a += _2PI;    
-    CORDIC->WDATA = (q31_t)((a / _PI) * 0x80000000);
-    q31_t out_cos = (int32_t)CORDIC->RDATA; // read cosine result
-    q31_t out_sin = (int32_t)CORDIC->RDATA; // read sine result
-    return (float)out_cos / (float)0x80000000;
+    CORDIC->WDATA = float_to_q1_31(a / _PI);
+    float out_cos = q31_to_float(CORDIC->RDATA); // read cosine result
+    uint32_t out_sin = CORDIC->RDATA; // read sine result
+    return out_cos;
 }
 
 void _sincos(float a, float* s, float* c) {
     a = fmod(a, _2PI);
     if (a>_PI) a -= _2PI;
     if (a<-_PI) a += _2PI;    
-    CORDIC->WDATA = (q31_t)((a / _PI) * 0x80000000);
-    q31_t out_cos = (int32_t)CORDIC->RDATA; // read cosine result
-    q31_t out_sin = (int32_t)CORDIC->RDATA; // read sine result
-    *c = (float)out_cos / (float)0x80000000;
-    *s = (float)out_sin / (float)0x80000000;
+    CORDIC->WDATA = float_to_q1_31(a / _PI);
+    *c = q31_to_float(CORDIC->RDATA); // read cosine result
+    *s = q31_to_float(CORDIC->RDATA); // read sine result
 }
 
 
