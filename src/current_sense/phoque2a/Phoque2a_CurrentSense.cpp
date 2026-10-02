@@ -58,7 +58,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 	sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 	}
 
 	if (read_bemf)
@@ -70,7 +70,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 		{
-			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+			SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 		}
 
 		/* Configure Regular Channel (PB1 / BEMFW / Phase W)
@@ -80,7 +80,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 		{
-			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+			SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 		}
 	}
 
@@ -93,7 +93,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 	sConfig.SamplingTime = SAMPLETIME_PERIPHERAL;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 	}
 
 	/** Configure Regular Channel (PA3 / Bus voltage monitor)
@@ -103,7 +103,7 @@ int Phoque2a_CurrentSense::ADC1_Init(ADC_HandleTypeDef* hadc1)
 	sConfig.SamplingTime = SAMPLETIME_PERIPHERAL;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 	}
 	return hadc1->Init.NbrOfConversion;
 }
@@ -126,7 +126,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 	}
 	/** Configure Regular Channel (PB2 / phase W current)
 	*/
@@ -135,7 +135,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 	}
 
 	if(read_bemf)
@@ -147,7 +147,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 		sConfig.SamplingTime = SAMPLETIME_IMPORTANT;
 		if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 		{
-			SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+			SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 		}
 	}
 
@@ -158,7 +158,7 @@ int Phoque2a_CurrentSense::ADC2_Init(ADC_HandleTypeDef* hadc2)
 	sConfig.SamplingTime = SAMPLETIME_PERIPHERAL;
 	if (HAL_ADC_ConfigChannel(hadc2, &sConfig) != HAL_OK)
 	{
-		SIMPLEFOC_DEBUG("HAL_ADC_ConfigChannel failed!");
+		SimpleFOCDebug::println("HAL_ADC_ConfigChannel failed!");
 	}
 	return hadc2->Init.NbrOfConversion;
 }
