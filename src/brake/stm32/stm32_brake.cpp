@@ -265,8 +265,17 @@ stm32_brake::stm32_brake(PinName _vbus_pin, PinName _brake_pin, uint8_t _brake_a
 
 void stm32_brake::start_brake(float trigger_voltage_over_vref)
 {
-	volatile HAL_StatusTypeDef status;
+	HAL_StatusTypeDef status;
+	//Even if HAL_DAC_MODULE_ONLY is set, Arduino still overrides HAL_DAC_MspInit and tries to pinmap the DAC out, fails and crashes the stm32.
+	//Set this to 1 when it's fixed.
+	#if 0
 	status = HAL_DAC_Init(&hdac);
+	#else
+	assert_param(IS_DAC_ALL_INSTANCE(hdac.Instance));
+	hdac.Lock = HAL_UNLOCKED;
+	hdac.State = HAL_DAC_STATE_READY;
+	hdac.ErrorCode = HAL_DAC_ERROR_NONE;
+	#endif
 	DAC_ChannelConfTypeDef dac_channel_config = get_dac_config();
 	status = HAL_DAC_ConfigChannel(&hdac, &dac_channel_config, dac_channel);
 	status = set_raw_threshold(trigger_voltage_over_vref);
