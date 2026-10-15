@@ -89,3 +89,29 @@ void setup(){
 Other MCUs are currently not supported. The problem is that the sensor uses SPI in half-duplex mode, which is not supported by Arduino framework. So for each MCU type a custom driver has to be written to get the half-duplex SPI communication to work. There are currently no plans to support other MCUs on our side, but we will gladly accept pull requests :-)
 
 If you can find other libraries for other MCUs, you can use the GenericSensor approach to integrate them.
+
+## Safety word validation
+
+The SSC protocol appends a safety word after the data on every read, carrying
+four active-low status bits and a CRC over the transaction. This driver already
+clocks those bytes off the wire, so validating them costs no extra bus traffic.
+
+It is disabled by default, leaving existing behaviour unchanged. Enable it when
+a corrupted angle would be acted on — for example once the sensor is closing a
+position loop and a bad reading commands current:
+
+```cpp
+sensor.checkSafetyWord(true);
+```
+
+With it enabled, a read whose CRC fails or whose status bits report a fault is
+rejected and the previous good angle is returned instead. Two accessors expose
+what happened:
+
+```cpp
+sensor.safetyErrorCount();   // reads rejected since init
+sensor.lastSafetyWord();     // raw safety word from the most recent read
+```
+
+The CRC is CRC-8, polynomial `0x1D`, seed `0xFF`, computed over the transmitted
+command word followed by the returned data word, with the result inverted.
